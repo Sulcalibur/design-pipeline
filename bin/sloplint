@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# bin/sloplint — run Hallmark's sloplint from any project.
+#
+# Resolves this repo so puppeteer-core is found, and picks an isolated
+# automation browser. Never uses the user's daily browser.
+#
+#   bin/sloplint <files|--url http://localhost:PORT/route> [--render] [--genre …]
+set -euo pipefail
+
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+HALLMARK="${HALLMARK_HOME:-$HOME/.agents/skills/hallmark}"
+
+if [ ! -f "$HALLMARK/scripts/sloplint.mjs" ]; then
+  echo "sloplint not found at $HALLMARK" >&2
+  exit 1
+fi
+
+# puppeteer-core is a dependency of THIS repo, not of the project being audited.
+export HALLMARK_PUPPETEER="$HERE"
+
+# Prefer an already-set CHROME_PATH. Otherwise use a versioned automation build,
+# never /Applications (that is where the daily browser lives).
+if [ -z "${CHROME_PATH:-}" ]; then
+  CANDIDATES=(
+    "$HOME/Library/Caches/ms-playwright/chromium-1248/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing"
+    "$HOME/.cache/puppeteer/chrome/mac_arm-131.0.6778.204/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing"
+  )
+  for candidate in "${CANDIDATES[@]}"; do
+    if [ -x "$candidate" ]; then
+      export CHROME_PATH="$candidate"
+      break
+    fi
+  done
+fi
+
+if [ -z "${CHROME_PATH:-}" ]; then
+  echo "No automation browser found. Set CHROME_PATH to a Chrome for Testing binary." >&2
+  exit 1
+fi
+
+exec node "$HALLMARK/scripts/sloplint.mjs" "$@"

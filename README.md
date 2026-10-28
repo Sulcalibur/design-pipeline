@@ -46,6 +46,17 @@ design slugs, `.hallmark/` — then creates only what is missing. Existing brief
 left untouched. Starting mid-pipeline is expected: a project may already have a brief, or a built
 page, or nothing.
 
+## Wrappers
+
+```bash
+bin/probe    status|init|ingest|sheet|build|serve|emit|record    # from any project
+bin/sloplint <files|--url …> [--render]                          # Hallmark's sweep
+```
+
+`bin/sloplint` sets `HALLMARK_PUPPETEER` to this repo and `CHROME_PATH` to an isolated automation
+browser, so `--render` works from a project directory with no environment variables. Add `bin/` to
+`PATH` to call them as `probe` and `sloplint`.
+
 ## The loop
 
 ```bash

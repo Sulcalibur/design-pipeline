@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# bin/probe — the shared probe engine, callable from anywhere.
+#
+#   bin/probe status --config <project>/docs/design/<slug>/probe.config.json
+#
+# Equivalent to: node <this repo>/probe/probe.mjs "$@"
+set -euo pipefail
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+exec node "$HERE/probe/probe.mjs" "$@"
