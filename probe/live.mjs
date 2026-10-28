@@ -255,14 +255,15 @@ try {
   for (const id of ids) {
     const option = optionsById.get(id)
     const candidate = byId.get(id)
-    const url = option?.url ?? candidate?.url ?? null
+    // A resolved gallery hop wins: the gallery page is not the site.
+    const url = analysis.images[id]?.link?.siteUrl ?? option?.url ?? candidate?.url ?? null
 
     if (!url) {
       results.push({ id, skipped: 'no url' })
       continue
     }
-    if (candidate?.via) {
-      results.push({ id, skipped: `gallery capture (${candidate.via}) — the URL is the gallery, not the site` })
+    if (candidate?.via && !analysis.images[id]?.link?.siteUrl) {
+      results.push({ id, skipped: `gallery capture (${candidate.via}) — run \`links\` first, or it will fetch the gallery` })
       continue
     }
     if (/\.(png|jpe?g|webp|gif|pdf)$/i.test(url)) {

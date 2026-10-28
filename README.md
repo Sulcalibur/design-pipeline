@@ -107,6 +107,20 @@ node probe/probe.mjs live --config …
 This is the truth for fonts and tokens; the saved capture remains the truth for what you actually saw.
 Where they disagree, record the drift rather than replacing one with the other.
 
+## URL canonicalisation
+
+`links` records three forms of every reference URL: the raw `linkedAs` href, the canonical `siteUrl`
+(`ref`, `utm_*`, `fbclid`, `gclid`, `msclkid`, `mc_*`, `_hs*`, `igshid`, `trk`, `campaign`, `affiliate`
+removed; fragment, default port, trailing slash and param order normalised) and the verified `finalUrl`
+after redirects.
+
+```bash
+probe links --clean 'https://frontapp.com/?ref=lapaninja'   # → https://frontapp.com/
+```
+
+Per project: `"links": { "stripQuery": "tracking", "keepParams": ["page", "id"] }`.
+`--strip all` keeps no params; `--strip none` keeps everything for debugging.
+
 ## Paths
 
 Every path is resolved from `--config`; each can be overridden with `--out`, `--data`, `--build`, or

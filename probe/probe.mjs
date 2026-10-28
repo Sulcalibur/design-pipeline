@@ -262,6 +262,7 @@ function help() {
   node probe.mjs sheet             build the contact sheet for curation
   node probe.mjs analyze           measure references + write their profile
   node probe.mjs live              read the reference's live page (fonts, colours, sections)
+  node probe.mjs links             resolve a gallery capture to the site it depicts
   node probe.mjs serve [--port]    run the probe at http://127.0.0.1:4210
   node probe.mjs emit [--dry]      write 05-probe.md + design-spec.json
   node probe.mjs record [--apply]  write verdicts back into Eagle
@@ -301,6 +302,9 @@ switch (cmd) {
     break
   case 'live':
     runScript('live.mjs', rest)
+    break
+  case 'links':
+    runScript('links.mjs', rest)
     break
   case 'serve':
     serve(rest)
