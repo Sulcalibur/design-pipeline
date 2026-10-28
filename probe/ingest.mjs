@@ -59,7 +59,12 @@ const writeCandidates = (usable, extra) => {
 if (kind === 'eagle') {
   const libraryName = source.library ?? paths.args.get('library', 'Inspirations')
   const root = path.join(homedir(), 'Library/Mobile Documents/com~apple~CloudDocs/Eagle')
-  const libraryPath = source.path ? path.resolve(paths.root, source.path) : path.join(root, `${libraryName}.library`)
+  // Precedence: explicit config path → EAGLE_LIBRARY (one machine-wide setting) → iCloud default.
+  const libraryPath = source.path
+    ? path.resolve(paths.root, source.path)
+    : process.env.EAGLE_LIBRARY
+      ? path.resolve(process.env.EAGLE_LIBRARY)
+      : path.join(root, `${libraryName}.library`)
 
   if (!existsSync(libraryPath)) fail(`library not found: ${libraryPath}`)
 

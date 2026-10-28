@@ -34,7 +34,9 @@ const sourceKind = source.kind ?? 'eagle'
 const libraryName = source.library ?? args.get('library', 'Inspirations')
 const libraryPath = source.path
   ? path.resolve(paths.root, source.path)
-  : path.join(homedir(), 'Library/Mobile Documents/com~apple~CloudDocs/Eagle', `${libraryName}.library`)
+  : process.env.EAGLE_LIBRARY
+    ? path.resolve(process.env.EAGLE_LIBRARY)
+    : path.join(homedir(), 'Library/Mobile Documents/com~apple~CloudDocs/Eagle', `${libraryName}.library`)
 const itemsDir = path.join(libraryPath, 'images')
 
 const candidates = loadCandidates(paths.candidates) ?? []

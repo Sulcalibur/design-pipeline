@@ -93,7 +93,9 @@ This is how a project keeps its outputs beside its config without a wrapper scri
 ## Reference sources
 
 **Eagle** (default). Indexes the library read-only, classifies specimens/assets/mood pins out, and
-serves images from Eagle's item directories. The index is matched by item count, then read in one
+serves images from Eagle's item directories. The library path resolves as `sources.path` → `$EAGLE_LIBRARY`
+→ the iCloud default, so one shell export covers every project. Keep the library on a local path: iCloud
+Drive can offload files and macOS denies a non-GUI process access to `~/Library/Mobile Documents`. The index is matched by item count, then read in one
 pass. Eagle's API has no working search — page `/api/item/list` and filter client-side.
 
 **Folder.** `sources.kind: "folder"` reads `references/manifest.json`:
