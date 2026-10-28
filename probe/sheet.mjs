@@ -20,6 +20,17 @@ const sourceKind = config.sources?.kind ?? 'eagle'
 if (!existsSync(paths.candidates)) fail(`no candidates at ${paths.candidates} — run ingest first`)
 const candidates = JSON.parse(readFileSync(paths.candidates, 'utf8'))
 
+// Optional: measured profiles from `analyze`, shown on the card so curation can
+// be done from the sheet rather than by opening every capture.
+const analysisPath = path.join(paths.data, 'analysis.json')
+const measured = existsSync(analysisPath) ? JSON.parse(readFileSync(analysisPath, 'utf8')).images ?? {} : {}
+const profileLine = (id) => {
+  const m = measured[id]?.measured
+  if (!m) return ''
+  const chips = m.palette.slice(0, 4).map((p) => `<i style="background:${p.hex}"></i>`).join('')
+  return `<span class="prof">${chips}<b>${m.visualDensity}</b> · ${m.bands} bands · ${m.columns} col${m.columns === 1 ? '' : 's'}</span>`
+}
+
 const escapeRe = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 const includeHosts = sliceConfig.hosts?.length ? new RegExp(sliceConfig.hosts.map(escapeRe).join('|'), 'i') : null
 const excludeHosts = sliceConfig.excludeHosts?.length
@@ -51,7 +62,7 @@ const cards = slice
     (i, n) => `
     <figure>
       <div class="shot"><img src="/img/${encodeURIComponent(i.id)}?thumb=1" loading="lazy" alt=""></div>
-      <figcaption><b>${String(n + 1).padStart(3, '0')}</b> ${escapeHtml(i.name)}<span>${escapeHtml(i.host ?? 'local')} · ${dims(i)}</span></figcaption>
+      <figcaption><b>${String(n + 1).padStart(3, '0')}</b> ${escapeHtml(i.name)}<span>${escapeHtml(i.host ?? 'local')} · ${dims(i)}</span>${profileLine(i.id)}</figcaption>
     </figure>`,
   )
   .join('')
@@ -90,6 +101,9 @@ writeFileSync(
   figcaption { font-size: 11px; line-height: 1.35; margin-top: 6px; color: #333; }
   figcaption b { display: inline-block; min-width: 26px; color: #8a8378; font-weight: 600; }
   figcaption span { display: block; color: #8a8378; margin-top: 1px; }
+  figcaption .prof { display: flex; align-items: center; gap: 3px; color: #6b665c; }
+  figcaption .prof i { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
+  figcaption .prof b { color: #333; font-weight: 600; margin-left: 4px; }
 </style></head>
 <body>
   <h1>${escapeHtml(title)}</h1>

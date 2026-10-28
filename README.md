@@ -60,8 +60,9 @@ browser, so `--render` works from a project directory with no environment variab
 ## The loop
 
 ```bash
-node probe/probe.mjs ingest --config <project>/docs/design/<slug>/probe.config.json
-node probe/probe.mjs sheet  --config …
+node probe/probe.mjs ingest  --config <project>/docs/design/<slug>/probe.config.json
+node probe/probe.mjs analyze --config …   # measure palette, density, bands, columns
+node probe/probe.mjs sheet   --config …
 node probe/probe.mjs build  --config …
 node probe/probe.mjs serve  --config …
 # answer in the browser; saving runs emit
@@ -75,6 +76,23 @@ not half-written.
 
 `record` writes verdicts back into Eagle (`probe:<id>`, `axis:<axis>`, `verdict:picked|rejected|neither`).
 Dry run unless `--apply`; needs Eagle running on `:41595`.
+
+## Reference profiles
+
+`analyze` writes a two-layer profile per image:
+
+- **measured** — palette with shares, background, whitespace, luminance, contrast, colour temperature,
+  edge density, section bands, a column hint, alignment, aspect. Deterministic, cached machine-wide in
+  `~/Library/Caches/design-pipeline/`, keyed by library + id + mtime.
+- **authored** — `style`, `typeVoice`, `layout`, `devices[]`, `avoid[]`, `rating`, `notes`. Written by the
+  agent or a person, and preserved when a refresh re-measures.
+
+The project keeps both in `data/analysis.json`, which is tracked: the measured half is regenerable, the
+authored half is knowledge. The contact sheet shows palette chips and density per card, and `emit`
+carries each chosen source's profile into `design-spec.json`.
+
+No OCR, no font identification, no style classification. A screenshot has no box model and no font
+metadata; guessing either would be worse than leaving it empty.
 
 ## Paths
 

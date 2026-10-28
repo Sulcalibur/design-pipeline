@@ -144,9 +144,42 @@ const detailRows = probe.followups.map((q) => {
   return { label: q.label ?? 'Detail', question: q.question, labels, answered: labels.length > 0 }
 })
 
+// Measured profiles, when `analyze` has run. Evidence for the builder, never a
+// substitute for the authored judgement in the direction document.
+const analysis = (() => {
+  const file = path.join(paths.data, 'analysis.json')
+  if (!existsSync(file)) return null
+  try {
+    return JSON.parse(readFileSync(file, 'utf8')).images ?? null
+  } catch {
+    return null
+  }
+})()
+
 const sources = choices
   .filter((c) => c.option)
-  .map((c) => ({ axis: c.pair.axis, source: c.option.source, url: c.option.url, borrow: c.option.note, label: c.option.label }))
+  .map((c) => {
+    const m = analysis?.[c.option.id]?.measured
+    return {
+      axis: c.pair.axis,
+      source: c.option.source,
+      url: c.option.url,
+      borrow: c.option.note,
+      label: c.option.label,
+      profile: m
+        ? {
+            palette: m.palette,
+            whitespace: m.whitespace,
+            density: m.visualDensity,
+            bands: m.bands,
+            columns: m.columns,
+            alignment: m.alignment,
+            contrast: m.contrast,
+            temperature: m.temperature,
+          }
+        : null,
+    }
+  })
 
 const avoided = run.avoided?.length
   ? run.avoided.filter((a) => a && !String(a).startsWith('undefined'))

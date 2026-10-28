@@ -260,6 +260,7 @@ function help() {
   node probe.mjs status            config, library pool, last run, last spec
   node probe.mjs ingest            index the reference source (Eagle or a folder)
   node probe.mjs sheet             build the contact sheet for curation
+  node probe.mjs analyze           measure references + write their profile
   node probe.mjs serve [--port]    run the probe at http://127.0.0.1:4210
   node probe.mjs emit [--dry]      write 05-probe.md + design-spec.json
   node probe.mjs record [--apply]  write verdicts back into Eagle
@@ -293,6 +294,9 @@ switch (cmd) {
     break
   case 'sheet':
     runScript('sheet.mjs', rest)
+    break
+  case 'analyze':
+    runScript('analyze.mjs', rest)
     break
   case 'serve':
     serve(rest)
