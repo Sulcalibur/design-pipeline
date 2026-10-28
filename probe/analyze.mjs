@@ -109,11 +109,17 @@ for (const id of ids) {
     measured: record.measured,
     authored: images[id]?.authored ?? {
       style: null,
+      layoutModel: null,
+      heroPosture: null,
+      nav: null,
+      mediaTreatment: null,
+      colourRoles: [],
       typeVoice: null,
-      layout: null,
+      sections: [],
       devices: [],
       avoid: [],
       rating: null,
+      confidence: null,
       notes: null,
       reviewedBy: null,
       reviewedAt: null,
@@ -137,6 +143,79 @@ writeFileSync(
     2,
   ) + '\n',
 )
+
+/* ------------------------------------------------------------- brief ---- */
+
+if (args.has('brief')) {
+  const template = {
+    style: 'editorial / quiet',
+    layoutModel: 'single column with a right rail',
+    heroPosture: 'centred display over a full-bleed image',
+    nav: 'wordmark left, four pill links right',
+    mediaTreatment: 'plated images with small captions',
+    colourRoles: ['paper: warm off-white', 'ink: near-black', 'accent: one coral CTA'],
+    typeVoice: 'high-contrast serif display; body serif at 18px',
+    sections: [{ name: 'Start here', job: 'send a new reader in', composition: 'two large cards side by side' }],
+    devices: ['date-stamped entries', 'ruled index'],
+    avoid: ['the wordmark repeated in the hero'],
+    rating: 4,
+    confidence: 'high',
+    notes: 'Rhythm comes from image heights, not spacing.',
+    reviewedBy: 'design-director',
+    reviewedAt: new Date().toISOString(),
+  }
+
+  const blocks = ids
+    .map((id) => {
+      const entry = images[id]
+      if (!entry) return null
+      const m = entry.measured
+      return `## ${id}${entry.name ? ` — ${entry.name}` : ''}
+
+\`${entry.file}\`
+
+| measured | | | measured | |
+|---|---|---|---|---|
+| palette | ${m.palette.map((p) => `${p.hex} ${Math.round(p.share * 100)}%`).join(' · ')} | | density | ${m.visualDensity} (whitespace ${m.whitespace}) |
+| bands | ${m.bands} | | columns (hint) | ${m.columns} |
+| alignment (hint) | ${m.alignment} | | aspect | ${m.aspect} |
+| contrast | ${m.contrast} | | temperature | ${m.temperature} |
+
+Fill \`authored\` for this id in \`data/analysis.json\`:
+
+\`\`\`json
+${JSON.stringify(template, null, 2)}
+\`\`\`
+`
+    })
+    .filter(Boolean)
+    .join('\n')
+
+  const brief = `# Look sheet — ${ids.length} reference${ids.length === 1 ? '' : 's'}
+
+You are the author of the semantic layer. The measurements below are already
+taken; do not repeat them and do not contradict them without saying so.
+
+For each image:
+
+1. Open the file with the image-reading tool. If you cannot see images, stop:
+   write \`confidence: "none"\` and \`notes: "not looked at"\`, and say so in chat.
+2. Describe **structure**, not surface: hero posture, the section order and each
+   section's job and composition, nav model, media treatment, colour roles, type
+   voice.
+3. Name the **device** worth borrowing and what must not be copied.
+4. Never name a font family unless the source states it. Describe the voice.
+5. If a measurement and what you see disagree, record the disagreement in
+   \`notes\` — do not silently overwrite it.
+
+Valid \`confidence\`: \`high\`, \`medium\`, \`low\`, \`none\`.
+
+${blocks}`
+
+  const briefPath = path.join(paths.data, 'look-sheet.md')
+  writeFileSync(briefPath, brief)
+  console.log(`\nlook sheet → ${rel(briefPath)}`)
+}
 
 /* ------------------------------------------------------------- report ---- */
 
@@ -162,6 +241,9 @@ for (const id of ids) {
 
 console.log(`
 The authored layer is yours to fill in ${rel(analysisPath)}:
-  style, typeVoice, layout, devices[], avoid[], rating, notes, reviewedBy, reviewedAt
+  style, layoutModel, heroPosture, nav, mediaTreatment, colourRoles[], typeVoice,
+  sections[{name, job, composition}], devices[], avoid[], rating, confidence, notes,
+  reviewedBy, reviewedAt
 A refresh only rewrites "measured"; "authored" is preserved.
+Add --brief to write data/look-sheet.md: the per-image authoring contract.
 `)
