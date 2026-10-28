@@ -107,6 +107,19 @@ node probe/probe.mjs live --config …
 This is the truth for fonts and tokens; the saved capture remains the truth for what you actually saw.
 Where they disagree, record the drift rather than replacing one with the other.
 
+## Preview a run
+
+```bash
+node probe/probe.mjs preview --config …
+```
+
+Writes `preview.html` beside the run: six pairs (or however many the config holds), each showing the
+screenshot, palette chips, measured density, live fonts and section list, and the authored note where a
+person or model has looked. Images are copied next to the page, so it opens offline. Clicking a side
+records a choice; export copies the JSON.
+
+It names its sources, so it is a review surface, not the blind interview.
+
 ## URL canonicalisation
 
 `links` records three forms of every reference URL: the raw `linkedAs` href, the canonical `siteUrl`

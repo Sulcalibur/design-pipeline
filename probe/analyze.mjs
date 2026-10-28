@@ -62,7 +62,11 @@ const skipped = []
 for (const id of ids) {
   const option = optionsById.get(id)
   const candidate = byId.get(id)
-  const file = option?.src && !/^https?:/i.test(option.src) ? path.resolve(paths.root, option.src) : imageFileFor(candidate ?? {})
+  let file = option?.src && !/^https?:/i.test(option.src) ? path.resolve(paths.root, option.src) : imageFileFor(candidate ?? {})
+  // When the library file is unreadable (macOS permission) or gone, measure the
+  // live screenshot instead of skipping the reference.
+  const liveShot = existing.images?.[id]?.live?.screenshot
+  if ((!file || !existsSync(file)) && liveShot && existsSync(liveShot)) file = liveShot
   if (!file || !existsSync(file)) {
     skipped.push({ id, reason: candidate ? 'no local image file' : 'not in candidates.json' })
     continue
@@ -101,8 +105,9 @@ for (const id of ids) {
   }
 
   images[id] = {
+    ...(images[id] ?? {}),
     id,
-    name: candidate?.name ?? option?.label ?? id,
+    name: images[id]?.name ?? candidate?.name ?? option?.label ?? id,
     file,
     measuredAt: new Date().toISOString(),
     method: record.method,
