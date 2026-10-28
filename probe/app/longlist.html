@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Longlist</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;padding:24px;background:#f6f4ef;color:#1a1a1a;font:13px/1.4 ui-sans-serif,-apple-system,sans-serif}
+  h1{font:500 18px/1.3 Georgia,serif;margin:0 0 18px}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .card{background:#fff;border-radius:4px;overflow:hidden;box-shadow:0 1px 3px rgb(0 0 0/10%)}
+  .top{aspect-ratio:4/5;overflow:hidden;background:#eee}
+  .top img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block}
+  .bot{aspect-ratio:16/5;overflow:hidden;background:#ddd;border-top:2px solid #fff}
+  .bot img{width:100%;height:100%;object-fit:cover;object-position:bottom center;display:block}
+  .meta{padding:8px 10px;font-size:11px;color:#555}
+  .meta b{color:#111}
+</style></head><body>
+<h1>Longlist — top and bottom crops</h1>
+<div class="grid" id="g"></div>
+<script>
+const items = [
+ ['LC4YCLIVDUHTN','Austin Kleon home'],
+ ['LC4YF0D41C3PA','Austin Kleon post'],
+ ['LUTQGC37F89L4','EJS home'],
+ ['LUTQHFP3YXUF5','EJS blog'],
+ ['LUTQL6OSKRITX','EJS podcast'],
+ ['LLCPWAZCCEL7L','Hische home'],
+ ['M2U9GEVYJPCKK','Cup of Jo'],
+ ['M2U9KANC17HXM','Design Milk'],
+ ['M2UAJDWAFBRHW','Designspiration'],
+ ['M2U9ANUMK3TCB','NOWNESS'],
+ ['LZPG1KNKDD81I','Special Projects'],
+ ['LH7JT15IMPO30','Elena Saharova'],
+ ['LH7JUSNQQ1EVP','Dea.ru'],
+ ['LH7KFZQLQ1W7F','Justine Wargnier'],
+ ['LUTQM601N2AHJ','Stuff &amp; Nonsense'],
+ ['M1Y82PIVKQSFS','Craft+Work'],
+ ['LZPG1KNIV6ITE','Stelladomo'],
+]
+document.getElementById('g').innerHTML = items.map(([id,label],i)=>`
+ <div class="card">
+   <div class="top"><img src="/img/${id}" alt=""></div>
+   <div class="bot"><img src="/img/${id}" alt=""></div>
+   <div class="meta"><b>${String(i+1).padStart(2,'0')}</b> ${label} · ${id}</div>
+ </div>`).join('')
+</script>
+</body></html>

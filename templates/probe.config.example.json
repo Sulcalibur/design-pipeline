@@ -1,0 +1,396 @@
+{
+  "$schema": "../probe/probe.schema.json",
+  "$about": "Starter config. Author pairs from your own references, then run: node probe.mjs build",
+  "id": "starter",
+  "created": "2026-10-28",
+  "intake": [
+    {
+      "id": "character",
+      "question": "What should the work feel like when it is right?",
+      "help": "Choose up to three. These are the brand's centre of gravity, not the page's mood.",
+      "type": "multi",
+      "max": 3,
+      "recommend": [
+        "warm",
+        "handmade"
+      ],
+      "recommendWhy": "The existing art is watercolour, the body face is Lora, and the writing is personal.",
+      "options": [
+        {
+          "id": "warm",
+          "label": "Warm",
+          "note": "Inviting, human, not glossy.",
+          "boosts": {
+            "media": 10,
+            "type": 10
+          }
+        },
+        {
+          "id": "exact",
+          "label": "Exact",
+          "note": "Measured, edited, nothing loose.",
+          "boosts": {
+            "density": 10,
+            "type": 10
+          }
+        },
+        {
+          "id": "playful",
+          "label": "Playful",
+          "note": "A wink, but not a clown.",
+          "boosts": {
+            "opening": 15,
+            "type": 15
+          }
+        },
+        {
+          "id": "serious",
+          "label": "Serious",
+          "note": "Weight without pomposity.",
+          "boosts": {
+            "opening": 10,
+            "density": 10
+          }
+        },
+        {
+          "id": "handmade",
+          "label": "Handmade",
+          "note": "Visible hand, imperfection with intent.",
+          "boosts": {
+            "media": 15,
+            "opening": 10
+          }
+        },
+        {
+          "id": "technical",
+          "label": "Technical",
+          "note": "Precise, systematic, legible.",
+          "boosts": {
+            "density": 10,
+            "type": 10
+          }
+        },
+        {
+          "id": "luxurious",
+          "label": "Luxurious",
+          "note": "Space, restraint, expensive quiet.",
+          "boosts": {
+            "density": 10,
+            "media": 10
+          }
+        },
+        {
+          "id": "plain",
+          "label": "Plain",
+          "note": "No performance; the work speaks.",
+          "boosts": {
+            "density": 15,
+            "type": 10
+          }
+        }
+      ]
+    },
+    {
+      "id": "anti",
+      "question": "What must it never feel like?",
+      "help": "Choose any, or none. These become hard rules, not preferences.",
+      "type": "multi",
+      "optional": true,
+      "recommend": [
+        "corporate",
+        "generic"
+      ],
+      "recommendWhy": "Most of the reference library is SaaS; drifting there is the default failure.",
+      "options": [
+        {
+          "id": "corporate",
+          "label": "Corporate",
+          "avoid": "a brand that looks like a B2B landing page"
+        },
+        {
+          "id": "cute",
+          "label": "Cute",
+          "avoid": "whimsy that undercuts the work"
+        },
+        {
+          "id": "cold",
+          "label": "Cold",
+          "avoid": "precision that reads as indifference"
+        },
+        {
+          "id": "generic",
+          "label": "Generic",
+          "avoid": "a style that could belong to anyone"
+        },
+        {
+          "id": "noisy",
+          "label": "Noisy",
+          "avoid": "competing elements with no hierarchy"
+        },
+        {
+          "id": "precious",
+          "label": "Precious",
+          "avoid": "craft that refuses to be used"
+        },
+        {
+          "id": "trend",
+          "label": "Trend-chasing",
+          "avoid": "a look with a expiry date"
+        },
+        {
+          "id": "minimal-tech",
+          "label": "Minimal tech",
+          "avoid": "grey type, hairline everything, no voice"
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "question": "How loud is the brand's default voice?",
+      "help": "The baseline, not the loudest thing it ever does.",
+      "type": "single",
+      "recommend": "conversational",
+      "recommendWhy": "The site speaks in first person; it is not a manifesto or a stage.",
+      "options": [
+        {
+          "id": "whisper",
+          "label": "Whisper",
+          "note": "Close, quiet, personal.",
+          "boosts": {
+            "density": 10,
+            "type": 10
+          }
+        },
+        {
+          "id": "conversational",
+          "label": "Conversational",
+          "note": "Direct, warm, unforced.",
+          "boosts": {}
+        },
+        {
+          "id": "declarative",
+          "label": "Declarative",
+          "note": "Statements, not suggestions.",
+          "boosts": {
+            "opening": 15,
+            "type": 15
+          }
+        },
+        {
+          "id": "theatrical",
+          "label": "Theatrical",
+          "note": "The brand is the performance.",
+          "boosts": {
+            "opening": 20,
+            "type": 20
+          }
+        }
+      ]
+    },
+    {
+      "id": "audience",
+      "question": "Who is it for?",
+      "help": "The person you would disappoint if the style drifted.",
+      "type": "single",
+      "recommend": "readers",
+      "recommendWhy": "The archive, newsletter and book notes are for readers, not clients.",
+      "options": [
+        {
+          "id": "peers",
+          "label": "Peers",
+          "note": "People who do the same work."
+        },
+        {
+          "id": "clients",
+          "label": "Clients",
+          "note": "People deciding whether to hire you.",
+          "boosts": {
+            "opening": 10
+          }
+        },
+        {
+          "id": "readers",
+          "label": "Readers",
+          "note": "People who come back for the writing.",
+          "boosts": {
+            "spine": 10,
+            "recirculation": 10
+          }
+        },
+        {
+          "id": "collectors",
+          "label": "Collectors",
+          "note": "People who want the object.",
+          "boosts": {
+            "media": 10
+          }
+        },
+        {
+          "id": "general",
+          "label": "A general audience",
+          "note": "No shared context to rely on."
+        }
+      ]
+    },
+    {
+      "id": "assets",
+      "question": "Which assets are canonical?",
+      "help": "What already exists and must survive translation to another format.",
+      "type": "multi",
+      "max": 6,
+      "recommend": [
+        "logo",
+        "type",
+        "palette",
+        "illustration",
+        "photography"
+      ],
+      "recommendWhy": "Arco, BalooSul and Lora, the warm palette and the watercolour world already exist.",
+      "options": [
+        {
+          "id": "logo",
+          "label": "Logo or wordmark"
+        },
+        {
+          "id": "type",
+          "label": "Typography",
+          "boosts": {
+            "type": 15
+          }
+        },
+        {
+          "id": "palette",
+          "label": "Palette"
+        },
+        {
+          "id": "illustration",
+          "label": "Illustration",
+          "boosts": {
+            "media": 10,
+            "opening": 5
+          }
+        },
+        {
+          "id": "photography",
+          "label": "Photography",
+          "boosts": {
+            "media": 15,
+            "opening": 10
+          }
+        },
+        {
+          "id": "voice",
+          "label": "Voice and copy"
+        }
+      ]
+    },
+    {
+      "id": "application",
+      "question": "Where will this style be applied?",
+      "help": "A style that only works on a web page is a page skin, not a brand.",
+      "type": "multi",
+      "max": 5,
+      "recommend": [
+        "web",
+        "social",
+        "decks"
+      ],
+      "recommendWhy": "The style has to survive outside the site or it is only a page skin.",
+      "options": [
+        {
+          "id": "web",
+          "label": "Website",
+          "boosts": {
+            "spine": 15,
+            "opening": 10,
+            "density": 10
+          }
+        },
+        {
+          "id": "social",
+          "label": "Social posts",
+          "boosts": {
+            "media": 10,
+            "opening": 5
+          }
+        },
+        {
+          "id": "decks",
+          "label": "Decks and documents",
+          "boosts": {
+            "density": 10,
+            "type": 10
+          }
+        },
+        {
+          "id": "print",
+          "label": "Print",
+          "boosts": {
+            "density": 10,
+            "type": 10
+          }
+        },
+        {
+          "id": "product",
+          "label": "Product UI",
+          "boosts": {
+            "density": 10
+          }
+        }
+      ]
+    },
+    {
+      "id": "reference",
+      "question": "What is the reference point for this style?",
+      "help": "The anchor that defines the brand. Everything else is extrapolated from it.",
+      "type": "single",
+      "recommend": "this-page",
+      "recommendWhy": "The home page is the fullest expression of the brand today.",
+      "options": [
+        {
+          "id": "this-page",
+          "label": "This page",
+          "note": "The canonical expression; the rest derives from it."
+        },
+        {
+          "id": "another-page",
+          "label": "Another existing page",
+          "note": "A different page carries the style."
+        },
+        {
+          "id": "assets-only",
+          "label": "Brand assets, no page",
+          "note": "Logo, type, palette and imagery exist, but no page is canonical."
+        },
+        {
+          "id": "fresh",
+          "label": "Nothing yet",
+          "note": "The style is being defined from scratch."
+        }
+      ]
+    }
+  ],
+  "pairs": [],
+  "followups": [],
+  "facts": [],
+  "intakeClose": {
+    "question": "Is this understanding shared?",
+    "help": "The references are chosen from these answers. If something is wrong, reopen it before the images.",
+    "yes": "Show the references",
+    "no": "Reopen a decision"
+  },
+  "baseline": null,
+  "ui": {
+    "title": "Reference probe",
+    "mark": "",
+    "storageKey": "probe:starter",
+    "note": ""
+  },
+  "sources": {
+    "kind": "eagle",
+    "library": "Inspirations"
+  },
+  "system": {},
+  "output": {},
+  "semantics": {}
+}

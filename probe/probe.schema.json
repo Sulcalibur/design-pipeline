@@ -1,0 +1,566 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://design-pipeline.local/probe.schema.json",
+  "title": "Reference probe config",
+  "type": "object",
+  "required": [
+    "id",
+    "intake",
+    "pairs",
+    "followups"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "$about": {
+      "type": "string"
+    },
+    "id": {
+      "type": "string"
+    },
+    "created": {
+      "type": "string"
+    },
+    "intake": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/question"
+      }
+    },
+    "pairs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/pair"
+      }
+    },
+    "followups": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/followup"
+      }
+    },
+    "facts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "text",
+          "source"
+        ],
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "when": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "intakeClose": {
+      "type": "object",
+      "required": [
+        "question",
+        "help",
+        "yes"
+      ],
+      "properties": {
+        "question": {
+          "type": "string"
+        },
+        "help": {
+          "type": "string"
+        },
+        "yes": {
+          "type": "string"
+        },
+        "no": {
+          "type": "string"
+        }
+      }
+    },
+    "baseline": {
+      "type": "object",
+      "required": [
+        "direction",
+        "constraints"
+      ],
+      "properties": {
+        "direction": {
+          "type": "string"
+        },
+        "when": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "constraints": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "intensity": {
+          "enum": [
+            "restrained",
+            "expressive"
+          ]
+        }
+      }
+    },
+    "sources": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "enum": [
+            "eagle",
+            "folder"
+          ]
+        },
+        "library": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "generatedPrefix": {
+          "type": "string"
+        }
+      }
+    },
+    "ui": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "mark": {
+          "type": "string"
+        },
+        "storageKey": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "system": {
+      "type": "object",
+      "properties": {
+        "tokensFile": {
+          "type": "string"
+        },
+        "tokensNamespace": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "tokenRefs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "output": {
+      "type": "object",
+      "properties": {
+        "readbackTitle": {
+          "type": "string"
+        },
+        "systemNote": {
+          "type": "string"
+        },
+        "assetsNote": {
+          "type": "string"
+        },
+        "directionFile": {
+          "type": "string"
+        },
+        "agentBrief": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "doNot": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "semantics": {
+      "type": "object",
+      "properties": {
+        "vocabulary": {
+          "type": "object"
+        },
+        "conflictNotes": {
+          "type": "object"
+        },
+        "implications": {
+          "type": "object"
+        },
+        "details": {
+          "type": "object"
+        },
+        "crossMedia": {
+          "type": "object"
+        },
+        "assets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "effect"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "effect": {
+                "type": "string"
+              },
+              "when": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "pendingTokens": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "name"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string"
+              },
+              "why": {
+                "type": "string"
+              },
+              "valueFrom": {
+                "type": "object",
+                "properties": {
+                  "intensity": {
+                    "type": "string"
+                  },
+                  "suffix": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "openQuestions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "option": {
+      "type": "object",
+      "required": [
+        "id",
+        "label"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "avoid": {
+          "type": "string"
+        },
+        "boosts": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "question": {
+      "type": "object",
+      "required": [
+        "id",
+        "question",
+        "type",
+        "options"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "question": {
+          "type": "string"
+        },
+        "help": {
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "single",
+            "multi"
+          ]
+        },
+        "max": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "optional": {
+          "type": "boolean"
+        },
+        "options": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "$ref": "#/$defs/option"
+          }
+        },
+        "recommend": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          ]
+        },
+        "recommendWhy": {
+          "type": "string"
+        }
+      }
+    },
+    "imageOption": {
+      "type": "object",
+      "required": [
+        "id",
+        "label",
+        "source",
+        "alt",
+        "vocab",
+        "note",
+        "constraints"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Eagle item id, or a slug when src is set"
+        },
+        "src": {
+          "type": "string",
+          "description": "External image path, served from app/"
+        },
+        "label": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "focus": {
+          "enum": [
+            "top",
+            "bottom"
+          ]
+        },
+        "thumb": {
+          "type": "boolean"
+        },
+        "alt": {
+          "type": "string"
+        },
+        "vocab": {
+          "type": "string"
+        },
+        "avoid": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "constraints": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "pair": {
+      "type": "object",
+      "required": [
+        "id",
+        "axis",
+        "question",
+        "hint",
+        "options"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "axis": {
+          "type": "string"
+        },
+        "axisKey": {
+          "type": "string"
+        },
+        "variant": {
+          "type": "string"
+        },
+        "mode": {
+          "enum": [
+            "confirm"
+          ]
+        },
+        "after": {
+          "type": "string"
+        },
+        "question": {
+          "type": "string"
+        },
+        "hint": {
+          "type": "string"
+        },
+        "priority": {
+          "type": "number"
+        },
+        "when": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "options": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+            "$ref": "#/$defs/imageOption"
+          }
+        }
+      }
+    },
+    "followup": {
+      "type": "object",
+      "required": [
+        "id",
+        "question",
+        "type",
+        "options"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "question": {
+          "type": "string"
+        },
+        "help": {
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "single",
+            "multi"
+          ]
+        },
+        "max": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "optional": {
+          "type": "boolean"
+        },
+        "when": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "options": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "label",
+              "constraint"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "label": {
+                "type": "string"
+              },
+              "note": {
+                "type": "string"
+              },
+              "constraint": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

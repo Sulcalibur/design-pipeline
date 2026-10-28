@@ -1,0 +1,1551 @@
+{
+  "$schema": "./probe.schema.json",
+  "$about": "Curator data for the Sulcalibur home probe. Edit this file, then run: node probe.mjs build",
+  "id": "sulcalibur-home-v7",
+  "created": "2026-10-24",
+  "intake": [
+    {
+      "id": "character",
+      "question": "What should the work feel like when it is right?",
+      "help": "Choose up to three. These are the brand's centre of gravity, not the page's mood.",
+      "type": "multi",
+      "max": 3,
+      "recommend": [
+        "warm",
+        "handmade"
+      ],
+      "recommendWhy": "The existing art is watercolour, the body face is Lora, and the writing is personal.",
+      "options": [
+        {
+          "id": "warm",
+          "label": "Warm",
+          "note": "Inviting, human, not glossy.",
+          "boosts": {
+            "media": 10,
+            "type": 10
+          }
+        },
+        {
+          "id": "exact",
+          "label": "Exact",
+          "note": "Measured, edited, nothing loose.",
+          "boosts": {
+            "density": 10,
+            "type": 10
+          }
+        },
+        {
+          "id": "playful",
+          "label": "Playful",
+          "note": "A wink, but not a clown.",
+          "boosts": {
+            "opening": 15,
+            "type": 15
+          }
+        },
+        {
+          "id": "serious",
+          "label": "Serious",
+          "note": "Weight without pomposity.",
+          "boosts": {
+            "opening": 10,
+            "density": 10
+          }
+        },
+        {
+          "id": "handmade",
+          "label": "Handmade",
+          "note": "Visible hand, imperfection with intent.",
+          "boosts": {
+            "media": 15,
+            "opening": 10
+          }
+        },
+        {
+          "id": "technical",
+          "label": "Technical",
+          "note": "Precise, systematic, legible.",
+          "boosts": {
+            "density": 10,
+            "type": 10
+          }
+        },
+        {
+          "id": "luxurious",
+          "label": "Luxurious",
+          "note": "Space, restraint, expensive quiet.",
+          "boosts": {
+            "density": 10,
+            "media": 10
+          }
+        },
+        {
+          "id": "plain",
+          "label": "Plain",
+          "note": "No performance; the work speaks.",
+          "boosts": {
+            "density": 15,
+            "type": 10
+          }
+        }
+      ]
+    },
+    {
+      "id": "anti",
+      "question": "What must it never feel like?",
+      "help": "Choose any, or none. These become hard rules, not preferences.",
+      "type": "multi",
+      "optional": true,
+      "recommend": [
+        "corporate",
+        "generic"
+      ],
+      "recommendWhy": "Most of the reference library is SaaS; drifting there is the default failure.",
+      "options": [
+        {
+          "id": "corporate",
+          "label": "Corporate",
+          "avoid": "a brand that looks like a B2B landing page"
+        },
+        {
+          "id": "cute",
+          "label": "Cute",
+          "avoid": "whimsy that undercuts the work"
+        },
+        {
+          "id": "cold",
+          "label": "Cold",
+          "avoid": "precision that reads as indifference"
+        },
+        {
+          "id": "generic",
+          "label": "Generic",
+          "avoid": "a style that could belong to anyone"
+        },
+        {
+          "id": "noisy",
+          "label": "Noisy",
+          "avoid": "competing elements with no hierarchy"
+        },
+        {
+          "id": "precious",
+          "label": "Precious",
+          "avoid": "craft that refuses to be used"
+        },
+        {
+          "id": "trend",
+          "label": "Trend-chasing",
+          "avoid": "a look with a expiry date"
+        },
+        {
+          "id": "minimal-tech",
+          "label": "Minimal tech",
+          "avoid": "grey type, hairline everything, no voice"
+        }
+      ]
+    },
+    {
+      "id": "expression",
+      "question": "How loud is the brand's default voice?",
+      "help": "The baseline, not the loudest thing it ever does.",
+      "type": "single",
+      "recommend": "conversational",
+      "recommendWhy": "The site speaks in first person; it is not a manifesto or a stage.",
+      "options": [
+        {
+          "id": "whisper",
+          "label": "Whisper",
+          "note": "Close, quiet, personal.",
+          "boosts": {
+            "density": 10,
+            "type": 10
+          }
+        },
+        {
+          "id": "conversational",
+          "label": "Conversational",
+          "note": "Direct, warm, unforced.",
+          "boosts": {}
+        },
+        {
+          "id": "declarative",
+          "label": "Declarative",
+          "note": "Statements, not suggestions.",
+          "boosts": {
+            "opening": 15,
+            "type": 15
+          }
+        },
+        {
+          "id": "theatrical",
+          "label": "Theatrical",
+          "note": "The brand is the performance.",
+          "boosts": {
+            "opening": 20,
+            "type": 20
+          }
+        }
+      ]
+    },
+    {
+      "id": "audience",
+      "question": "Who is it for?",
+      "help": "The person you would disappoint if the style drifted.",
+      "type": "single",
+      "recommend": "readers",
+      "recommendWhy": "The archive, newsletter and book notes are for readers, not clients.",
+      "options": [
+        {
+          "id": "peers",
+          "label": "Peers",
+          "note": "People who do the same work."
+        },
+        {
+          "id": "clients",
+          "label": "Clients",
+          "note": "People deciding whether to hire you.",
+          "boosts": {
+            "opening": 10
+          }
+        },
+        {
+          "id": "readers",
+          "label": "Readers",
+          "note": "People who come back for the writing.",
+          "boosts": {
+            "spine": 10,
+            "recirculation": 10
+          }
+        },
+        {
+          "id": "collectors",
+          "label": "Collectors",
+          "note": "People who want the object.",
+          "boosts": {
+            "media": 10
+          }
+        },
+        {
+          "id": "general",
+          "label": "A general audience",
+          "note": "No shared context to rely on."
+        }
+      ]
+    },
+    {
+      "id": "assets",
+      "question": "Which assets are canonical?",
+      "help": "What already exists and must survive translation to another format.",
+      "type": "multi",
+      "max": 6,
+      "recommend": [
+        "logo",
+        "type",
+        "palette",
+        "illustration",
+        "photography"
+      ],
+      "recommendWhy": "Arco, BalooSul and Lora, the warm palette and the watercolour world already exist.",
+      "options": [
+        {
+          "id": "logo",
+          "label": "Logo or wordmark"
+        },
+        {
+          "id": "type",
+          "label": "Typography",
+          "boosts": {
+            "type": 15
+          }
+        },
+        {
+          "id": "palette",
+          "label": "Palette"
+        },
+        {
+          "id": "illustration",
+          "label": "Illustration",
+          "boosts": {
+            "media": 10,
+            "opening": 5
+          }
+        },
+        {
+          "id": "photography",
+          "label": "Photography",
+          "boosts": {
+            "media": 15,
+            "opening": 10
+          }
+        },
+        {
+          "id": "voice",
+          "label": "Voice and copy"
+        }
+      ]
+    },
+    {
+      "id": "application",
+      "question": "Where will this style be applied?",
+      "help": "A style that only works on a web page is a page skin, not a brand.",
+      "type": "multi",
+      "max": 5,
+      "recommend": [
+        "web",
+        "social",
+        "decks"
+      ],
+      "recommendWhy": "The style has to survive outside the site or it is only a page skin.",
+      "options": [
+        {
+          "id": "web",
+          "label": "Website",
+          "boosts": {
+            "spine": 15,
+            "opening": 10,
+            "density": 10
+          }
+        },
+        {
+          "id": "social",
+          "label": "Social posts",
+          "boosts": {
+            "media": 10,
+            "opening": 5
+          }
+        },
+        {
+          "id": "decks",
+          "label": "Decks and documents",
+          "boosts": {
+            "density": 10,
+            "type": 10
+          }
+        },
+        {
+          "id": "print",
+          "label": "Print",
+          "boosts": {
+            "density": 10,
+            "type": 10
+          }
+        },
+        {
+          "id": "product",
+          "label": "Product UI",
+          "boosts": {
+            "density": 10
+          }
+        }
+      ]
+    },
+    {
+      "id": "reference",
+      "question": "What is the reference point for this style?",
+      "help": "The anchor that defines the brand. Everything else is extrapolated from it.",
+      "type": "single",
+      "recommend": "this-page",
+      "recommendWhy": "The home page is the fullest expression of the brand today.",
+      "options": [
+        {
+          "id": "this-page",
+          "label": "This page",
+          "note": "The canonical expression; the rest derives from it."
+        },
+        {
+          "id": "another-page",
+          "label": "Another existing page",
+          "note": "A different page carries the style."
+        },
+        {
+          "id": "assets-only",
+          "label": "Brand assets, no page",
+          "note": "Logo, type, palette and imagery exist, but no page is canonical."
+        },
+        {
+          "id": "fresh",
+          "label": "Nothing yet",
+          "note": "The style is being defined from scratch."
+        }
+      ]
+    }
+  ],
+  "pairs": [
+    {
+      "id": "spine",
+      "axisKey": "spine",
+      "axis": "Spine",
+      "question": "How should the front page be organised?",
+      "hint": "Ignore colour and typeface. Which structure would you keep?",
+      "priority": 50,
+      "when": {},
+      "options": [
+        {
+          "id": "LC4YCLIVDUHTN",
+          "label": "Chronological",
+          "source": "Austin Kleon",
+          "url": "https://austinkleon.com/",
+          "focus": "top",
+          "thumb": true,
+          "alt": "A tall single-column page: a narrow column of date-stamped posts with photographs inline and a small sidebar of book covers.",
+          "vocab": "One column, date-led, newest first; images sit inside the prose.",
+          "constraints": {
+            "spine": "chronological",
+            "chrome": "minimal"
+          },
+          "avoid": "an undated stream where the best work scrolls away",
+          "note": "Single column, date-stamped entries, inline images with captions, one nav row, no sidebar. The page is the feed."
+        },
+        {
+          "id": "LLCPWAZCCEL7L",
+          "label": "Curated index",
+          "source": "Jessica Hische",
+          "url": "https://www.jessicahische.is/",
+          "focus": "top",
+          "thumb": false,
+          "alt": "A warm, dense front page: a short biography followed by shelves of book covers, lettering and selected work.",
+          "vocab": "A curated front page: a short introduction, then shelves of books and work.",
+          "constraints": {
+            "spine": "curated",
+            "chrome": "rich"
+          },
+          "avoid": "a front page that hides the newest work behind a menu",
+          "note": "Bio, book, covers, selected work: many entry points, warm colour, organised as shelves rather than a timeline."
+        }
+      ]
+    },
+    {
+      "id": "opening",
+      "axisKey": "opening",
+      "axis": "Opening",
+      "question": "What should the first screen do?",
+      "hint": "Both are full pages; judge only the top of each.",
+      "priority": 50,
+      "when": {},
+      "options": [
+        {
+          "id": "LZPG1KNIV6ITE",
+          "label": "Image first",
+          "source": "Stelladomo",
+          "url": "https://land-book.com/websites/43243-stella-domo",
+          "focus": "top",
+          "thumb": false,
+          "alt": "A full-bleed photograph of a dark house in a field at dusk, with a large serif line of text over it.",
+          "vocab": "A full-bleed photograph, one serif line over it; almost no chrome.",
+          "constraints": {
+            "opening": "image",
+            "density": "low"
+          },
+          "avoid": "a first screen that is a picture with nothing to read",
+          "note": "Full-bleed photograph, a single serif line, a small scroll cue. The image introduces the place."
+        },
+        {
+          "id": "LZPG1KNKDD81I",
+          "label": "Statement first",
+          "source": "Special Projects",
+          "url": "https://specialprojects.studio/",
+          "focus": "top",
+          "thumb": false,
+          "alt": "A pale page with a letterspaced wordmark at the top, a centred three-line statement, and photography beginning below the fold.",
+          "vocab": "A letterspaced wordmark and a centred statement; photography starts below the fold.",
+          "constraints": {
+            "opening": "statement",
+            "density": "low"
+          },
+          "avoid": "a first screen that could belong to any studio",
+          "note": "Wordmark, centred statement, generous white, image grid below. Type introduces, images follow."
+        }
+      ]
+    },
+    {
+      "id": "opening-confirm",
+      "axis": "Opening",
+      "mode": "confirm",
+      "after": "opening",
+      "question": "Same question, different pair: what should the first screen do?",
+      "hint": "You answered this once. If the principle is real, it should hold on a different site.",
+      "when": {
+        "opening": [
+          "image",
+          "statement"
+        ]
+      },
+      "options": [
+        {
+          "id": "LH7KFZQLQ1W7F",
+          "label": "Image first",
+          "source": "Justine Wargnier",
+          "url": "https://www.justinewargnier.com/portfolio",
+          "focus": "top",
+          "thumb": false,
+          "alt": "A dark photograph of a workspace with a large quotation over it, followed by a row of small thumbnails.",
+          "vocab": "A photograph fills the first screen; the words sit on the image.",
+          "constraints": {
+            "opening": "image"
+          },
+          "note": "A full-width image with a quote over it, then a thumbnail strip."
+        },
+        {
+          "id": "LUTQGC37F89L4",
+          "label": "Statement first",
+          "source": "Elliot Jay Stocks",
+          "url": "https://elliotjaystocks.com/",
+          "focus": "top",
+          "thumb": false,
+          "alt": "A cream page with a red rule, a very large name, a short introduction, and a set of cards below the fold.",
+          "vocab": "A large name and an introduction; the first image is a card, not a hero.",
+          "constraints": {
+            "opening": "statement"
+          },
+          "note": "Name, introduction, then cards for the book, the podcast and the work."
+        }
+      ]
+    },
+    {
+      "id": "density",
+      "axisKey": "density",
+      "axis": "Density",
+      "question": "How much should a screen hold?",
+      "hint": "Both are publications. Count the competing elements, not the content.",
+      "priority": 45,
+      "when": {},
+      "options": [
+        {
+          "id": "M2U9GEVYJPCKK",
+          "label": "Magazine dense",
+          "source": "Cup of Jo",
+          "url": "https://cupofjo.com/",
+          "focus": "top",
+          "thumb": false,
+          "alt": "A magazine-style page with a header, a large lead image, and several columns of modules and advertisements above the fold.",
+          "vocab": "A magazine page: several modules above the fold, ads and recirculation everywhere.",
+          "constraints": {
+            "density": "high",
+            "chrome": "rich"
+          },
+          "avoid": "a page with more doors than content",
+          "note": "Multi-column, several competing modules, ads and sidebars. Density is the point."
+        },
+        {
+          "id": "M2U9KANC17HXM",
+          "label": "Airy",
+          "source": "Design Milk",
+          "url": "https://design-milk.com/",
+          "focus": "top",
+          "thumb": false,
+          "alt": "A white page with a small centred logo and a calm three-up grid of cards, each with one image and one headline.",
+          "vocab": "A three-up card grid, one headline each, wide margins.",
+          "constraints": {
+            "density": "low",
+            "chrome": "minimal"
+          },
+          "avoid": "endless cards with no hierarchy between them",
+          "note": "Three-up grid, one headline per card, generous margins, little chrome."
+        }
+      ]
+    },
+    {
+      "id": "media",
+      "axisKey": "media",
+      "axis": "Images",
+      "question": "How should images carry meaning?",
+      "hint": "Look at whether the images have words attached.",
+      "priority": 45,
+      "when": {},
+      "options": [
+        {
+          "id": "M2U9ANUMK3TCB",
+          "label": "Captioned grid",
+          "source": "NOWNESS",
+          "url": "https://www.nowness.com/",
+          "focus": "top",
+          "thumb": false,
+          "alt": "A magazine page with a large lead video still and rows of image tiles, each tile carrying a title and a category label.",
+          "vocab": "An image grid where every tile carries a title and a category.",
+          "constraints": {
+            "media": "captioned-grid"
+          },
+          "avoid": "a caption on every tile until the page reads as a database",
+          "note": "Image tiles with titles and section labels; each tile is a door."
+        },
+        {
+          "id": "M2UAJDWAFBRHW",
+          "label": "Bare images",
+          "source": "Designspiration",
+          "url": "https://www.designspiration.com/",
+          "focus": "top",
+          "thumb": false,
+          "alt": "A dense masonry of images with no captions, filling the page edge to edge.",
+          "vocab": "A masonry of images with no captions; the collection is the page.",
+          "constraints": {
+            "media": "bare-image"
+          },
+          "avoid": "a gallery where nothing says what you are looking at",
+          "note": "Masonry, images only, no captions; the grid is the content."
+        }
+      ]
+    },
+    {
+      "id": "type",
+      "axisKey": "type",
+      "axis": "Type voice",
+      "question": "How loudly should type perform?",
+      "hint": "Both are designer sites. Judge the type, not the work shown.",
+      "priority": 40,
+      "when": {},
+      "options": [
+        {
+          "id": "LH7JT15IMPO30",
+          "label": "Type as the page",
+          "source": "Elena Saharova",
+          "url": "https://eessoo.co/desinography/",
+          "focus": "top",
+          "thumb": false,
+          "alt": "A page filled by a grid of coloured rectangles, each containing small type, under a very large black wordmark.",
+          "vocab": "Type set as coloured blocks filling the viewport; the grid is the design.",
+          "constraints": {
+            "typeVoice": "expressive"
+          },
+          "avoid": "colour used as decoration rather than structure",
+          "note": "A colour-block grid of type; the page is a specimen."
+        },
+        {
+          "id": "LUTQM601N2AHJ",
+          "label": "Type as text",
+          "source": "Stuff & Nonsense",
+          "url": "https://stuffandnonsense.co.uk/",
+          "focus": "top",
+          "thumb": false,
+          "alt": "A conventional editorial page with narrow columns of text, red links and modest headings.",
+          "vocab": "Conventional editorial columns with red accents; density carried by text.",
+          "constraints": {
+            "typeVoice": "quiet"
+          },
+          "avoid": "type that performs louder than the writing",
+          "note": "Editorial columns, red accents, modest type; the writing leads."
+        }
+      ]
+    },
+    {
+      "id": "spine-b",
+      "axis": "Spine",
+      "axisKey": "spine",
+      "variant": "B",
+      "question": "How should the front page be organised?",
+      "hint": "A link blog and a portfolio index. Which structure would you keep?",
+      "priority": 48,
+      "when": {},
+      "options": [
+        {
+          "id": "M2U9NJDT0GIJW",
+          "label": "Chronological",
+          "source": "swiss-miss",
+          "url": "https://www.swiss-miss.com/",
+          "focus": "top",
+          "thumb": false,
+          "alt": "A narrow column of dated links, each with a small image and a short note, on a white page.",
+          "vocab": "A dated stream of links and images in a narrow column; the newest is the page.",
+          "constraints": {
+            "spine": "chronological",
+            "chrome": "minimal"
+          },
+          "avoid": "an undated stream where the best work scrolls away",
+          "note": "A link blog: one narrow column, dated entries, small images, almost no chrome."
+        },
+        {
+          "id": "LH7JUSNQQ1EVP",
+          "label": "Curated index",
+          "source": "Denis Abdullin",
+          "url": "https://deab.ru/",
+          "focus": "top",
+          "thumb": false,
+          "alt": "A white page with a name, a short introduction, a portrait and a grid of project cards.",
+          "vocab": "A name, a portrait, then a grid of work; the index is the page.",
+          "constraints": {
+            "spine": "curated",
+            "chrome": "minimal"
+          },
+          "avoid": "a front page that hides the newest work behind a menu",
+          "note": "Name, introduction, portrait, then works. A quiet curated index."
+        }
+      ]
+    },
+    {
+      "id": "opening-b",
+      "axis": "Opening",
+      "axisKey": "opening",
+      "variant": "B",
+      "question": "What should the first screen do?",
+      "hint": "An illustrated studio and a writer. Judge only the top of each.",
+      "priority": 48,
+      "when": {},
+      "options": [
+        {
+          "id": "LDYU8TACTFY8Y",
+          "label": "Image first",
+          "source": "Frankentoon",
+          "url": "https://frankentoonstudio.com/",
+          "focus": "top",
+          "thumb": false,
+          "alt": "A dark page with a large illustrated banner of characters, then a colourful grid of projects.",
+          "vocab": "A dark illustrated banner fills the first screen; the artwork leads.",
+          "constraints": {
+            "opening": "image",
+            "density": "high"
+          },
+          "avoid": "a first screen that is a picture with nothing to read",
+          "note": "Illustrated banner, bold colour, a grid of projects below. The artwork introduces the studio."
+        },
+        {
+          "id": "LUTQGC37F89L4",
+          "label": "Statement first",
+          "source": "Elliot Jay Stocks",
+          "url": "https://elliotjaystocks.com/",
+          "focus": "top",
+          "thumb": false,
+          "alt": "A cream page with a red rule, a very large name, a short introduction, and cards below the fold.",
+          "vocab": "A large name and an introduction; the first image is a card, not a hero.",
+          "constraints": {
+            "opening": "statement",
+            "density": "low"
+          },
+          "avoid": "a first screen that could belong to any studio",
+          "note": "Name, introduction, then cards. Type introduces; images follow."
+        }
+      ]
+    },
+    {
+      "id": "density-b",
+      "axis": "Density",
+      "axisKey": "density",
+      "variant": "B",
+      "question": "How much should a screen hold?",
+      "hint": "A lifestyle feed and an airy portfolio. Count the competing elements.",
+      "priority": 44,
+      "when": {},
+      "options": [
+        {
+          "id": "M2U95M9XOAM29",
+          "label": "Dense",
+          "source": "A Beautiful Mess",
+          "url": "https://abeautifulmess.com/",
+          "focus": "top",
+          "thumb": false,
+          "alt": "A warm lifestyle blog with recipe cards, categories and several images competing above the fold.",
+          "vocab": "A lifestyle feed: recipes, categories and images competing above the fold.",
+          "constraints": {
+            "density": "high",
+            "chrome": "rich"
+          },
+          "avoid": "a page with more doors than content",
+          "note": "Warm, dense, many entry points: recipes, categories, a shop block. Density is the point."
+        },
+        {
+          "id": "LH7KFZQLQ1W7F",
+          "label": "Airy",
+          "source": "Justine Wargnier",
+          "url": "https://www.justinewargnier.com/portfolio",
+          "focus": "top",
+          "thumb": false,
+          "alt": "A calm product grid with generous white space and a few large images.",
+          "vocab": "A calm product grid with generous white; the work is spaced.",
+          "constraints": {
+            "density": "low",
+            "chrome": "minimal"
+          },
+          "avoid": "endless cards with no hierarchy between them",
+          "note": "Wide margins, a few large objects, one idea per screen."
+        }
+      ]
+    },
+    {
+      "id": "type-b",
+      "axis": "Type voice",
+      "axisKey": "type",
+      "variant": "B",
+      "question": "How loudly should type perform?",
+      "hint": "Lettering as the page, and a quiet portfolio. Judge the type, not the work.",
+      "priority": 38,
+      "when": {},
+      "options": [
+        {
+          "id": "LLCPWAZCCEL7L",
+          "label": "Type as the page",
+          "source": "Jessica Hische",
+          "url": "https://www.jessicahische.is/",
+          "focus": "top",
+          "thumb": false,
+          "alt": "A warm, dense page where lettering and book covers carry the composition.",
+          "vocab": "Lettering is the visual language; the page is warm and dense.",
+          "constraints": {
+            "typeVoice": "expressive"
+          },
+          "avoid": "colour used as decoration rather than structure",
+          "note": "Lettering and covers do the work; type is the composition, not a label."
+        },
+        {
+          "id": "LH7JUSNQQ1EVP",
+          "label": "Type as text",
+          "source": "Denis Abdullin",
+          "url": "https://deab.ru/",
+          "focus": "top",
+          "thumb": false,
+          "alt": "A quiet portfolio with small type, a portrait and a grid of work.",
+          "vocab": "Type stays small; the work carries the page.",
+          "constraints": {
+            "typeVoice": "quiet"
+          },
+          "avoid": "a page with no voice of its own",
+          "note": "Small labels, a modest name, the work in front."
+        }
+      ]
+    },
+    {
+      "id": "recirculation",
+      "axisKey": "recirculation",
+      "axis": "After the last item",
+      "question": "What should happen after the newest thing?",
+      "hint": "Two pages from one site, so style is controlled. Judge only the model.",
+      "priority": 45,
+      "when": {},
+      "options": [
+        {
+          "id": "LUTQHFP3YXUF5",
+          "label": "Full archive",
+          "source": "Elliot Jay Stocks",
+          "url": "https://elliotjaystocks.com/blog",
+          "focus": "top",
+          "thumb": true,
+          "alt": "An archive page headed “Yearly blog archives”, listing every year and every post in four columns.",
+          "vocab": "Every year, every post, in columns; nothing is hidden.",
+          "constraints": {
+            "recirculation": "archive"
+          },
+          "avoid": "an index so complete it gives no next step",
+          "note": "Yearly archives with every post listed in columns. An index, not a recommendation."
+        },
+        {
+          "id": "LUTQL6OSKRITX",
+          "label": "Curated shelf",
+          "source": "Elliot Jay Stocks",
+          "url": "https://elliotjaystocks.com/podcast",
+          "focus": "bottom",
+          "thumb": false,
+          "alt": "The lower part of a page: a dark band titled “Musio” with a small grid of record covers and links.",
+          "vocab": "A dark shelf of records and links after the piece; curated next steps.",
+          "constraints": {
+            "recirculation": "curated"
+          },
+          "avoid": "a recirculation block that repeats the same three posts",
+          "note": "After the episode, a dark “Musio” shelf of records and related links. A recommendation, not an index."
+        }
+      ]
+    }
+  ],
+  "followups": [
+    {
+      "id": "first-rung",
+      "label": "First rung",
+      "when": {
+        "spine": [
+          "curated"
+        ]
+      },
+      "question": "An index needs a first rung. What is it?",
+      "help": "This is the one thing you would pin to the top of the page.",
+      "type": "single",
+      "options": [
+        {
+          "id": "pinned",
+          "label": "A start-here piece",
+          "constraint": {
+            "firstRung": "pinned"
+          },
+          "note": "One essay or project that explains the rest."
+        },
+        {
+          "id": "newest",
+          "label": "The newest post",
+          "constraint": {
+            "firstRung": "newest"
+          },
+          "note": "The page stays alive without curation."
+        },
+        {
+          "id": "featured",
+          "label": "A featured project",
+          "constraint": {
+            "firstRung": "featured"
+          },
+          "note": "The work leads, writing follows."
+        },
+        {
+          "id": "intro",
+          "label": "A short introduction",
+          "constraint": {
+            "firstRung": "intro"
+          },
+          "note": "Who you are, then the shelves."
+        }
+      ]
+    },
+    {
+      "id": "archive-place",
+      "label": "Archive",
+      "when": {
+        "recirculation": [
+          "archive"
+        ]
+      },
+      "question": "Where does the archive live?",
+      "help": "An exhaustive index is a commitment; decide where it sits.",
+      "type": "single",
+      "options": [
+        {
+          "id": "home",
+          "label": "On the home page",
+          "constraint": {
+            "archivePlace": "home"
+          },
+          "note": "A rung, visible without a click."
+        },
+        {
+          "id": "own-page",
+          "label": "Its own page",
+          "constraint": {
+            "archivePlace": "own-page"
+          },
+          "note": "The home ends with a link; the archive is separate."
+        },
+        {
+          "id": "both",
+          "label": "Both",
+          "constraint": {
+            "archivePlace": "both"
+          },
+          "note": "A recent slice on the home, everything on its own page."
+        }
+      ]
+    },
+    {
+      "id": "second-column",
+      "label": "Second column",
+      "when": {
+        "density": [
+          "high"
+        ]
+      },
+      "question": "What earns the second column?",
+      "help": "Density is only honest if something specific fills it.",
+      "type": "multi",
+      "max": 2,
+      "options": [
+        {
+          "id": "now",
+          "label": "Now / reading",
+          "constraint": {
+            "secondColumn": "now"
+          }
+        },
+        {
+          "id": "photos",
+          "label": "Photography",
+          "constraint": {
+            "secondColumn": "photos"
+          }
+        },
+        {
+          "id": "micro",
+          "label": "Micro-posts",
+          "constraint": {
+            "secondColumn": "micro"
+          }
+        },
+        {
+          "id": "events",
+          "label": "Events or talks",
+          "constraint": {
+            "secondColumn": "events"
+          }
+        },
+        {
+          "id": "none",
+          "label": "Nothing — keep it airy",
+          "constraint": {
+            "secondColumn": "none"
+          },
+          "note": "This overrides the dense choice."
+        }
+      ]
+    },
+    {
+      "id": "caption-source",
+      "label": "Captions",
+      "when": {
+        "media": [
+          "captioned-grid"
+        ]
+      },
+      "question": "Where do captions come from?",
+      "help": "A caption you cannot fill is worse than no caption.",
+      "type": "single",
+      "options": [
+        {
+          "id": "cms",
+          "label": "A CMS field",
+          "constraint": {
+            "captionSource": "cms"
+          },
+          "note": "Requires `featured_image_caption` in Directus."
+        },
+        {
+          "id": "alt",
+          "label": "Alt text for now",
+          "constraint": {
+            "captionSource": "alt"
+          },
+          "note": "Honest, but not a caption."
+        },
+        {
+          "id": "manual",
+          "label": "Written per post",
+          "constraint": {
+            "captionSource": "manual"
+          },
+          "note": "Stored in the body, not the media record."
+        }
+      ]
+    },
+    {
+      "id": "hero-art",
+      "label": "Hero art",
+      "when": {
+        "opening": [
+          "image"
+        ]
+      },
+      "question": "What is the hero image?",
+      "help": "This decides whether the first screen is photography or artwork.",
+      "type": "single",
+      "options": [
+        {
+          "id": "photo",
+          "label": "My own photograph",
+          "constraint": {
+            "heroArt": "photo"
+          },
+          "note": "Real, never generated."
+        },
+        {
+          "id": "existing",
+          "label": "Existing artwork",
+          "constraint": {
+            "heroArt": "existing"
+          },
+          "note": "The current meadow and cloud."
+        },
+        {
+          "id": "commission",
+          "label": "A commissioned illustration",
+          "constraint": {
+            "heroArt": "commission"
+          },
+          "note": "A slot with a brief, not a placeholder."
+        }
+      ]
+    },
+    {
+      "id": "display-budget",
+      "label": "Display budget",
+      "when": {
+        "typeVoice": [
+          "expressive"
+        ]
+      },
+      "question": "How many display moments per page?",
+      "help": "Expressive type is a budget, not a licence.",
+      "type": "single",
+      "options": [
+        {
+          "id": "one",
+          "label": "One",
+          "constraint": {
+            "displayBudget": "one"
+          },
+          "note": "The statement. Everything else is reading type."
+        },
+        {
+          "id": "two",
+          "label": "Two",
+          "constraint": {
+            "displayBudget": "two"
+          },
+          "note": "The statement and one section opener."
+        },
+        {
+          "id": "sections",
+          "label": "One per section",
+          "constraint": {
+            "displayBudget": "sections"
+          },
+          "note": "The page becomes a specimen."
+        }
+      ]
+    },
+    {
+      "id": "never",
+      "label": "Hard bans",
+      "when": {},
+      "question": "What must never appear?",
+      "help": "These become hard rules in the spec.",
+      "type": "multi",
+      "options": [
+        {
+          "id": "carousel",
+          "label": "A carousel",
+          "constraint": {
+            "never": "carousel"
+          }
+        },
+        {
+          "id": "three-cards",
+          "label": "Three equal cards",
+          "constraint": {
+            "never": "three-cards"
+          }
+        },
+        {
+          "id": "scroll-reveal",
+          "label": "Scroll-triggered reveals",
+          "constraint": {
+            "never": "scroll-reveal"
+          }
+        },
+        {
+          "id": "widgets",
+          "label": "Sidebar widgets",
+          "constraint": {
+            "never": "widgets"
+          }
+        },
+        {
+          "id": "fake",
+          "label": "Fake metrics or testimonials",
+          "constraint": {
+            "never": "fake"
+          }
+        },
+        {
+          "id": "none",
+          "label": "Nothing else",
+          "constraint": {
+            "never": "none"
+          }
+        }
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "text": "The type is Arco (display), BalooSul (headings and UI) and Lora (body).",
+      "source": "tokens.json"
+    },
+    {
+      "text": "The palette is warm linen and dusk, with lavender for links, coral for one CTA and gold for metadata.",
+      "source": "design.md"
+    },
+    {
+      "text": "The Eagle library holds 5,495 usable captures; 5,216 came from five galleries.",
+      "source": "docs/design/probe/ingest.mjs"
+    },
+    {
+      "text": "The home page is 1,721 lines and runs three overlapping feeds: blog, micro-posts and photography.",
+      "source": "app/pages/index.vue",
+      "when": {
+        "reference": [
+          "this-page",
+          "another-page"
+        ]
+      }
+    },
+    {
+      "text": "Directus has `featured_image_alt`, but no `featured_image_caption`.",
+      "source": "app/types/blog.ts",
+      "when": {
+        "reference": [
+          "this-page",
+          "another-page"
+        ]
+      }
+    },
+    {
+      "text": "`post_type: 'pinned'` already exists, so a start-here piece needs no new field.",
+      "source": "docs/design/home-refresh/03-structure.md",
+      "when": {
+        "reference": [
+          "this-page",
+          "another-page"
+        ]
+      }
+    }
+  ],
+  "intakeClose": {
+    "question": "Is this understanding shared?",
+    "help": "The references are chosen from these answers. If something is wrong, reopen it before the images.",
+    "yes": "Show the references",
+    "no": "Reopen a decision"
+  },
+  "baseline": {
+    "direction": "A — Kept book",
+    "when": {
+      "reference": [
+        "this-page",
+        "another-page"
+      ]
+    },
+    "constraints": {
+      "spine": "curated",
+      "opening": "statement",
+      "density": "low",
+      "media": "captioned-grid",
+      "typeVoice": "quiet",
+      "recirculation": "archive"
+    },
+    "intensity": "restrained"
+  },
+  "ui": {
+    "title": "Sulcalibur · reference probe",
+    "mark": "Sulcalibur",
+    "storageKey": "probe:sulcalibur-home-v2",
+    "note": ""
+  },
+  "system": {
+    "tokensFile": "../../../tokens.json",
+    "tokensNamespace": "sulcalibur",
+    "tokenRefs": [
+      "type.5xl",
+      "type.md",
+      "font.display",
+      "font.body",
+      "font.ui",
+      "spacing.6",
+      "spacing.9",
+      "spacing.10",
+      "motion.ease-out",
+      "border-radius.card",
+      "layout.max-width"
+    ]
+  },
+  "output": {
+    "readbackTitle": "Probe result — Sulcalibur home",
+    "systemNote": "This file is the **direction layer** for this page. The system layer stays in `tokens.json`, `main.css` and `design.md`.",
+    "assetsNote": "`ArtSlot` stays the only way an image reaches the page. The probe changes role and captioning, not the slot contract.",
+    "directionFile": "../home-refresh/02-direction.md",
+    "agentBrief": [
+      "Build the structure, not the references. Borrow principles; never copy a layout wholesale.",
+      "Every content image goes through `ArtSlot`/`Plate`; alt required, no layout shift on swap.",
+      "Do not add motion beyond the intensity values above; gate it behind `prefers-reduced-motion`.",
+      "Use the existing tokens. If a parameter is missing, add it to `tokens.json` and `main.css` together.",
+      "Before claiming done: `pnpm tokens:check`, `pnpm typecheck`, render at 1440 and 390, and `?art=audit` with zero unspecced slots."
+    ],
+    "doNot": [
+      "use a carousel",
+      "three equal cards",
+      "scroll-triggered reveals",
+      "glassmorphism",
+      "fake metrics",
+      "lorem ipsum"
+    ]
+  },
+  "semantics": {
+    "vocabulary": {
+      "density": {
+        "low": "Airy",
+        "high": "Dense"
+      },
+      "chrome": {
+        "minimal": "Minimal chrome",
+        "rich": "Rich chrome"
+      },
+      "spine": {
+        "chronological": "Chronological",
+        "curated": "Curated index"
+      },
+      "opening": {
+        "image": "Image first",
+        "statement": "Statement first"
+      },
+      "media": {
+        "captioned-grid": "Captioned grid",
+        "bare-image": "Bare images"
+      },
+      "typeVoice": {
+        "expressive": "Type as the page",
+        "quiet": "Type as text"
+      },
+      "recirculation": {
+        "archive": "Full archive",
+        "curated": "Curated shelf"
+      },
+      "firstRung": {
+        "pinned": "A start-here piece",
+        "newest": "The newest post",
+        "featured": "A featured project",
+        "intro": "A short introduction"
+      },
+      "archivePlace": {
+        "home": "On the home page",
+        "own-page": "Its own page",
+        "both": "Both"
+      },
+      "secondColumn": {
+        "now": "Now / reading",
+        "photos": "Photography",
+        "micro": "Micro-posts",
+        "events": "Events or talks",
+        "none": "Nothing — keep it airy"
+      },
+      "captionSource": {
+        "cms": "A CMS field",
+        "alt": "Alt text for now",
+        "manual": "Written per post"
+      },
+      "heroArt": {
+        "photo": "My own photograph",
+        "existing": "Existing artwork",
+        "commission": "A commissioned illustration"
+      },
+      "displayBudget": {
+        "one": "One",
+        "two": "Two",
+        "sections": "One per section"
+      },
+      "never": {
+        "carousel": "No carousel",
+        "three-cards": "No three equal cards",
+        "scroll-reveal": "No scroll-triggered reveals",
+        "widgets": "No sidebar widgets",
+        "fake": "No fake metrics",
+        "none": "Nothing else"
+      }
+    },
+    "conflictNotes": {
+      "spine:chronological": "A is a ladder (Start here → Latest → Archive). A pure date feed removes the first rung.",
+      "opening:image": "A opens on a statement, not a photograph. An image-first hero changes the first screen.",
+      "density:high": "A is one thing per screen. High density adds competing modules and a margin column.",
+      "media:bare-image": "A commits to plated, captioned images for every content image.",
+      "typeVoice:expressive": "A reserves Arco for the wordmark and one hero line; type does not become the page.",
+      "recirculation:curated": "A ends on an archive index, not a related-items shelf."
+    },
+    "implications": {
+      "spine": {
+        "chronological": "Order the home by date. One column, newest first; no Start here shelf. `LadderRow` is not used.",
+        "curated": "Build a three-rung ladder: Start here → Latest → Archive. `LadderRow` + `IndexList`; nothing depends on publish order."
+      },
+      "opening": {
+        "image": "First screen is one image with one line over it. Hero art slot at 16:9; no wordmark block above it.",
+        "statement": "First screen is the wordmark and a statement of at most three lines. No hero image above the fold; `type.5xl`."
+      },
+      "density": {
+        "high": "Six to eight entry points above the fold; a margin column is allowed. Section rhythm `spacing.6`.",
+        "low": "At most three entry points above the fold; no sidebar. Section rhythm `spacing.9`–`spacing.10`."
+      },
+      "media": {
+        "captioned-grid": "Every image is a `Plate`: alt required, caption required (fall back to alt until `featured_image_caption` exists).",
+        "bare-image": "Images may stand alone in a grid; alt still required, captions optional. Do not mix bare and plated images on one screen."
+      },
+      "typeVoice": {
+        "expressive": "One oversized display line per page (`font.display`, up to `type.5xl`); colour may structure sections.",
+        "quiet": "Display only at section openers; body `font.body` at `type.md`, measure 62–68ch; colour is an accent."
+      },
+      "recirculation": {
+        "archive": "End with `IndexList`: years and months, every item. No related-posts carousel.",
+        "curated": "End with 3–5 related items and a one-line reason each. No exhaustive archive on the home page."
+      }
+    },
+    "details": {
+      "firstRung": {
+        "pinned": "Rung 1 is a pinned piece (`post_type: 'pinned'`), falling back to the newest post.",
+        "newest": "Rung 1 is the newest post; the page stays alive without curation.",
+        "featured": "Rung 1 is a featured project; the work leads and the writing follows.",
+        "intro": "Rung 1 is a short introduction; the shelves follow it."
+      },
+      "archivePlace": {
+        "home": "The archive is a rung on the home page, not a link to somewhere else.",
+        "own-page": "The home ends with a link to `/writing`; the exhaustive archive lives there.",
+        "both": "A recent slice on the home; everything at `/writing`."
+      },
+      "secondColumn": {
+        "now": "The second column carries now / reading.",
+        "photos": "The second column carries photography.",
+        "micro": "The second column carries micro-posts.",
+        "events": "The second column carries events or talks.",
+        "none": "No second column. This overrides the dense choice: keep the page airy."
+      },
+      "captionSource": {
+        "cms": "Add `featured_image_caption` to Directus before captions ship. Until then, fall back to alt and say so.",
+        "alt": "Captions fall back to alt text and the UI says so. Do not invent captions.",
+        "manual": "Captions live in the post body; the media record stays uncaptioned."
+      },
+      "heroArt": {
+        "photo": "The hero is a real photograph. Never generate it.",
+        "existing": "The hero is the existing meadow/cloud artwork at 16:9.",
+        "commission": "The hero slot stays pending until the illustration is commissioned; no placeholder art."
+      },
+      "displayBudget": {
+        "one": "At most one display moment per page; everything else is reading type.",
+        "two": "At most two display moments per page.",
+        "sections": "One display moment per section; the page may become a specimen."
+      },
+      "never": {
+        "carousel": "No carousel.",
+        "three-cards": "No three equal cards in a row.",
+        "scroll-reveal": "No scroll-triggered reveals.",
+        "widgets": "No sidebar widgets.",
+        "fake": "No fake metrics or testimonials.",
+        "none": "No extra bans beyond the direction contract."
+      }
+    },
+    "crossMedia": {
+      "density": {
+        "low": "One idea per surface: one card in social, one claim per slide, one object per print page.",
+        "high": "Layered surfaces: carousels, deck grids, index-led pages."
+      },
+      "typeVoice": {
+        "expressive": "One display line per surface: the social hook, the deck section opener, the print cover.",
+        "quiet": "Text carries each surface: deck body at reading size, social led by the caption."
+      },
+      "media": {
+        "captioned-grid": "Every image is labelled: social captions, deck figure notes, print captions.",
+        "bare-image": "Images can stand alone: full-bleed deck covers, image-only posts."
+      },
+      "opening": {
+        "image": "Lead with an image on every surface: first slide, cover, post.",
+        "statement": "Lead with a sentence on every surface: title slide, cover line, first post."
+      },
+      "recirculation": {
+        "archive": "End with an index or a next step, never a carousel.",
+        "curated": "End with a small curated shelf, not an exhaustive list."
+      }
+    },
+    "assets": [
+      {
+        "id": "hero-plate",
+        "when": {
+          "opening": "image",
+          "heroArt": "photo"
+        },
+        "effect": "Full-bleed real photograph with one line over it; never generated."
+      },
+      {
+        "id": "hero-plate",
+        "when": {
+          "opening": "image",
+          "heroArt": "existing"
+        },
+        "effect": "Full-bleed existing artwork with one line over it."
+      },
+      {
+        "id": "hero-plate",
+        "when": {
+          "opening": "image",
+          "heroArt": "commission"
+        },
+        "effect": "Slot stays pending until the illustration is commissioned; no substitute."
+      },
+      {
+        "id": "hero-plate",
+        "when": {
+          "opening": "image"
+        },
+        "effect": "Full-bleed image with one line over it; the source is not yet decided."
+      },
+      {
+        "id": "hero-plate",
+        "effect": "Stays behind the statement; it never becomes a standalone hero image."
+      },
+      {
+        "id": "start-plate",
+        "when": {
+          "media": "bare-image"
+        },
+        "effect": "Caption optional; alt still required. Do not strip the plated frame."
+      },
+      {
+        "id": "start-plate",
+        "when": {
+          "captionSource": "cms"
+        },
+        "effect": "Caption from `featured_image_caption`; add the field first."
+      },
+      {
+        "id": "start-plate",
+        "when": {
+          "captionSource": "manual"
+        },
+        "effect": "Caption written in the post body; the media record stays uncaptioned."
+      },
+      {
+        "id": "start-plate",
+        "effect": "Caption falls back to alt and says so."
+      },
+      {
+        "id": "photo-plate",
+        "when": {
+          "media": "bare-image"
+        },
+        "effect": "No captions; the grid is the content. Alt still names place and season."
+      },
+      {
+        "id": "photo-plate",
+        "effect": "Caption names place and season; alt carries the same information."
+      },
+      {
+        "id": "empty-garden",
+        "effect": "Unchanged by the probe; both empty states still need art and a written line."
+      },
+      {
+        "id": "og-home",
+        "effect": "Unchanged; text-free meadow and wordmark."
+      }
+    ],
+    "pendingTokens": [
+      {
+        "name": "motion.duration",
+        "valueFrom": {
+          "intensity": "motionMs",
+          "suffix": "ms"
+        },
+        "why": "{intensity} preset; not in tokens.json"
+      },
+      {
+        "name": "motion.shift",
+        "valueFrom": {
+          "intensity": "motionPx",
+          "suffix": "px"
+        },
+        "why": "{intensity} preset; not in tokens.json"
+      },
+      {
+        "name": "border.rule",
+        "valueFrom": {
+          "intensity": "rulePx",
+          "suffix": "px"
+        },
+        "why": "{intensity} preset; not in tokens.json"
+      },
+      {
+        "name": "image.hover-scale",
+        "valueFrom": {
+          "intensity": "imageScale",
+          "suffix": ""
+        },
+        "why": "{intensity} preset; not in tokens.json"
+      }
+    ],
+    "openQuestions": [
+      "`featured_image_caption` does not exist in Directus; plates fall back to alt until the field is added.",
+      "`Start here` uses `post_type: 'pinned'`, falling back to newest. Confirm which post is pinned."
+    ]
+  }
+}
