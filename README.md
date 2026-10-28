@@ -94,6 +94,19 @@ carries each chosen source's profile into `design-spec.json`.
 No OCR, no font identification, no style classification. A screenshot has no box model and no font
 metadata; guessing either would be worse than leaving it empty.
 
+## The live layer
+
+`live` reads the reference's page, not its pixels: real font stacks, computed colours, declared
+`--custom-properties`, section sizes and grid columns, motion counts, basic a11y facts, plus a 1440×900
+screenshot. Gallery captures are refused — a `land-book` URL is the gallery, not the site.
+
+```bash
+node probe/probe.mjs live --config …
+```
+
+This is the truth for fonts and tokens; the saved capture remains the truth for what you actually saw.
+Where they disagree, record the drift rather than replacing one with the other.
+
 ## Paths
 
 Every path is resolved from `--config`; each can be overridden with `--out`, `--data`, `--build`, or

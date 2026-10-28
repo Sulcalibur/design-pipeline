@@ -94,7 +94,7 @@ for (const file of ['00-brief.md', '01-references.md', '02-direction.md', '03-st
 if (!existsSync(path.join(target, '.gitignore'))) {
   writeFileSync(
     path.join(target, '.gitignore'),
-    ['data/answers.json', 'data/candidates.json', 'data/eagle-writeback.json', 'build/', '', '!data/fixtures/', ''].join('\n'),
+    ['data/answers.json', 'data/candidates.json', 'data/eagle-writeback.json', 'data/live/', 'build/', '', '!data/fixtures/', ''].join('\n'),
   )
   created.push('.gitignore')
 }
