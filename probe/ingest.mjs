@@ -66,7 +66,21 @@ if (kind === 'eagle') {
   const cacheDir = path.join(homedir(), 'Library/Application Support/Eagle/library-caches')
   if (!existsSync(cacheDir)) fail(`Eagle library cache not found: ${cacheDir} — open Eagle once, or use sources.kind "folder"`)
 
-  const itemDirs = readdirSync(path.join(libraryPath, 'images')).filter((n) => n.endsWith('.info'))
+  const itemDirsPath = path.join(libraryPath, 'images')
+  let itemDirs
+  try {
+    itemDirs = readdirSync(itemDirsPath).filter((n) => n.endsWith('.info'))
+  } catch (error) {
+    if (error.code === 'EPERM' || error.code === 'EACCES') {
+      fail(
+        `cannot read ${itemDirsPath} (${error.code}).\n` +
+          '  macOS denied file access to this process. Run the command from a terminal with iCloud Drive\n' +
+          '  access, or grant Full Disk Access to the app hosting the agent.\n' +
+          '  A folder source needs no such permission: set sources.kind to "folder".',
+      )
+    }
+    fail(`cannot read ${itemDirsPath}: ${error.message}`)
+  }
   const caches = readdirSync(cacheDir)
     .filter((n) => n.endsWith('.txt'))
     .map((n) => ({ file: path.join(cacheDir, n), lines: readFileSync(path.join(cacheDir, n), 'utf8').trim().split('\n').length }))

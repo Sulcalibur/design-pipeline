@@ -52,10 +52,18 @@ function optionById() {
 }
 const options = optionById()
 
-if (sourceKind === 'eagle' && !existsSync(itemsDir)) {
-  console.error(`✗ Eagle library images not found: ${itemsDir}`)
-  console.error('  Set sources.kind to "folder" (with sources.path) or pass --library <name>.')
-  process.exit(1)
+if (sourceKind === 'eagle') {
+  try {
+    readdirSync(itemsDir)
+  } catch (error) {
+    console.error(`✗ cannot read Eagle library images: ${itemsDir} (${error.code ?? error.message})`)
+    if (error.code === 'EPERM' || error.code === 'EACCES') {
+      console.error('  macOS denied file access to this process. Run serve from a terminal with iCloud Drive')
+      console.error('  access, or grant Full Disk Access to the app hosting the agent. A folder source needs none.')
+    }
+    console.error('  Alternatively set sources.kind to "folder" (with sources.path).')
+    process.exit(1)
+  }
 }
 
 mkdirSync(paths.data, { recursive: true })
