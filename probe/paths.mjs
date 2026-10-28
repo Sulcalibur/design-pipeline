@@ -50,7 +50,7 @@ export function resolvePaths(argv = process.argv.slice(2), cwd = process.cwd()) 
   const root = path.dirname(config)
 
   // A project can describe its own layout, so no wrapper script is needed:
-  // { "paths": { "out": "../home-refresh", "data": "data", "build": "build" } }
+  // { "paths": { "out": "../<slug>", "data": "data", "build": "build" } }
   let declared = {}
   try {
     if (existsSync(config)) declared = JSON.parse(readFileSync(config, 'utf8')).paths ?? {}

@@ -3,9 +3,9 @@
  * probe/emit.mjs — turn an adaptive probe run into a design spec.
  *
  * Reads the latest saved run (or --run <id>), writes:
- *   docs/design/home-refresh/05-probe.md       human readback + build rules
- *   docs/design/home-refresh/design-spec.json  machine spec for agents
- *   docs/design/home-refresh/02-direction.md   marked "Probe result" block
+ *   <out>/05-probe.md       human readback + build rules
+ *   <out>/design-spec.json  machine spec for agents
+ *   <out>/02-direction.md   marked "Probe result" block
  *
  * A run may be partial: "I've seen enough" is a valid ending. Unprobed axes are
  * reported as unprobed, never filled in.

@@ -25,7 +25,7 @@ let target
 if (args.positionals.length) {
   target = path.resolve(process.cwd(), args.positionals[0])
 } else {
-  if (!slug) fail('init needs a slug: node probe.mjs init --project . --slug home-refresh')
+  if (!slug) fail('init needs a slug: node probe.mjs init --project . --slug <slug>')
   target = path.join(projectRoot, 'docs/design', slug)
 }
 
