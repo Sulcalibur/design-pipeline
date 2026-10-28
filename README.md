@@ -134,3 +134,9 @@ generic defaults elsewhere. With `semantics`, the authored prose wins.
   except the generator attribution line and `generatedAt`.
 - Fresh project, no Eagle: `init` → folder manifest → `ingest` → `sheet` → `build` → `serve` → save →
   `emit` completes, with generic fallbacks and no token file.
+- Render tier: `sloplint --render` with `puppeteer-core@24.43.1` + Playwright's Chrome for Testing 156
+  wrote five frames and ran the gates.
+
+`npm audit` shows high-severity advisories inside puppeteer-core's tree. They are on paths this tool does
+not use (archive extraction, FTP) and `npm audit fix --force` breaks the pin. Leave them until puppeteer
+ships a fix.
