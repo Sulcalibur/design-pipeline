@@ -251,6 +251,7 @@
     const field = el('div', { class: 'field' })
     if (q.id === 'v3-display') field.append(fontPairings())
     field.append(inputFor(q, a))
+    field.append(aiHelpRow(q))
     field.append(statusChips(q, a))
     field.append(
       el('div', { class: 'source' },
@@ -397,6 +398,41 @@
       type: 'text', id: `q-${q.id}`, value: value ?? '', placeholder: q.placeholder ?? '',
       oninput: (e) => { a.value = e.target.value; scheduleSave() },
     })
+  }
+
+  function aiHelpRow(q) {
+    // AI drafts are never verified: the record's honesty rules stay intact.
+    const row = el('div', { class: 'airow' })
+    const btn = el('button', { class: 'btn ghost', type: 'button' }, 'AI help')
+    const note = el('span', { class: 'ainote' }, 'draft from answers so far — verify before use')
+    btn.addEventListener('click', async () => {
+      const a = answer(q.id)
+      if (a.value != null && !window.confirm(`Replace your answer with an AI draft? (Current: "${
+        Array.isArray(a.value) ? a.value.join('; ') : typeof a.value === 'object' ? '(dials)' : String(a.value)
+      }")`)) return
+      btn.disabled = true
+      btn.textContent = 'Drafting…'
+      try {
+        const res = await fetch('/api/ai-help', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: q.id, type: q.type }),
+        })
+        const finisher = await res.json()
+        if (!res.ok) throw new Error(finisher.error ?? finisher.message ?? String(finisher))
+        if (!finisher.draft) throw new Error('Empty draft')
+        answers[q.id] = { value: finisher.draft, status: 'assumption', source: 'AI draft — replace with the real answer' }
+        dirty = true
+        scheduleSave()
+        render()
+      } catch (error) {
+        btn.textContent = 'AI help'
+        btn.disabled = false
+        note.textContent = error.message.slice(0, 160)
+      }
+    })
+    row.append(btn, note)
+    return row
   }
 
   function statusChips(q, a) {

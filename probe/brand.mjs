@@ -16,11 +16,20 @@
  */
 import { readFileSync, writeFileSync, existsSync, mkdirSync, copyFileSync } from 'node:fs'
 import { createServer } from 'node:http'
-import { spawnSync } from 'node:child_process'
+import { spawnSync, spawn } from 'node:child_process'
 import path from 'node:path'
 import { parseArgs, fail, rel } from './paths.mjs'
 
 const here = import.meta.dirname
+
+/** Split a command string, respecting quoted words, for spawning. */
+function parseCmd(cmd) {
+  const out = []
+  for (const match of String(cmd ?? '').matchAll(/(?:[^\s"]+|"[^"]*")+/g)) {
+    out.push(match[0].replace(/^"|"$/g, ''))
+  }
+  return out
+}
 const args = parseArgs(process.argv.slice(2))
 const cmd = args.positionals[0] ?? 'serve'
 const project = path.resolve(process.cwd(), args.get('project', '.'))
@@ -332,6 +341,91 @@ function serve() {
       }
       if (req.method === 'GET' && url.pathname === '/api/answers') {
         return send(200, JSON.stringify(loadAnswers()), MIME['.json'])
+      }
+      if (req.method === 'POST' && url.pathname === '/api/ai-help') {
+        let body = ''
+        for await (const chunk of req) body += chunk
+        const { id, type } = JSON.parse(body || '{}')
+        if (!id) return send(400, 'slot id required')
+        const cfg = loadConfig()
+        const question = cfg.questions.find((q) => q.id === id)
+        if (!question) return send(404, `unknown slot ${id}`)
+        const { answers: current = {} } = loadAnswers()
+
+        // Context: everything answered so far. Truncated so one long slot
+        // cannot crowd the rest of the record out of the prompt.
+        const context = []
+        for (const q of cfg.questions) {
+          if (q.id === id) continue
+          const a = current[q.id]
+          if (a?.value == null) continue
+          const text = Array.isArray(a.value) ? a.value.join('; ') : typeof a.value === 'object' ? JSON.stringify(a.value) : String(a.value)
+          if (!text.trim()) continue
+          context.push(`${q.label ?? q.id}: ${text.trim().slice(0, 240)}`)
+        }
+        const dials = current.dials?.value ?? cfg.dials
+        if (dials && typeof dials === 'object') {
+          const rows = Object.entries(dials)
+            .map(([k, d]) => `${d.label ?? k} target ${d.target ?? '—'}`)
+            .join(', ')
+          if (rows) context.push(`Direction dials (where the brand is heading): ${rows}`)
+        }
+
+        const shape = {
+          long: 'Answer in 1–2 plain sentences.',
+          list: 'Answer as a short list, one item per line.',
+          owner: 'Answer as one line in the exact form: Name — YYYY-MM-DD (use the current date for the date).',
+          colour: 'Answer with a single hex colour like #a4452e.',
+        }[type] ?? 'Answer in one short line.'
+
+        const prompt = [
+          `You are drafting one answer for a brand record for: ${current.product?.value ?? cfg.product ?? 'the project'}.`,
+          current.oneLine?.value ? `What it is: ${current.oneLine.value}` : '',
+          '',
+          'Everything known so far:',
+          context.length ? context.map((l) => `- ${l}`).join('\n') : '- nothing answered yet',
+          '',
+          `Slot to fill — ${question.label ?? id}: ${question.question}`,
+          question.help ? `Guidance: ${question.help}` : '',
+          question.why ? `Why this slot exists: ${question.why}` : '',
+          '',
+          'Rules:',
+          `- Use only the context above. Do NOT invent facts, numbers, prices, dates or customer quotes.`,
+          shape,
+          `- If nothing in the context lets you answer honestly, reply exactly: TBC`,
+          '- Reply with the answer only. No preamble, no quotes around it, no explanation.',
+          '- Never present the answer as verified or sourced.',
+        ].filter(Boolean).join('\n')
+
+        const cmd = process.env.BRAND_AI_CMD ?? 'opencode run --format json'
+        const [bin, ...args] = parseCmd(cmd)
+        const model = process.env.BRAND_AI_MODEL
+        const result = await new Promise((resolve) => {
+          const child = spawn(bin, model ? [...args, '--model', model, prompt] : [...args, prompt], { cwd: project, stdio: ['ignore', 'pipe', 'pipe'] })
+          let out = ''
+          let err = ''
+          const timer = setTimeout(() => child.kill('SIGKILL'), 90_000)
+          child.stdout.on('data', (c) => { out += c })
+          child.stderr.on('data', (c) => { err += c })
+          child.on('error', (e) => { clearTimeout(timer); resolve({ ok: false, error: `${bin}: ${e.message}` }) })
+          child.on('close', (code) => {
+            clearTimeout(timer)
+            let draft = ''
+            for (const line of out.split('\n')) {
+              if (line.startsWith('{')) {
+                try {
+                  const event = JSON.parse(line)
+                  if (event.type === 'text') draft += event.part?.text ?? ''
+                } catch {}
+              }
+            }
+            if (!draft.trim() && code === 0 && out.trim()) draft = out.trim()
+            resolve({ ok: code === 0 && draft.trim().length > 0, draft: draft.trim(), error: code === 0 ? '' : (err.trim().slice(-400) || `exit ${code}`) })
+            console.error(`[ai-help] ${id} → exit ${code}, err: ${err.slice(0, 200) || '(silent)'}, stdout: ${out.slice(0, 150) || '(empty)'}`)
+          })
+        })
+        if (!result.ok) return send(502, result.error || 'AI did not return anything')
+        return send(200, JSON.stringify({ draft: result.draft }), MIME['.json'])
       }
       if (req.method === 'POST' && url.pathname === '/api/answers') {
         let body = ''
