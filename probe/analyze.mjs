@@ -20,6 +20,28 @@
  */
 import { readFileSync, writeFileSync, existsSync, mkdirSync, statSync } from 'node:fs'
 import os from 'node:os'
+
+/** Pixels can reach us over HTTP thanks to a preview server running inside Eagle. */
+async function fetchThroughMediaServer(id, template) {
+  const url = template.replace('{id}', id)
+  try {
+    const res = await fetch(url, { signal: AbortSignal.timeout(15000) })
+    if (!res.ok) return null
+    const type = res.headers.get('content-type') ?? ''
+    if (!type.startsWith('image/')) return null
+    const buffer = Buffer.from(await res.arrayBuffer())
+    if (buffer.length < 1024) return null
+    const dir = path.join(os.tmpdir(), 'design-pipeline')
+    mkdirSync(dir, { recursive: true })
+    const ext = type.includes('webp') ? 'webp' : type.includes('png') ? 'png' : type.includes('jpeg') ? 'jpg' : 'bin'
+    const file = path.join(dir, `${id}.${ext}`)
+    writeFileSync(file, buffer)
+    return file
+  } catch {
+    return null
+  }
+}
+
 import path from 'node:path'
 import { resolvePaths, loadConfig, loadCandidates, fail, rel } from './paths.mjs'
 import { loadPixels, measure, imageFileFor, cacheKey, cacheDir, METHOD, LIMITS } from './image.mjs'
@@ -70,6 +92,7 @@ for (const id of ids) {
   if ((!file || !existsSync(file)) && liveShot && existsSync(liveShot)) file = liveShot
   if ((!file || !existsSync(file)) && process.env.EAGLE_MEDIA_URL) {
     file = await fetchThroughMediaServer(id, process.env.EAGLE_MEDIA_URL)
+    if (file) console.log(`  · via media server`)
   }
   if (!file || !existsSync(file)) {
     skipped.push({ id, reason: candidate ? 'no local image file' : 'not in candidates.json' })

@@ -37,7 +37,8 @@ export function decodeBmp(buf) {
   const rawHeight = buf.readInt32LE(22)
   const bpp = buf.readUInt16LE(28)
   const compression = buf.readUInt32LE(30)
-  if (compression !== 0) throw new Error('compressed BMP is not supported')
+  // 0 = BI_RGB, 3 = BI_BITFIELDS (sips writes these for RGBA sources)
+  if (compression !== 0 && compression !== 3) throw new Error(`unsupported BMP compression: ${compression}`)
   if (bpp !== 24 && bpp !== 32) throw new Error(`unsupported BMP depth: ${bpp}`)
 
   const topDown = rawHeight < 0
@@ -52,7 +53,7 @@ export function decodeBmp(buf) {
     for (let x = 0; x < width; x += 1) {
       const p = rowStart + x * bytesPerPixel
       const out = (y * width + x) * 3
-      data[out] = buf[p + 2] // BGR -> RGB
+      data[out] = buf[p + 2] // BGRA/BGR -> RGB
       data[out + 1] = buf[p + 1]
       data[out + 2] = buf[p]
     }
@@ -72,7 +73,13 @@ export function loadPixels(file) {
       ['-s', 'format', 'bmp', '--resampleWidth', String(SAMPLE_WIDTH), file, '--out', tmp],
       { stdio: 'ignore' },
     )
-    const img = decodeBmp(readFileSync(tmp))
+    let img
+    try {
+      img = decodeBmp(readFileSync(tmp))
+    } catch (error) {
+      console.error(`decode ${(file ?? '').split('/').pop()}: ${error.message}`)
+      return null
+    }
     if (img.height > MAX_ROWS) {
       // Keep the top and a tail sample so a 20k-pixel page still yields bands.
       const keep = Math.floor(MAX_ROWS / 2)

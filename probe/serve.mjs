@@ -52,7 +52,7 @@ function optionById() {
 }
 const options = optionById()
 
-if (sourceKind === 'eagle') {
+if (sourceKind === 'eagle' && !(process.env.EAGLE_MEDIA_URL || source.mediaServer)) {
   try {
     readdirSync(itemsDir)
   } catch (error) {

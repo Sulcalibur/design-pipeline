@@ -181,10 +181,11 @@ directories when the process can read them. The library path resolves as `source
 Drive can offload files and macOS denies a non-GUI process access to `~/Library/Mobile Documents`. The index is matched by item count, then read in one
 pass. Eagle's API has no working search — page `/api/item/list` and filter client-side.
 
-**Preview server.** Eagle plugins run inside the app, where file access is not a problem. If a server
-plugin (for example Media Preview Server) serves item images over HTTP, set
-`EAGLE_MEDIA_URL="http://127.0.0.1:41532/{id}"` (or `"sources": { "mediaServer": "…" }`) and both the
-serve and analyze paths will use it by id. `{id}` is replaced with the item id.
+**Preview server.** Eagle plugins run inside the app, where file access is not a problem. Media Preview
+Server (default port 41532) serves item bytes at `/api/items/{id}/file`; set
+`EAGLE_MEDIA_URL="http://127.0.0.1:41532/api/items/{id}/file"` (or `"sources": { "mediaServer": "…" }`)
+and the serve path redirects to it, while analyze fetches to a temp file and measures. No file access from
+this process is needed.
 
 **Folder.** `sources.kind: "folder"` reads `references/manifest.json`:
 
