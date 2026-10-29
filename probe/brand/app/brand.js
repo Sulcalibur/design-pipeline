@@ -250,14 +250,16 @@
     const main = $('#main')
     main.innerHTML = ''
 
-    main.append(
+    // DOM append() stringifies its arguments — a guarded ternary's null must
+    // be filtered, or the page renders the bare word "null" above the form.
+    main.append(...[
       el('p', { class: 'qhead' }, section?.title ?? '', el('span', {}, ` · ${index + 1} of ${config.questions.length}`)),
       el('h2', {}, q.question),
       q.help ? el('p', { class: 'help' }, q.help) : null,
       q.why ? el('p', { class: 'why' }, el('strong', {}, 'Why this question: '), q.why) : null,
       q.example ? el('p', { class: 'why' }, el('strong', {}, 'What a good answer looks like: '), q.example) : null,
       q.tbcHint ? el('p', { class: 'tbchint' }, q.tbcHint) : null,
-    )
+    ].filter((kid) => kid != null))
 
     const field = el('div', { class: 'field' })
     if (q.id === 'v3-display') field.append(fontPairings())
