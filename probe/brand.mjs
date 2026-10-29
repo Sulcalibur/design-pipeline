@@ -56,7 +56,7 @@ function loadConfig() {
       if (['why', 'example', 'tbcHint', 'help'].includes(key)) {
         // Explanations fill gaps; a project may override the wording.
         if (q[key] == null) q[key] = doc
-      } else if (['type', 'placeholder'].includes(key)) {
+      } else if (['type', 'placeholder', 'help'].includes(key)) {
         // Behaviour follows the tool: an old scaffold should not pin a stale widget.
         q[key] = doc
       }

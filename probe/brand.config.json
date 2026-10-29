@@ -437,33 +437,39 @@
       "id": "dials",
       "section": "direction",
       "label": "D2 Dials",
-      "question": "Score each dial now and where it should be.",
-      "help": "1–5. The gap is the brief for the visual work.",
+      "question": "Score each dial now, and where the brand should be.",
+      "help": "Six levers that describe how the site should feel. \"Now\" is the site as it exists — pre-launch, leave Now empty (an honest gap is the point). \"Target\" is where the visual work should land. The distance between them is the brief.",
       "type": "dials",
       "dials": [
         {
           "id": "density",
-          "label": "Density"
+          "label": "Density",
+          "note": "1 = one idea per screen, huge air. 5 = the screen is full — dense grid, little padding."
         },
         {
           "id": "contrast",
-          "label": "Contrast"
+          "label": "Contrast",
+          "note": "1 = everything whispers, even tone. 5 = poster-like: big jumps between calm and loud."
         },
         {
           "id": "warmth",
-          "label": "Warmth"
+          "label": "Warmth",
+          "note": "1 = cool, flat, corporate. 5 = personal, human, tactile — warm regardless of hue."
         },
         {
           "id": "editoriality",
-          "label": "Editoriality"
+          "label": "Editoriality",
+          "note": "1 = marketing poster, claims and CTAs. 5 = magazine — typography-led, considered, writing matters."
         },
         {
           "id": "ornament",
-          "label": "Ornament"
+          "label": "Ornament",
+          "note": "1 = none; surfaces carry themselves. 5 = decorative detail everywhere — grain, rules, borders, glyphs."
         },
         {
           "id": "motion",
-          "label": "Motion"
+          "label": "Motion",
+          "note": "1 = still; nothing animates. 5 = everything responds — motion is part of the identity."
         }
       ],
       "why": "Current = the site you have today (leave unchecked pre-launch); target = where the brand should go. The gap is the brief for the visual work."

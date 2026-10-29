@@ -352,7 +352,9 @@
           }
           return s
         }
-        body.append(el('tr', {}, el('td', {}, dial.label), el('td', {}, select('current', current)), el('td', {}, select('target', target))))
+        body.append(el('tr', {},
+          el('td', { class: 'dialname' }, dial.label, dial.note ? el('small', {}, dial.note) : null),
+          el('td', {}, select('current', current)), el('td', {}, select('target', target))))
       }
       table.append(body)
       return table
@@ -414,6 +416,11 @@
   }
 
   function aiHelpRow(q) {
+    // The dials are a matrix, not a sentence — an AI draft cannot express
+    // them, and a string here silently blanks the table.
+    if (q.type === 'dials') {
+      return el('div', { class: 'airow' }, el('span', { class: 'ainote' }, 'no AI draft here — the six dials are set by hand'))
+    }
     // AI drafts are never verified: the record's honesty rules stay intact.
     const row = el('div', { class: 'airow' })
     const btn = el('button', { class: 'btn ghost', type: 'button' }, 'AI help')
