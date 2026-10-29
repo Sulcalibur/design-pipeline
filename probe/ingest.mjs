@@ -92,11 +92,36 @@ if (kind === 'eagle') {
     .map((c) => ({ ...c, distance: Math.abs(c.lines - itemDirs.length) }))
     .sort((a, b) => a.distance - b.distance)
 
-  if (!caches[0] || caches[0].distance > 5) {
-    fail(`no Eagle index file matches ${itemDirs.length} items in ${libraryName}`)
+  // Matching by item count alone is fragile once several libraries exist or have
+  // been merged: a stale cache can be the same size and win the match. Confirm a
+  // few ids actually exist in this library before trusting an index.
+  const verifyCache = (file) => {
+    try {
+      const sample = readFileSync(file, 'utf8')
+        .trim()
+        .split('\n')
+        .filter(Boolean)
+        .slice(0, 3)
+        .map((line) => JSON.parse(line))
+      if (!sample.length) return false
+      return sample.every((item) => existsSync(path.join(libraryPath, 'images', `${item.id}.info`)))
+    } catch {
+      return false
+    }
   }
 
-  const indexFile = caches[0].file
+  const near = caches.filter((c) => c.distance <= 5)
+  const chosen = near.find((c) => verifyCache(c.file))
+  if (!chosen) {
+    const seen = near.slice(0, 4).map((c) => `${path.basename(c.file)} (${c.lines} lines, Δ${c.distance})`).join(', ')
+    fail(
+      `no Eagle index verifies against ${libraryName} (${itemDirs.length} items).\n` +
+        `  Candidates: ${seen || 'none within 5 items'}\n` +
+        '  Open Eagle and let it finish indexing this library, then retry.',
+    )
+  }
+
+  const indexFile = chosen.file
   const items = readFileSync(indexFile, 'utf8')
     .trim()
     .split('\n')
