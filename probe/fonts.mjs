@@ -17,6 +17,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, copyFi
 import os from 'node:os'
 import path from 'node:path'
 import { parseArgs, fail, rel } from './paths.mjs'
+import { resolveLibrary } from './library.mjs'
 
 const args = parseArgs(process.argv.slice(2))
 const cmd = args.positionals[0] ?? 'discover'
@@ -113,10 +114,8 @@ if (cmd === 'validate') {
   process.exit(0)
 }
 
-const library =
-  args.get('library') ??
-  process.env.EAGLE_LIBRARY ??
-  path.join(os.homedir(), 'Library/Mobile Documents/com~apple~CloudDocs/Eagle/Inspirations.library')
+const lib = await resolveLibrary(args.get('library') ?? args.get('library-path'))
+const library = lib.path
 
 const imagesDir = path.join(library, 'images')
 if (!existsSync(imagesDir)) fail(`library images not found: ${imagesDir}\n  Move the library to a local path and set EAGLE_LIBRARY, or pass --library <path>.`)
@@ -126,13 +125,42 @@ try {
   entries = readdirSync(imagesDir).filter((n) => n.endsWith('.info'))
 } catch (error) {
   if (error.code === 'EPERM' || error.code === 'EACCES') {
-    fail(
-      `cannot read ${imagesDir} (${error.code}).\n` +
-        '  macOS denied access to iCloud Drive. Move the library out of iCloud, or run this from a\n' +
-        '  terminal that has permission.',
-    )
+    // The files are unreadable to this process, but the app's index is not:
+    // the names are still useful, the previews are not.
+    await discoverViaApi()
+    process.exit(0)
   }
   fail(`cannot read ${imagesDir}: ${error.message}`)
+}
+
+async function discoverViaApi() {
+  const API = 'http://localhost:41595/api/v2'
+  const exts = ['ttf', 'otf', 'woff', 'woff2']
+  const specimens = []
+  for (const ext of exts) {
+    try {
+      const res = await fetch(`${API}/item/get`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ ext, limit: 1000, fields: ['id', 'name', 'tags', 'width', 'height', 'ext'] }),
+        signal: AbortSignal.timeout(15000),
+      })
+      if (!res.ok) continue
+      const json = await res.json()
+      for (const item of json?.data?.data ?? []) {
+        specimens.push({ id: item.id, name: item.name, tags: item.tags ?? [], ext: item.ext, width: item.width, height: item.height, image: null })
+      }
+    } catch {}
+  }
+  mkdirSync(dataDir, { recursive: true })
+  writeFileSync(
+    path.join(dataDir, 'fonts.json'),
+    JSON.stringify({ generatedAt: new Date().toISOString(), library: `${lib.name}.library`, count: specimens.length, via: 'api-v2', specimens }, null, 2) + '\n',
+  )
+  console.log(`library files are unreadable to this process; indexed ${specimens.length} font file(s) by name via the API.`)
+  console.log(`→ ${rel(path.join(dataDir, 'fonts.json'))}`)
+  console.log('Previews need local access: Full Disk Access, or a library outside iCloud.')
+  if (!specimens.length) console.log('No ttf/otf/woff items found in the active library.')
 }
 
 const WEIGHT = /regular|heavy|bold|italic|light|medium|black|thin|extralight|semibold/i

@@ -187,13 +187,13 @@
   }
 
   function libraryFonts() {
-    const box = el('div', { class: 'lib', id: 'lib-fonts' }, el('p', { class: 'qhead' }, 'From your library', el('span', {}, ' — Eagle specimens')))
+    const box = el('div', { class: 'lib', id: 'lib-fonts' }, el('p', { class: 'qhead' }, 'From your library', el('span', {}, ' — Eagle fonts')))
     fetch('/api/fonts')
       .then((r) => r.json())
       .then((data) => {
         const list = data.specimens ?? []
         if (!list.length) {
-          box.append(el('p', { class: 'help' }, 'None indexed yet. With the library on a local path, run: probe fonts --project .'))
+          box.append(el('p', { class: 'help' }, 'None indexed yet. Run: probe fonts --project .'))
           return
         }
         const grid = el('div', { class: 'libgrid' })
@@ -207,7 +207,9 @@
                 render()
               },
             },
-              el('img', { src: `/${s.image}`, alt: s.name, loading: 'lazy' }),
+              s.image
+                ? el('img', { src: `/${s.image}`, alt: s.name, loading: 'lazy' })
+                : el('b', { class: 'fontmark' }, String(s.name ?? '?').slice(0, 2).toUpperCase()),
               el('span', {}, s.name),
             ),
           )

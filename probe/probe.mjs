@@ -224,6 +224,13 @@ function status() {
   printReport(report, config)
 
   console.log(`\nconfig: ${rel(configPath)}`)
+  const libFile = path.join(paths.data, 'library.json')
+  if (existsSync(libFile)) {
+    try {
+      const lib = JSON.parse(readFileSync(libFile, 'utf8'))
+      console.log(`library: ${lib.name} · ${lib.total ?? '?'} items · via ${lib.via ?? 'index'}`)
+    } catch {}
+  }
   console.log(`candidates: ${candidates ? candidates.length : 'not ingested'}`)
   if (existsSync(answersPath)) {
     const runs = JSON.parse(readFileSync(answersPath, 'utf8'))

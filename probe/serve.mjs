@@ -19,6 +19,7 @@ import { spawnSync } from 'node:child_process'
 import { homedir } from 'node:os'
 import path from 'node:path'
 import { resolvePaths, loadConfig, loadCandidates } from './paths.mjs'
+import { resolveLibrary } from './library.mjs'
 
 const here = import.meta.dirname
 const paths = resolvePaths(process.argv.slice(2))
@@ -31,12 +32,9 @@ const appDir = path.join(here, 'app')
 const config = loadConfig(paths.config)
 const source = config.sources ?? {}
 const sourceKind = source.kind ?? 'eagle'
-const libraryName = source.library ?? args.get('library', 'Inspirations')
-const libraryPath = source.path
-  ? path.resolve(paths.root, source.path)
-  : process.env.EAGLE_LIBRARY
-    ? path.resolve(process.env.EAGLE_LIBRARY)
-    : path.join(homedir(), 'Library/Mobile Documents/com~apple~CloudDocs/Eagle', `${libraryName}.library`)
+const lib = await resolveLibrary(source.path ? path.resolve(paths.root, source.path) : args.get('library-path'))
+const libraryName = lib.name
+const libraryPath = lib.path
 const itemsDir = path.join(libraryPath, 'images')
 
 const candidates = loadCandidates(paths.candidates) ?? []
@@ -246,7 +244,7 @@ function forwardArgs() {
 
 server.listen(port, '127.0.0.1', () => {
   console.log(`probe → http://127.0.0.1:${port}`)
-  const where = sourceKind === 'eagle' ? `eagle · ${libraryName}` : `folder · ${path.relative(process.cwd(), libraryPath)}`
+  const where = sourceKind === 'eagle' ? `eagle · ${libraryName} (${lib.source})` : `folder · ${path.relative(process.cwd(), libraryPath)}`
   console.log(`source → ${where}`)
   console.log(`answers → ${path.relative(process.cwd(), paths.answers)}`)
   console.log(`images → ${options.size} options · ${candidates.length} indexed candidates`)
