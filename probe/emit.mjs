@@ -3,8 +3,8 @@
  * probe/emit.mjs — turn an adaptive probe run into a design spec.
  *
  * Reads the latest saved run (or --run <id>), writes:
- *   <out>/05-probe.md       human readback + build rules
- *   <out>/design-spec.json  machine spec for agents
+ *   <out>/05-decision.md    human decision readback + build rules
+ *   <out>/build-spec.json    machine brief for agents
  *   <out>/02-direction.md   marked "Probe result" block
  *
  * A run may be partial: "I've seen enough" is a valid ending. Unprobed axes are
@@ -16,6 +16,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs'
 import path from 'node:path'
 import { resolvePaths, loadConfig, fail, rel } from './paths.mjs'
 import { loadBrandRecord, brandBlock } from './brand-link.mjs'
+import { writeDesignIndex } from './design-index.mjs'
 
 const paths = resolvePaths(process.argv.slice(2))
 const args = paths.args
@@ -568,7 +569,7 @@ ${openQuestions.map((q) => `- ${q}`).join('\n')}
 
 ## Agent brief
 
-Read in this order: \`design-spec.json\` → \`02-direction.md\` → \`03-structure.md\` → \`04-assets.md\`.
+Read in this order: \`build-spec.json\` → \`02-direction.md\` → \`03-structure.md\` → \`04-assets.md\`.
 
 ${agentBrief.map((line, i) => `${i + 1}. ${line}`).join('\n')}
 
@@ -586,6 +587,8 @@ if (dry) {
 mkdirSync(outDir, { recursive: true })
 writeFileSync(paths.readback, md)
 writeFileSync(paths.spec, JSON.stringify(spec, null, 2))
+const indexFiles = writeDesignIndex(paths.root, { slug: paths.slug ?? config.id, hasProbe: true })
+if (indexFiles) console.log(`index → ${indexFiles.map((f) => rel(f)).join(' · ')}`)
 
 const directionPath = output.directionFile
   ? path.resolve(paths.root, output.directionFile)
@@ -605,7 +608,7 @@ if (touchDirection && existsSync(directionPath)) {
 
 Run \`${run.runId}\` · ${fmt(run.completedAt ?? run.startedAt)} · **${label}**.
 
-${Object.keys(answers).length} decisions answered; full readback in [05-probe.md](./05-probe.md). This block is generated: edit the probe, not this text.
+${Object.keys(answers).length} decisions answered; full readback in [05-decision.md](./05-decision.md). This block is generated: edit the probe, not this text.
 <!-- probe:end -->`
   const current = readFileSync(directionPath, 'utf8')
   const next = current.includes('<!-- probe:start -->')

@@ -864,7 +864,7 @@
       const after = document.getElementById('status')
       after.dataset.ok = '1'
       after.textContent = body.emitted
-        ? 'Saved · spec generated (05-probe.md, design-spec.json)'
+        ? 'Saved · spec generated (05-decision.md, build-spec.json)'
         : body.emitError
           ? `Saved, but the spec did not generate: ${body.emitError}`
           : 'Saved to data/answers.json'

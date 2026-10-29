@@ -7,8 +7,8 @@
  *   <project>/probe.config.json     the source of truth (edited by a human/agent)
  *   <project>/data/                 answers.json, candidates.json (generated, ignored)
  *   <project>/build/                probe.json, sheet.html (generated runtime)
- *   <project>/05-probe.md           readback (generated)
- *   <project>/design-spec.json      machine spec (generated)
+ *   <project>/05-decision.md        decision readback (generated)
+ *   <project>/build-spec.json       machine brief (generated)
  *
  * Every path can be overridden, which is what makes the engine usable from a
  * shared tool directory against a project that lives anywhere.
@@ -79,8 +79,9 @@ export function resolvePaths(argv = process.argv.slice(2), cwd = process.cwd()) 
     writeback: path.join(data, 'eagle-writeback.json'),
     runtime: path.join(build, 'probe.json'),
     sheet: path.join(build, 'sheet.html'),
-    readback: path.join(out, '05-probe.md'),
-    spec: path.join(out, 'design-spec.json'),
+    // Filenames are project-configurable; defaults keep the human-first order.
+    readback: path.join(out, declared.readback ?? '05-decision.md'),
+    spec: path.join(out, declared.spec ?? 'build-spec.json'),
   }
 }
 

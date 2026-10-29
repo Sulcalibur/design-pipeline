@@ -11,7 +11,7 @@
  *   node probe.mjs ingest           index the Eagle library
  *   node probe.mjs sheet            build the contact sheet for curation
  *   node probe.mjs serve [--port]   run the probe
- *   node probe.mjs emit [--dry]     write 05-probe.md + design-spec.json
+ *   node probe.mjs emit [--dry]     write 05-decision.md + build-spec.json
  *   node probe.mjs record [--apply] write verdicts back into Eagle
  *
  * Editing probe.config.json is the only step that needs judgement. Everything
@@ -256,9 +256,11 @@ function status() {
   } else {
     console.log('answers: none yet')
   }
-  if (existsSync(specPath)) {
-    const spec = JSON.parse(readFileSync(specPath, 'utf8'))
-    console.log(`spec: ${spec.status} · ${spec.generatedAt.slice(0, 10)} · ${spec.buildRules?.length ?? 0} rules`)
+  const specPathLegacy = specPath.includes('build-spec.json') ? specPath.replace('build-spec.json', 'design-spec.json') : null
+  const specSource = existsSync(specPath) ? specPath : (specPathLegacy && existsSync(specPathLegacy) ? specPathLegacy : null)
+  if (specSource) {
+    const spec = JSON.parse(readFileSync(specSource, 'utf8'))
+    console.log(`spec: ${spec.status} · ${spec.generatedAt.slice(0, 10)} · ${spec.buildRules?.length ?? 0} rules${specSource !== specPath ? ' (legacy spec file)' : ''}`)
   } else {
     console.log('spec: not generated yet')
   }
@@ -298,12 +300,12 @@ function help() {
   node probe.mjs fonts             index type specimens · validate named families
   node probe.mjs audit             Lighthouse: performance, accessibility, SEO
   node probe.mjs serve [--port]    run the probe at http://127.0.0.1:4210
-  node probe.mjs emit [--dry]      write 05-probe.md + design-spec.json
+  node probe.mjs emit [--dry]      write 05-decision.md + build-spec.json
   node probe.mjs record [--apply]  write verdicts back into Eagle
 
 Global flags, valid on every command:
   --config <path>   the project's probe.config.json (default ./probe.config.json)
-  --out <dir>       where 05-probe.md, design-spec.json and 02-direction.md land
+  --out <dir>       where 05-decision.md, build-spec.json and 02-direction.md land
   --data <dir>      answers.json, candidates.json
   --build <dir>     generated probe.json and sheet.html
 

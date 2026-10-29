@@ -28,8 +28,8 @@ A project gets exactly one folder:
   02-direction.md        gets a generated "Probe result" block; never overwritten
   03-structure.md
   04-assets.md
-  05-probe.md            generated readback
-  design-spec.json       generated machine spec
+  05-decision.md (legacy: 05-decision.md)            generated readback
+  build-spec.json       generated machine spec
   data/                  answers.json, candidates.json (gitignored)
   build/                 probe.json, sheet.html (generated, gitignored)
   references/manifest.json   only when sources.kind is "folder"
@@ -89,7 +89,7 @@ Dry run unless `--apply`; needs Eagle running on `:41595`.
 
 The project keeps both in `data/analysis.json`, which is tracked: the measured half is regenerable, the
 authored half is knowledge. The contact sheet shows palette chips and density per card, and `emit`
-carries each chosen source's profile into `design-spec.json`.
+carries each chosen source's profile into `build-spec.json`.
 
 No OCR, no font identification, no style classification. A screenshot has no box model and no font
 metadata; guessing either would be worse than leaving it empty.
@@ -232,7 +232,7 @@ generic defaults elsewhere. With `semantics`, the authored prose wins.
 
 ## Verified
 
-- Sulcalibur parity: the ported engine reproduces `05-probe.md` and `design-spec.json` byte-identically
+- Sulcalibur parity: the ported engine reproduces `05-decision.md (legacy: 05-decision.md)` and `build-spec.json` byte-identically
   except the generator attribution line and `generatedAt`.
 - Fresh project, no Eagle: `init` → folder manifest → `ingest` → `sheet` → `build` → `serve` → save →
   `emit` completes, with generic fallbacks and no token file.

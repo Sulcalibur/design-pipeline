@@ -19,6 +19,7 @@ import { createServer } from 'node:http'
 import { spawnSync, spawn } from 'node:child_process'
 import path from 'node:path'
 import { parseArgs, fail, rel } from './paths.mjs'
+import { writeDesignIndex } from './design-index.mjs'
 
 const here = import.meta.dirname
 
@@ -310,6 +311,8 @@ function emit({ dry = false } = {}) {
   mkdirSync(brandDir, { recursive: true })
   writeFileSync(path.join(brandDir, 'brand.md'), md)
   writeFileSync(path.join(brandDir, 'brand.json'), JSON.stringify(spec, null, 2) + '\n')
+  const indexFiles = writeDesignIndex(project, { hasBrand: true })
+  if (indexFiles) console.log(`index → ${indexFiles.map((f) => rel(f)).join(' · ')}`)
   console.log(`brand → ${rel(path.join(brandDir, 'brand.md'))}`)
   console.log(`spec  → ${rel(path.join(brandDir, 'brand.json'))}`)
   console.log(`${rows.filter((r) => r.present).length}/${rows.length} answered · ${gaps.length} gap(s) · ${assumptions.length} assumption(s)`)
