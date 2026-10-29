@@ -1,0 +1,414 @@
+{
+  "$about": "The brand interview. One question at a time; every answer carries a status and a source. Emits brand.md + brand.json.",
+  "id": "brand",
+  "title": "Brand interview",
+  "sections": [
+    {
+      "id": "evidence",
+      "title": "Evidence",
+      "note": "What this brand is, and what you actually read before answering."
+    },
+    {
+      "id": "define",
+      "title": "Define",
+      "note": "What exists today. Facts, not ambition."
+    },
+    {
+      "id": "position",
+      "title": "Position",
+      "note": "What you claim, and what you can prove."
+    },
+    {
+      "id": "operate",
+      "title": "Operate",
+      "note": "How it sounds, what it costs, what moves next."
+    },
+    {
+      "id": "identity",
+      "title": "Identity",
+      "note": "The visual system: colour roles, type roles, imagery, motion, forbidden territory."
+    },
+    {
+      "id": "direction",
+      "title": "Direction",
+      "note": "Where the brand should go next, as decisions rather than adjectives."
+    }
+  ],
+  "questions": [
+    {
+      "id": "product",
+      "section": "evidence",
+      "label": "Product",
+      "question": "What is this brand called, and what is it?",
+      "help": "The name a customer would recognise, and one line beside it.",
+      "type": "text",
+      "required": true,
+      "placeholder": "Sulcalibur \u2014 a personal digital garden"
+    },
+    {
+      "id": "oneLine",
+      "section": "evidence",
+      "label": "One line",
+      "question": "In one line, what is it?",
+      "help": "The phrase that sits under the name. Concrete nouns.",
+      "type": "text",
+      "required": true,
+      "placeholder": "A personal digital garden of writing, photography and small signals."
+    },
+    {
+      "id": "stage",
+      "section": "evidence",
+      "label": "Stage",
+      "question": "Where is it now?",
+      "type": "single",
+      "required": true,
+      "options": [
+        {
+          "id": "pre",
+          "label": "Pre-launch"
+        },
+        {
+          "id": "live-empty",
+          "label": "Live, no customers yet"
+        },
+        {
+          "id": "live",
+          "label": "Live, with customers"
+        }
+      ]
+    },
+    {
+      "id": "owner",
+      "section": "evidence",
+      "label": "Owner and date",
+      "question": "Who owns this record, and when was it last verified?",
+      "type": "text",
+      "placeholder": "Sulei \u2014 2026-10-29"
+    },
+    {
+      "id": "sources",
+      "section": "evidence",
+      "label": "Sources read",
+      "question": "What did you actually read to fill this in?",
+      "help": "Documents, URLs, repo paths, product, interview. One per line. A slot with no source is an assumption, and must say so.",
+      "type": "list",
+      "required": true,
+      "placeholder": "design.md\ntokens.json\nhttps://example.com/\nTwo customer calls, 14 Oct"
+    },
+    {
+      "id": "a1",
+      "section": "define",
+      "label": "A1 The thing",
+      "question": "What is it, in one sentence a customer would repeat to a friend?",
+      "help": "Under 20 words. No category jargon. Name the outcome, not the mechanism.",
+      "type": "long",
+      "required": true
+    },
+    {
+      "id": "a2",
+      "section": "define",
+      "label": "A2 Who",
+      "question": "Who buys, who uses, and who pays \u2014 and are they the same person?",
+      "help": "A named segment with a size you can count, a place they gather, and what they already spend money on. 'Small businesses' fails.",
+      "type": "long",
+      "required": true
+    },
+    {
+      "id": "a3",
+      "section": "define",
+      "label": "A3 The alternative",
+      "question": "What do they do today instead?",
+      "help": "At least three: a competitor, a spreadsheet, and doing nothing. Give the real cost of each. The free option is always one of them.",
+      "type": "list",
+      "required": true
+    },
+    {
+      "id": "a4",
+      "section": "define",
+      "label": "A4 The problem in their words",
+      "question": "What do they actually say the problem is?",
+      "help": "Two or three short quotes with a source. Not your summary. If there are none, write TBC and say so.",
+      "type": "long"
+    },
+    {
+      "id": "b1",
+      "section": "position",
+      "label": "B1 The promise",
+      "question": "What changes for them, by when, and through what mechanism?",
+      "help": "Outcome + mechanism + timeframe. The mechanism must be a real feature. No 'seamless', 'world-class', 'revolutionary'.",
+      "type": "long",
+      "required": true
+    },
+    {
+      "id": "b2-now",
+      "section": "position",
+      "label": "B2 Proof \u2014 exists now",
+      "question": "What can you show today?",
+      "help": "One per line. 'No customers yet' is a valid entry and must appear if true.",
+      "type": "list"
+    },
+    {
+      "id": "b2-earn",
+      "section": "position",
+      "label": "B2 Proof \u2014 earnable in 90 days",
+      "question": "What could you honestly earn within ninety days?",
+      "type": "list"
+    },
+    {
+      "id": "b2-forbid",
+      "section": "position",
+      "label": "B2 Proof \u2014 never claim",
+      "question": "What must never be claimed, by you or an agent writing for you?",
+      "type": "list"
+    },
+    {
+      "id": "b3",
+      "section": "position",
+      "label": "B3 The offer",
+      "question": "What exactly do they buy, at what price, with what included and excluded, and what happens if it does not work?",
+      "help": "Quote the authoritative price. Never invent a trial length or a free tier; use TBC.",
+      "type": "long",
+      "required": true
+    },
+    {
+      "id": "b4",
+      "section": "position",
+      "label": "B4 The category",
+      "question": "What shelf is it on, and what is the comparison set?",
+      "help": "'X for Y' in one line, plus the two or three products a buyer will compare it with.",
+      "type": "text"
+    },
+    {
+      "id": "b5",
+      "section": "position",
+      "label": "B5 The enemy",
+      "question": "What practice or status quo is this against?",
+      "help": "Not a named competitor. Paper cards, the group chat, the spreadsheet, the agency retainer.",
+      "type": "text"
+    },
+    {
+      "id": "c1-rules",
+      "section": "operate",
+      "label": "C1 Voice \u2014 five rules",
+      "question": "Five rules that make a sentence sound like this brand.",
+      "help": "Each must be checkable by reading a sentence aloud. One per line.",
+      "type": "list",
+      "required": true
+    },
+    {
+      "id": "c1-banned",
+      "section": "operate",
+      "label": "C1 Voice \u2014 banned words",
+      "question": "Five words or phrases this brand never uses.",
+      "type": "list"
+    },
+    {
+      "id": "c1-keepers",
+      "section": "operate",
+      "label": "C1 Voice \u2014 keeper lines",
+      "question": "Three lines already written and approved that show the voice.",
+      "help": "Approved, not newly written.",
+      "type": "list"
+    },
+    {
+      "id": "c2",
+      "section": "operate",
+      "label": "C2 Economics",
+      "question": "Price, margin, the most you can pay to acquire a customer, and how many you can serve.",
+      "help": "Show the arithmetic. Break-even count, intake cap, hours available.",
+      "type": "long"
+    },
+    {
+      "id": "c3",
+      "section": "operate",
+      "label": "C3 The one motion",
+      "question": "Which single motion for the next four weeks \u2014 to whom, saying what, at what cadence, with what number says stop?",
+      "help": "One motion, not three. A named list, a first sentence, a date, a number and a kill rule.",
+      "type": "long"
+    },
+    {
+      "id": "v1",
+      "section": "identity",
+      "label": "V1 Logo",
+      "question": "What is the mark, the wordmark, and their lockups \u2014 with three misuses?",
+      "help": "Name the files or paths if they exist. If there is only a wordmark, say that.",
+      "type": "long"
+    },
+    {
+      "id": "v2-paper",
+      "section": "identity",
+      "label": "V2 Colour \u2014 paper",
+      "question": "What is the page colour?",
+      "help": "A hex value. This is the base everything is read against.",
+      "type": "colour",
+      "placeholder": "#faf0e6"
+    },
+    {
+      "id": "v2-ink",
+      "section": "identity",
+      "label": "V2 Colour \u2014 ink",
+      "question": "What is the primary text colour?",
+      "type": "colour",
+      "placeholder": "#2d2938"
+    },
+    {
+      "id": "v2-accent",
+      "section": "identity",
+      "label": "V2 Colour \u2014 accent",
+      "question": "What is the one accent, and what is it allowed to do?",
+      "help": "Hex plus a limit: links only, one CTA per screen, etc.",
+      "type": "text",
+      "placeholder": "#a4452e \u2014 CTA fills only, never body text"
+    },
+    {
+      "id": "v2-surface",
+      "section": "identity",
+      "label": "V2 Colour \u2014 surface",
+      "question": "What is the card or raised surface colour?",
+      "type": "colour",
+      "placeholder": "#f5ebe0"
+    },
+    {
+      "id": "v3-display",
+      "section": "identity",
+      "label": "V3 Type \u2014 display",
+      "question": "Which face carries display, at what role, and is it licensed?",
+      "help": "Name the family and the licence. If it cannot be identified, describe the voice \u2014 never invent a name.",
+      "type": "text",
+      "placeholder": "Arco \u2014 self-hosted, display only, 48\u201396px"
+    },
+    {
+      "id": "v3-body",
+      "section": "identity",
+      "label": "V3 Type \u2014 body",
+      "question": "Which face carries reading text, and at what size and measure?",
+      "type": "text",
+      "placeholder": "Lora \u2014 18px/1.6, 62\u201368ch"
+    },
+    {
+      "id": "v3-ui",
+      "section": "identity",
+      "label": "V3 Type \u2014 UI and labels",
+      "question": "Which face carries nav, labels and buttons?",
+      "type": "text"
+    },
+    {
+      "id": "v4",
+      "section": "identity",
+      "label": "V4 Imagery",
+      "question": "What is photographed or illustrated, in what treatment, and what is never shown?",
+      "help": "Name the source. Never claim photography you do not have.",
+      "type": "long"
+    },
+    {
+      "id": "v5",
+      "section": "identity",
+      "label": "V5 Layout signatures",
+      "question": "What recurs on every page \u2014 grid, section rhythm, the one device?",
+      "type": "long"
+    },
+    {
+      "id": "v6",
+      "section": "identity",
+      "label": "V6 Motion",
+      "question": "What moves, what never moves, and what happens with reduced motion?",
+      "type": "long"
+    },
+    {
+      "id": "v7",
+      "section": "identity",
+      "label": "V7 Texture and detail",
+      "question": "Grain, rules, radii, icon style \u2014 what are the small recurring decisions?",
+      "type": "long"
+    },
+    {
+      "id": "v8",
+      "section": "identity",
+      "label": "V8 Forbidden territory",
+      "question": "What would make this look like someone else?",
+      "help": "The clich\u00e9s of the category, the competitor's signature, the trend you refuse. One per line.",
+      "type": "list",
+      "required": true
+    },
+    {
+      "id": "d1-1",
+      "section": "direction",
+      "label": "D1 Decision one",
+      "question": "First decision that makes the next direction specific.",
+      "type": "text",
+      "placeholder": "Lora at 64px for the statement, not the wordmark"
+    },
+    {
+      "id": "d1-2",
+      "section": "direction",
+      "label": "D1 Decision two",
+      "question": "Second decision.",
+      "type": "text"
+    },
+    {
+      "id": "d1-3",
+      "section": "direction",
+      "label": "D1 Decision three",
+      "question": "Third decision.",
+      "type": "text"
+    },
+    {
+      "id": "d1-refusal",
+      "section": "direction",
+      "label": "D1 Refusal",
+      "question": "What does this direction refuse to do?",
+      "help": "A decision with no refusal drifts back to the category default.",
+      "type": "text"
+    },
+    {
+      "id": "dials",
+      "section": "direction",
+      "label": "D2 Dials",
+      "question": "Score each dial now and where it should be.",
+      "help": "1\u20135. The gap is the brief for the visual work.",
+      "type": "dials",
+      "dials": [
+        {
+          "id": "density",
+          "label": "Density"
+        },
+        {
+          "id": "contrast",
+          "label": "Contrast"
+        },
+        {
+          "id": "warmth",
+          "label": "Warmth"
+        },
+        {
+          "id": "editoriality",
+          "label": "Editoriality"
+        },
+        {
+          "id": "ornament",
+          "label": "Ornament"
+        },
+        {
+          "id": "motion",
+          "label": "Motion"
+        }
+      ]
+    }
+  ],
+  "contrastPairs": [
+    {
+      "id": "paper-ink",
+      "label": "Ink on paper",
+      "fg": "v2-ink",
+      "bg": "v2-paper",
+      "min": 4.5
+    },
+    {
+      "id": "surface-ink",
+      "label": "Ink on card surface",
+      "fg": "v2-ink",
+      "bg": "v2-surface",
+      "min": 4.5
+    }
+  ]
+}
