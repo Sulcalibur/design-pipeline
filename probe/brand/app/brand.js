@@ -343,6 +343,39 @@
       table.append(body)
       return table
     }
+    if (q.type === 'owner') {
+      // Stored shape is "Name — YYYY-MM-DD"; split for two inputs, join back.
+      const m = String(value ?? '').match(/^(.*?)\s*[—–-]\s*(\d{4}-\d{2}-\d{2})\s*$/)
+      let name = m ? m[1].trim() : String(value ?? '').trim()
+      const dateInput = el('input', {
+        type: 'date', value: m ? m[2] : '', 'aria-label': 'Last verified date',
+        onchange: commit,
+      })
+      const nameInput = el('input', {
+        type: 'text', id: `q-${q.id}`, value: name, placeholder: 'Name',
+        oninput: (e) => { name = e.target.value.trim(); commit() },
+      })
+      const wrap = el('div', { class: 'row' })
+      wrap.append(
+        nameInput,
+        el('span', { class: 'mini' }, 'Last verified'),
+        dateInput,
+        el('button', {
+          class: 'btn', type: 'button', title: 'Set the date to today',
+          onclick: () => {
+            // en-CA renders the local date as YYYY-MM-DD
+            dateInput.value = new Date().toLocaleDateString('en-CA')
+            dateInput.dispatchEvent(new Event('change'))
+          },
+        }, 'Today'),
+      )
+      return wrap
+
+      function commit() {
+        a.value = [name, dateInput.value].filter(Boolean).join(' — ')
+        scheduleSave()
+      }
+    }
     if (q.type === 'colour') {
       const wrap = el('div', { class: 'row' })
       const swatch = el('span', { class: 'swatch', style: `background:${/^#[0-9a-f]{6}$/i.test(value ?? '') ? value : 'transparent'}` })

@@ -44,8 +44,13 @@ function loadConfig() {
     const d = byId.get(q.id)
     if (!d) continue
     for (const [key, doc] of Object.entries(d)) {
-      if (!['why', 'example', 'tbcHint', 'help'].includes(key)) continue
-      if (q[key] == null) q[key] = doc
+      if (['why', 'example', 'tbcHint', 'help'].includes(key)) {
+        // Explanations fill gaps; a project may override the wording.
+        if (q[key] == null) q[key] = doc
+      } else if (['type', 'placeholder'].includes(key)) {
+        // Behaviour follows the tool: an old scaffold should not pin a stale widget.
+        q[key] = doc
+      }
     }
     if (q.help == null) q.help = d.help
   }
