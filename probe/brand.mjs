@@ -45,10 +45,22 @@ function hasValue(value) {
 /* --------------------------------------------------------------- contrast -- */
 
 const hexToRgb = (hex) => {
-  const m = String(hex ?? '').match(/#([0-9a-f]{6})\b/i)
+  // 3-digit and 6-digit hex are both valid CSS; expand #fff rather than fail silently.
+  const m = String(hex ?? '').match(/#([0-9a-f]{6}|[0-9a-f]{3})\b/i)
   if (!m) return null
-  const n = parseInt(m[1], 16)
+  let h = m[1]
+  if (h.length === 3) h = h.split('').map((c) => c + c).join('')
+  const n = parseInt(h, 16)
   return [(n >> 16) & 255, (n >> 8) & 255, n & 255]
+}
+
+/** First hex in a free-text colour answer, normalised to 6 digits for display. */
+const firstHex = (hex) => {
+  const m = String(hex ?? '').match(/#([0-9a-f]{6}|[0-9a-f]{3})\b/i)
+  if (!m) return null
+  let h = m[1]
+  if (h.length === 3) h = h.split('').map((c) => c + c).join('')
+  return `#${h.toLowerCase()}`
 }
 const luminance = ([r, g, b]) => {
   const f = (v) => {
@@ -73,8 +85,8 @@ function contrastResults(config, value) {
     out.push({
       id: pair.id,
       label: pair.label,
-      fg: String(value(pair.fg)).match(/#[0-9a-f]{6}/i)?.[0] ?? null,
-      bg: String(value(pair.bg)).match(/#[0-9a-f]{6}/i)?.[0] ?? null,
+      fg: firstHex(value(pair.fg)),
+      bg: firstHex(value(pair.bg)),
       ratio: r,
       min: pair.min ?? 4.5,
       passes: r >= (pair.min ?? 4.5),
@@ -115,6 +127,7 @@ function emit({ dry = false } = {}) {
 
   const gaps = rows.filter((r) => r.status === 'tbc' || (q[r.id]?.required && !r.present))
   const assumptions = rows.filter((r) => r.status === 'assumption')
+  const unverified = rows.filter((r) => r.status === 'verified' && !r.source)
 
   const list = (id) => {
     const v = value(id)
@@ -223,6 +236,13 @@ function emit({ dry = false } = {}) {
     lines.push('| Slot | Status | What it blocks |', '|---|---|---|')
     for (const g of gaps) lines.push(`| ${g.label} | ${statusLabel[g.status]} | A direction or claim that depends on it |`)
     lines.push('')
+  }
+  if (unverified.length) {
+    lines.push(
+      `**Marked Verified without a source:** ${unverified.map((u) => u.label).join(' · ')}.`,
+      'Either add the source it came from, or downgrade the status. A record cannot claim proof it did not record.',
+      '',
+    )
   }
   if (assumptions.length) {
     lines.push(
