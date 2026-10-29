@@ -124,6 +124,10 @@ function validate(config, candidates) {
       if (!o.source) errors.push(`pair ${pair.id}/${o.id}: missing source`)
       if (!o.alt) errors.push(`pair ${pair.id}/${o.id}: missing alt`)
       if (!o.vocab) errors.push(`pair ${pair.id}/${o.id}: missing vocab`)
+      // The app dereferences these at save time — half-formed options must
+      // fail validation, not the browser.
+      if (!o.url) errors.push(`pair ${pair.id}/${o.id}: missing url`)
+      if (!o.avoid) errors.push(`pair ${pair.id}/${o.id}: missing avoid`)
       if (!o.note) errors.push(`pair ${pair.id}/${o.id}: missing note`)
       if (!o.src && byId && !byId.has(o.id)) errors.push(`pair ${pair.id}/${o.id}: no Eagle candidate and no src`)
       if (byId && !byId.has(o.id) && !o.src) warnings.push(`pair ${pair.id}/${o.id}: external image; write-back will skip it`)
