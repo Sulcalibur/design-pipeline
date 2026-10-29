@@ -66,7 +66,7 @@ node probe/probe.mjs sheet   --config …
 node probe/probe.mjs build  --config …
 node probe/probe.mjs serve  --config …
 # answer in the browser; saving runs emit
-node probe/probe.mjs emit   --config …
+node probe/probe.mjs emit   --config …   # carries the brand record's constraints when one exists
 node probe/probe.mjs record --config … [--apply]
 ```
 
@@ -111,7 +111,7 @@ Where they disagree, record the drift rather than replacing one with the other.
 
 ```bash
 node probe/probe.mjs brand scaffold --project .
-node probe/probe.mjs brand serve    --project .
+node probe/probe.mjs brand serve    --project .   # probe emits read the record automatically
 ```
 
 A local app asking 39 brand questions one at a time — positioning (the twelve from `brand-breakdown`),

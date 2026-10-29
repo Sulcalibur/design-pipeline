@@ -9,7 +9,10 @@ import { existsSync } from 'node:fs'
 import path from 'node:path'
 
 export function findBrandRecord(startDir) {
-  let cursor = startDir
+  // The config itself sits in docs/design/<slug>/; walk up to the project root
+  // so a brand record is found by convention, not by a path in a config.
+  let cursor = path.resolve(startDir, '..', '..')
+  if (!path.basename(path.dirname(startDir)) === 'design') cursor = startDir
   while (cursor !== path.dirname(cursor)) {
     const file = path.join(cursor, 'docs', 'brand', 'brand.json')
     if (existsSync(file)) {

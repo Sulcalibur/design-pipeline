@@ -300,7 +300,7 @@ if (kind === 'eagle') {
 
 if (kind !== 'folder') fail(`unknown sources.kind "${kind}" — use "eagle" or "folder"`)
 
-const dir = path.resolve(paths.root, paths.args.get('library-path', source.path ?? 'references'))
+const dir = path.resolve(paths.root, paths.args.get('library-path', source.path ?? 'references')) // folder is relative to the *project* being probed
 const manifestPath = path.join(dir, 'manifest.json')
 if (!existsSync(manifestPath)) {
   fail(`manifest not found: ${manifestPath}\n  Expected { "items": [ { "id", "name", "file", "url"?, "width"?, "height"?, "kind"? } ] }`)

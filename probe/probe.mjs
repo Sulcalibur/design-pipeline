@@ -21,6 +21,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs'
 import { spawn, spawnSync } from 'node:child_process'
 import path from 'node:path'
 import { resolvePaths, loadConfig, loadCandidates, fail, rel } from './paths.mjs'
+import { loadBrandRecord, brandBlock } from './brand-link.mjs'
 
 const here = import.meta.dirname
 const argv = process.argv.slice(2)
@@ -191,9 +192,21 @@ function build() {
   if (!candidates) console.warn('  ! data/candidates.json not found; skipping image-id checks (run ingest first)')
   const report = validate(config, candidates)
   printReport(report, config)
+  const { record, block } = brandFor(paths)
+  if (block) {
+    console.log(`  · brand → ${rel(record.file)} (${block.product ?? 'unnamed'}, ${block.status})`)
+  }
   mkdirSync(paths.build, { recursive: true })
-  writeFileSync(paths.runtime, JSON.stringify(withUi(config), null, 2))
+  writeFileSync(paths.runtime, JSON.stringify(withUi({ ...config, brand: block }), null, 2))
   console.log(`→ ${rel(paths.runtime)}`)
+}
+
+/** Walk up from the config dir to find a project-level brand record, if any. */
+function brandFor(paths) {
+  const record = loadBrandRecord(paths.root, { readFile: readFileSync })
+  if (!record) return { record: null, block: null }
+  const block = brandBlock(record.data)
+  return { record, block }
 }
 
 /** The runtime copy carries the UI strings the app needs, so the app stays generic. */
@@ -244,6 +257,12 @@ function status() {
     console.log(`spec: ${spec.status} · ${spec.generatedAt.slice(0, 10)} · ${spec.buildRules?.length ?? 0} rules`)
   } else {
     console.log('spec: not generated yet')
+  }
+  const { record, block } = brandFor(paths)
+  if (record && block) {
+    console.log(`brand: ${block.product} · ${block.status} · ${rel(record.file)}`)
+  } else {
+    console.log('brand: none — the spec will not carry brand constraints')
   }
 }
 
