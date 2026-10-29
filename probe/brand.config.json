@@ -40,20 +40,24 @@
       "section": "evidence",
       "label": "Product",
       "question": "What is this brand called, and what is it?",
-      "help": "The name a customer would recognise, and one line beside it.",
+      "help": "The name as it would appear on the door.",
       "type": "text",
       "required": true,
-      "placeholder": "Sulcalibur — a personal digital garden"
+      "placeholder": "Sulcalibur — a personal digital garden",
+      "why": "Every later slot references this name — the record title, the browser tab, the first headline. It must be unambiguous, including spelling and capitalisation.",
+      "example": "Beagles Bikes — not BeeGles, not beagles bikes. Write it the way you want to read it back."
     },
     {
       "id": "oneLine",
       "section": "evidence",
       "label": "One line",
       "question": "In one line, what is it?",
-      "help": "The phrase that sits under the name. Concrete nouns.",
+      "help": "One sentence, under 25 words, that a stranger understands on first read.",
       "type": "text",
       "required": true,
-      "placeholder": "A personal digital garden of writing, photography and small signals."
+      "placeholder": "A personal digital garden of writing, photography and small signals.",
+      "why": "This line becomes the record hero and the shorthand every later answer is measured against. If it cannot be said in one breath, the site cannot either.",
+      "example": "A friendly bicycle repair workshop that collects and returns your bike in under 48 hours."
     },
     {
       "id": "stage",
@@ -75,7 +79,11 @@
           "id": "live",
           "label": "Live, with customers"
         }
-      ]
+      ],
+      "help": "Where the business is today. Be honest — pre-launch is a normal answer, not a failure.",
+      "why": "It decides what \"proof\" can mean later: a pre-launch brand proves intent and assets; a live one proves numbers and customers.",
+      "example": "Pre-launch (workshop fitted, no site yet) · Trading 3 months · Trading 2 years + rebrand.",
+      "tbcHint": "Between stages? Pick the one that describes most of this month, not most of the plan."
     },
     {
       "id": "owner",
@@ -83,17 +91,24 @@
       "label": "Owner and date",
       "question": "Who owns this record, and when was it last verified?",
       "type": "text",
-      "placeholder": "Sulei — 2026-10-29"
+      "placeholder": "Sulei — 2026-10-29",
+      "help": "Who maintains this record, and when was it last checked against reality.",
+      "why": "A brand record drifts. Named ownership and a date make the next agent treat stale slots as stale rather than as truth.",
+      "example": "Sulei — last verified 2026-10-29 after the shop sign was fitted.",
+      "tbcHint": "Solo? Still write your own name. \"Not stated\" gets flagged as a gap later."
     },
     {
       "id": "sources",
       "section": "evidence",
       "label": "Sources read",
       "question": "What did you actually read to fill this in?",
-      "help": "Documents, URLs, repo paths, product, interview. One per line. A slot with no source is an assumption, and must say so.",
+      "help": "What you actually read or did before answering anything else — files, URLs, conversations.",
       "type": "list",
       "required": true,
-      "placeholder": "design.md\ntokens.json\nhttps://example.com/\nTwo customer calls, 14 Oct"
+      "placeholder": "design.md\ntokens.json\nhttps://example.com/\nTwo customer calls, 14 Oct",
+      "why": "Every \"Verified\" status elsewhere is anchored here. No sources listed means the record must downgrade those claims to assumptions.",
+      "example": "Shop premises lease (a real document) · three customer conversations · competitor sites read on 28 Oct.",
+      "tbcHint": "Answered nothing on evidence? List the one conversation you have already had, or mark TBC — the gap table will carry it."
     },
     {
       "id": "a1",
