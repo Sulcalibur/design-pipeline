@@ -307,6 +307,26 @@ function serve() {
         if (!existsSync(file)) return send(200, JSON.stringify({ results: [] }), MIME['.json'])
         return send(200, readFileSync(file), MIME['.json'])
       }
+      if (req.method === 'GET' && url.pathname.startsWith('/api/font/')) {
+        // Browser pages on this port cannot fetch Eagle's server cross-origin
+        // (it sends no CORS headers), so bytes are fetched here and served same-origin.
+        const id = url.pathname.split('/').filter(Boolean).pop()
+        const ext = url.searchParams.get('ext') ?? 'woff2'
+        const template = process.env.EAGLE_MEDIA_URL || config?.sources?.mediaServer || 'http://127.0.0.1:41532/api/items/{id}/file'
+        if (!template.includes('{id}')) return send(400, 'media server template needs {id}')
+        try {
+          const res = await fetch(template.replace('{id}', id), { signal: AbortSignal.timeout(15000) })
+          if (!res.ok) return send(404, `media server ${res.status} for ${id}`)
+          const type = res.headers.get('content-type') ?? ''
+          if (type.startsWith('image/')) return send(404, 'not a font')
+          const buffer = Buffer.from(await res.arrayBuffer())
+          if (buffer.length < 64) return send(404, 'empty')
+          const mime = ext === 'woff2' ? 'font/woff2' : ext === 'woff' ? 'font/woff' : 'font/ttf'
+          return send(200, buffer, mime)
+        } catch (error) {
+          return send(502, `media server unreachable: ${error.message}`)
+        }
+      }
       if (req.method === 'GET' && url.pathname === '/api/fonts') {
         const file = path.join(brandDir, 'data/fonts.json')
         if (!existsSync(file)) return send(200, JSON.stringify({ specimens: [] }), MIME['.json'])

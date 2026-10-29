@@ -186,6 +186,14 @@
     return wrap
   }
 
+  const FONT_FORMAT = { woff2: 'woff2', woff: 'woff', ttf: 'truetype', otf: 'opentype' }
+
+  function fontFaceRule(specimen) {
+    const family = `EagleFont-${specimen.id}`
+    const format = FONT_FORMAT[specimen.ext] ?? 'woff2'
+    return { family, css: `@font-face { font-family: '${family}'; src: url('/api/font/${specimen.id}?ext=${specimen.ext}') format('${format}'); }` }
+  }
+
   function libraryFonts() {
     const box = el('div', { class: 'lib', id: 'lib-fonts' }, el('p', { class: 'qhead' }, 'From your library', el('span', {}, ' — Eagle fonts')))
     fetch('/api/fonts')
@@ -197,19 +205,23 @@
           return
         }
         const grid = el('div', { class: 'libgrid' })
-        for (const s of list.slice(0, 18)) {
+        const style = el('style')
+        document.head.append(style)
+        for (const s of list.slice(0, 24)) {
+          const { family, css } = fontFaceRule(s)
+          style.append(document.createTextNode(css))
           grid.append(
             el('button', {
               type: 'button', class: 'libcard', title: 'Use this name in the display field',
               onclick: () => {
-                answers['v3-display'] = { value: `${s.name} — from an Eagle specimen`, status: 'assumption', source: `Eagle item ${s.id}` }
+                answers['v3-display'] = { value: `${s.name} — from an Eagle font file (${s.ext})`, status: 'assumption', source: `Eagle item ${s.id}` }
                 scheduleSave()
                 render()
               },
             },
               s.image
                 ? el('img', { src: `/${s.image}`, alt: s.name, loading: 'lazy' })
-                : el('b', { class: 'fontmark' }, String(s.name ?? '?').slice(0, 2).toUpperCase()),
+                : el('b', { class: 'fontpreview', style: `font-family:'${family}'` }, String(s.name ?? '').slice(0, 1).toUpperCase()),
               el('span', {}, s.name),
             ),
           )
