@@ -267,6 +267,25 @@ for (const [key, value] of Object.entries(constraints)) {
   }
 }
 
+// Brand constraints become build rules too — the brief a builder implements,
+// not just metadata it might ignore. The `brand` blob below keeps the full
+// context; these entries are the enforceable rows.
+if (brand) {
+  for (const w of brand.bannedWords ?? []) {
+    buildRules.push({ key: 'brand-banned', value: w, rule: `never write the word “${w}” in copy, headings or labels` })
+  }
+  for (const f of brand.forbidden ?? []) {
+    buildRules.push({ key: 'brand-forbidden', value: f, rule: `must not appear in the build: ${f}` })
+  }
+  for (const r of brand.voiceRules ?? []) {
+    buildRules.push({ key: 'brand-voice', value: r, rule: `${r} (voice rule — applies to every sentence)` })
+  }
+  const dialRules = Object.entries(brand.dials ?? {})
+    .filter(([, d]) => d.target != null)
+    .map(([id, d]) => ({ key: `dial-${id}`, value: `target ${d.target}`, rule: `${d.label ?? id} should land at ${d.target} of 5${d.current != null ? ` (now ${d.current})` : ''}` }))
+  if (dialRules.length) buildRules.push(...dialRules)
+}
+
 // Asset effects are rules, not a list: first matching rule per id wins. The
 // project authors them because they name real slots and real content.
 const assetMatches = (rule) =>
