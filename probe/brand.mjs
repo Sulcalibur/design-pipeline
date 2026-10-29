@@ -339,7 +339,14 @@ function serve() {
         if (body.length > 2_000_000) return send(413, 'too large')
         const payload = JSON.parse(body)
         mkdirSync(path.join(brandDir, 'data'), { recursive: true })
-        writeFileSync(answersPath, JSON.stringify({ savedAt: new Date().toISOString(), ...payload }, null, 2))
+        // Merge per slot: a write that only carries some slots must not
+        // erase the rest. The app always sends the full set; external tools
+        // may not, and losing answers to a partial write is unacceptable.
+        const existing = loadAnswers().answers ?? {}
+        const incoming = payload.answers ?? {}
+        const merged = { ...existing }
+        for (const [id, slot] of Object.entries(incoming)) merged[id] = slot
+        writeFileSync(answersPath, JSON.stringify({ savedAt: new Date().toISOString(), answers: merged }, null, 2))
         return send(200, JSON.stringify({ ok: true, savedAt: new Date().toISOString() }), MIME['.json'])
       }
       if (req.method === 'POST' && url.pathname === '/api/emit') {
