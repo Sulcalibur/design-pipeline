@@ -71,7 +71,7 @@ add('other design slugs', siblings.length ? siblings.join(', ') : 'none')
 add('hallmark state', existsSync(path.join(owner, '.hallmark')) ? '.hallmark/ present' : 'not used')
 add('reference source', args.get('source', 'eagle'))
 
-const existingDocs = ['00-brief.md', '01-references.md', '02-direction.md', '03-structure.md', '04-assets.md'].filter((f) =>
+const existingDocs = ['00-brief.md', '01-references.md', '02-direction.md', '03-structure.md', '04-assets.md', 'review.md'].filter((f) =>
   existsSync(path.join(target, f)),
 )
 
@@ -82,7 +82,7 @@ mkdirSync(path.join(target, 'build'), { recursive: true })
 
 const created = []
 const templateDir = path.join(toolRoot, 'templates')
-for (const file of ['00-brief.md', '01-references.md', '02-direction.md', '03-structure.md', '04-assets.md', 'reference-set.schema.json']) {
+for (const file of ['00-brief.md', '01-references.md', '02-direction.md', '03-structure.md', '04-assets.md', 'review.md', 'reference-set.schema.json']) {
   const from = path.join(templateDir, file)
   const to = path.join(target, file)
   if (!existsSync(to) && existsSync(from)) {

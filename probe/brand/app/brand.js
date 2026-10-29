@@ -403,6 +403,14 @@
       main.append(ul)
     }
 
+    const checks = el('div', { class: 'checks' },
+      el('h3', {}, 'Checks'),
+      el('div', { id: 'contrast-check' }, el('p', { class: 'help' }, 'Checking contrast…')),
+      el('div', { id: 'font-check' }, el('p', { class: 'help' }, 'Checking type…')),
+    )
+    main.append(checks)
+    loadChecks()
+
     const out = el('div', { class: 'out' }, el('pre', { id: 'emit-out' }))
     const button = el('button', {
       class: 'btn primary', type: 'button',
@@ -432,6 +440,38 @@
       el('button', { class: 'btn', type: 'button', onclick: () => { reviewing = false; index = 0; render() } }, 'Back to questions'),
       button,
     ), out)
+  }
+
+  /* ----------------------------------------------------------- checks --- */
+
+  function loadChecks() {
+    fetch('/api/contrast').then((r) => r.json()).then((data) => {
+      const box = document.getElementById('contrast-check')
+      if (!box) return
+      const pairs = data.pairs ?? []
+      if (!pairs.length) {
+        box.innerHTML = '<h4>Contrast</h4><p class="help">No colour pairs yet — fill paper, ink, accent and surface.</p>'
+        return
+      }
+      const rows = pairs.map((p) =>
+        `<tr><td>${esc(p.label)}</td><td>${esc(p.fg)} on ${esc(p.bg)}</td><td>${p.ratio}:1</td><td>${p.min}:1</td><td class="${p.passes ? 'ok' : 'bad'}">${p.passes ? 'pass' : 'FAIL'}</td></tr>`,
+      ).join('')
+      box.innerHTML = `<h4>Contrast</h4><table class="checktable"><thead><tr><th>Pair</th><th>Colours</th><th>Ratio</th><th>Req</th><th>Result</th></tr></thead><tbody>${rows}</tbody></table>`
+    }).catch(() => {})
+
+    fetch('/api/font-check').then((r) => r.json()).then((data) => {
+      const box = document.getElementById('font-check')
+      if (!box) return
+      const results = data.results ?? []
+      if (!results.length) {
+        box.innerHTML = '<h4>Type</h4><p class="help">Not checked yet. Run: <code>probe fonts validate --project .</code></p>'
+        return
+      }
+      const rows = results.map((r) =>
+        `<tr><td>${esc(r.role)}</td><td>${esc(r.family)}</td><td>${esc(r.verdict)}</td><td>${esc(r.note ?? '')}</td></tr>`,
+      ).join('')
+      box.innerHTML = `<h4>Type</h4><table class="checktable"><thead><tr><th>Role</th><th>Family</th><th>Verdict</th><th>Note</th></tr></thead><tbody>${rows}</tbody></table>`
+    }).catch(() => {})
   }
 
   /* ------------------------------------------------------------ keys --- */

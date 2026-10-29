@@ -121,6 +121,16 @@ Fonts; `probe fonts --project .` indexes the specimens in your Eagle library so 
 Every answer carries a status and a source. It emits `docs/brand/brand.md` with a computed contrast table
 and a gap table, plus `brand.json` for agents.
 
+## Verify a built page
+
+```bash
+node probe/probe.mjs audit --url http://localhost:3000/ --slug home-refresh
+```
+
+Lighthouse in the cached Chrome for Testing — performance, accessibility (axe-core), best practices and
+SEO — written as `audit.json` plus a short `audit.md` for `review.md`. Every failing audit is fixed or
+waived with a reason; a score is not a pass. `templates/review.md` carries the table.
+
 ## Preview a run
 
 ```bash

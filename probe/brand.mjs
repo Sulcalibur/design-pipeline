@@ -63,6 +63,26 @@ const ratio = (a, b) => {
   return Number(((Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05)).toFixed(2))
 }
 
+function contrastResults(config, value) {
+  const out = []
+  for (const pair of config.contrastPairs ?? []) {
+    const fg = hexToRgb(value(pair.fg))
+    const bg = hexToRgb(value(pair.bg))
+    if (!fg || !bg) continue
+    const r = ratio(fg, bg)
+    out.push({
+      id: pair.id,
+      label: pair.label,
+      fg: String(value(pair.fg)).match(/#[0-9a-f]{6}/i)?.[0] ?? null,
+      bg: String(value(pair.bg)).match(/#[0-9a-f]{6}/i)?.[0] ?? null,
+      ratio: r,
+      min: pair.min ?? 4.5,
+      passes: r >= (pair.min ?? 4.5),
+    })
+  }
+  return out
+}
+
 /* ------------------------------------------------------------------ emit -- */
 
 function emit({ dry = false } = {}) {
@@ -91,23 +111,7 @@ function emit({ dry = false } = {}) {
   if (!product) fail('nothing to emit: the "product" question has no answer')
   const generatedAt = new Date().toISOString()
 
-  // Contrast pairs, when both ends are valid hex.
-  const contrast = []
-  for (const pair of config.contrastPairs ?? []) {
-    const fg = hexToRgb(value(pair.fg))
-    const bg = hexToRgb(value(pair.bg))
-    if (!fg || !bg) continue
-    const r = ratio(fg, bg)
-    contrast.push({
-      id: pair.id,
-      label: pair.label,
-      fg: String(value(pair.fg)).match(/#[0-9a-f]{6}/i)?.[0] ?? null,
-      bg: String(value(pair.bg)).match(/#[0-9a-f]{6}/i)?.[0] ?? null,
-      ratio: r,
-      min: pair.min ?? 4.5,
-      passes: r >= (pair.min ?? 4.5),
-    })
-  }
+  const contrast = contrastResults(config, value)
 
   const gaps = rows.filter((r) => r.status === 'tbc' || (q[r.id]?.required && !r.present))
   const assumptions = rows.filter((r) => r.status === 'assumption')
@@ -292,6 +296,16 @@ function serve() {
       if (req.method === 'POST' && url.pathname === '/api/emit') {
         const result = spawnSync(process.execPath, [path.join(here, 'brand.mjs'), 'emit', '--project', project, '--dir', path.relative(project, brandDir)], { encoding: 'utf8' })
         return send(result.status === 0 ? 200 : 500, JSON.stringify({ ok: result.status === 0, out: result.stdout, err: result.stderr }), MIME['.json'])
+      }
+      if (req.method === 'GET' && url.pathname === '/api/contrast') {
+        const cfg = loadConfig()
+        const { answers: current = {} } = loadAnswers()
+        return send(200, JSON.stringify({ pairs: contrastResults(cfg, (id) => current[id]?.value ?? null) }), MIME['.json'])
+      }
+      if (req.method === 'GET' && url.pathname === '/api/font-check') {
+        const file = path.join(brandDir, 'data/font-check.json')
+        if (!existsSync(file)) return send(200, JSON.stringify({ results: [] }), MIME['.json'])
+        return send(200, readFileSync(file), MIME['.json'])
       }
       if (req.method === 'GET' && url.pathname === '/api/fonts') {
         const file = path.join(brandDir, 'data/fonts.json')

@@ -409,6 +409,27 @@
       "fg": "v2-ink",
       "bg": "v2-surface",
       "min": 4.5
+    },
+    {
+      "id": "paper-accent",
+      "label": "Paper text on accent fill (CTA)",
+      "fg": "v2-paper",
+      "bg": "v2-accent",
+      "min": 4.5
+    },
+    {
+      "id": "accent-paper",
+      "label": "Accent text on paper",
+      "fg": "v2-accent",
+      "bg": "v2-paper",
+      "min": 4.5
+    },
+    {
+      "id": "accent-surface",
+      "label": "Accent text on card surface",
+      "fg": "v2-accent",
+      "bg": "v2-surface",
+      "min": 4.5
     }
   ],
   "fontPairings": [

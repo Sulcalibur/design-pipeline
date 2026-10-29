@@ -19,11 +19,99 @@ import path from 'node:path'
 import { parseArgs, fail, rel } from './paths.mjs'
 
 const args = parseArgs(process.argv.slice(2))
+const cmd = args.positionals[0] ?? 'discover'
 const project = path.resolve(process.cwd(), args.get('project', '.'))
 const brandDir = path.resolve(project, args.get('dir', 'docs/brand'))
 const outDir = path.join(brandDir, 'fonts')
 const dataDir = path.join(brandDir, 'data')
 const limit = Number(args.get('limit', 80))
+
+/* ---------------------------------------------------------------- validate -- */
+
+const SYSTEM_FONTS = new Set([
+  'system-ui', '-apple-system', 'blinkmacsystemfont', 'segoe ui', 'roboto', 'arial', 'helvetica',
+  'helvetica neue', 'georgia', 'times', 'times new roman', 'courier', 'courier new', 'menlo', 'monaco',
+  'sf pro', 'sf pro text', 'sf pro display', 'new york',
+])
+
+async function googleMetadata() {
+  const base = process.env.XDG_CACHE_HOME ?? path.join(os.homedir(), 'Library/Caches')
+  const dir = path.join(base, 'design-pipeline', 'fonts')
+  const file = path.join(dir, 'google-metadata.json')
+  mkdirSync(dir, { recursive: true })
+  const fresh = existsSync(file) && Date.now() - JSON.parse(readFileSync(file, 'utf8')).fetchedAt < 1000 * 60 * 60 * 24 * 30
+  if (fresh) return JSON.parse(readFileSync(file, 'utf8'))
+  const res = await fetch('https://fonts.google.com/metadata/fonts', { headers: { 'user-agent': 'Mozilla/5.0' } })
+  if (!res.ok) throw new Error(`Google Fonts metadata ${res.status}`)
+  const json = await res.json()
+  const families = (json.familyMetadataList ?? []).map((f) => ({ family: f.family, category: f.category }))
+  const payload = { fetchedAt: Date.now(), families }
+  writeFileSync(file, JSON.stringify(payload))
+  return payload
+}
+
+async function validateFonts() {
+  const brandDir = path.resolve(project, args.get('dir', 'docs/brand'))
+  const answersPath = path.join(brandDir, 'data/answers.json')
+  if (!existsSync(answersPath)) fail(`no answers at ${answersPath} — run the brand interview first`)
+  const { answers = {} } = JSON.parse(readFileSync(answersPath, 'utf8'))
+
+  let meta
+  try {
+    meta = await googleMetadata()
+  } catch (error) {
+    fail(`could not fetch Google Fonts metadata (${error.message}). Offline? Nothing checked, nothing written.`)
+  }
+  const byName = new Map(meta.families.map((f) => [f.family.toLowerCase(), f]))
+
+  const roles = [
+    ['v3-display', 'display'],
+    ['v3-body', 'body'],
+    ['v3-ui', 'ui'],
+  ]
+  const results = []
+  for (const [id, role] of roles) {
+    const raw = String(answers[id]?.value ?? '').trim()
+    if (!raw) continue
+    // "Fraunces — display, 48–96px, OFL" -> Fraunces; "Lora, Georgia, serif" -> Lora
+    const family = raw.split(/\s+[—-]\s+|,/)[0].replace(/["']/g, '').trim()
+    if (!family) continue
+    const key = family.toLowerCase()
+    const google = byName.get(key)
+    const verdict = google ? 'google' : SYSTEM_FONTS.has(key) ? 'system' : 'unknown'
+    results.push({
+      id,
+      role,
+      family,
+      verdict,
+      category: google?.category ?? null,
+      note:
+        verdict === 'google'
+          ? `${google.category} · OFL family on Google Fonts`
+          : verdict === 'system'
+            ? 'system stack — no webfont licence needed'
+            : 'not on Google Fonts: self-hosted, commercial, or misspelled — confirm the licence',
+    })
+  }
+
+  mkdirSync(path.join(brandDir, 'data'), { recursive: true })
+  writeFileSync(
+    path.join(brandDir, 'data', 'font-check.json'),
+    JSON.stringify({ generatedAt: new Date().toISOString(), checkedAgainst: 'fonts.google.com/metadata/fonts', results }, null, 2) + '\n',
+  )
+
+  console.log(`type check · ${results.length} role(s) · ${meta.families.length} Google families in catalogue`)
+  for (const r of results) {
+    const mark = r.verdict === 'google' ? '✓' : r.verdict === 'system' ? '·' : '!'
+    console.log(`  ${mark} ${r.role.padEnd(8)} ${r.family.padEnd(24)} ${r.verdict.padEnd(8)} ${r.note}`)
+  }
+  console.log(`→ ${rel(path.join(brandDir, 'data', 'font-check.json'))}`)
+}
+
+if (cmd === 'validate') {
+  await validateFonts()
+  process.exit(0)
+}
 
 const library =
   args.get('library') ??
