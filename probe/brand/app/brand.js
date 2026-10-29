@@ -15,7 +15,16 @@
     for (const kid of kids.flat()) if (kid != null) node.append(kid.nodeType ? kid : document.createTextNode(String(kid)))
     return node
   }
-  const esc = (s) => String(s ?? '')
+  /**
+   * Heal values arriving from storage or old tabs: a literal "null" string,
+   * an empty object, or a blank-es-only array is no value at all.
+   */
+  function heal(slot) {
+    if (!slot || typeof slot !== 'object') return slot
+    if (typeof slot.value === 'string' && /^\s*null\s*$/i.test(slot.value)) slot.value = null
+    if (Array.isArray(slot.value) && slot.value.every((x) => /^\s*null\s*$/i.test(String(x)))) slot.value = slot.value.filter((x) => !/^\s*null\s*$/i.test(String(x)))
+    return slot
+  }
 
   let config = null
   let answers = {}
@@ -45,6 +54,7 @@
     .then(([cfg, saved]) => {
       config = cfg
       answers = saved.answers ?? {}
+      for (const slot of Object.values(answers)) heal(slot)
       document.title = config.title || 'Brand interview'
       $('#title').textContent = config.title || 'Brand interview'
       render()
@@ -64,6 +74,7 @@
 
   async function save() {
     try {
+      for (const slot of Object.values(answers)) heal(slot)
       const res = await fetch('/api/answers', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

@@ -425,6 +425,9 @@ function serve() {
           })
         })
         if (!result.ok) return send(502, result.error || 'AI did not return anything')
+        // A model sometimes answers the empty set with the string "null";
+        // that is nothing, and nothing must not become an answer.
+        if (/^null$/i.test(result.draft.trim())) return send(502, 'the model had nothing usable for this slot')
         return send(200, JSON.stringify({ draft: result.draft }), MIME['.json'])
       }
       if (req.method === 'POST' && url.pathname === '/api/answers') {
@@ -439,7 +442,13 @@ function serve() {
         const existing = loadAnswers().answers ?? {}
         const incoming = payload.answers ?? {}
         const merged = { ...existing }
-        for (const [id, slot] of Object.entries(incoming)) merged[id] = slot
+        for (const [id, slot] of Object.entries(incoming)) {
+          const healed = JSON.parse(JSON.stringify(slot))
+          if (typeof healed?.value === 'string' && /^\s*null\s*$/i.test(healed.value)) healed.value = null
+          if (Array.isArray(healed?.value)) healed.value = healed.value.filter((x) => String(x).trim() && !/^\s*null\s*$/i.test(String(x)))
+          if (Array.isArray(healed?.value) && healed.value.length === 0 && incoming[id]?.value?.length) healed.value = incoming[id].value
+          merged[id] = healed
+        }
         writeFileSync(answersPath, JSON.stringify({ savedAt: new Date().toISOString(), answers: merged }, null, 2))
         return send(200, JSON.stringify({ ok: true, savedAt: new Date().toISOString() }), MIME['.json'])
       }
