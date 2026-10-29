@@ -102,7 +102,9 @@
       "question": "What is it, in one sentence a customer would repeat to a friend?",
       "help": "Under 20 words. No category jargon. Name the outcome, not the mechanism.",
       "type": "long",
-      "required": true
+      "required": true,
+      "why": "This becomes the hero sentence of the site. Over 20 words, or naming a mechanism, and the headline has to invent a translation.",
+      "example": "Bike hire and a repair workshop that comes to your door. — outcome first, mechanism second, under 20 words."
     },
     {
       "id": "a2",
@@ -111,7 +113,9 @@
       "question": "Who buys, who uses, and who pays — and are they the same person?",
       "help": "A named segment with a size you can count, a place they gather, and what they already spend money on. 'Small businesses' fails.",
       "type": "long",
-      "required": true
+      "required": true,
+      "why": "It feeds the site brief. A segment you can count, a place they gather, and what they already spend money on. \"People who like bikes\" is not answerable.",
+      "example": "Commuters in town with one bike each, no space to service it. Roughly 400 households within two miles."
     },
     {
       "id": "a3",
@@ -120,7 +124,9 @@
       "question": "What do they do today instead?",
       "help": "At least three: a competitor, a spreadsheet, and doing nothing. Give the real cost of each. The free option is always one of them.",
       "type": "list",
-      "required": true
+      "required": true,
+      "why": "The alternatives are what the pricing and category copy argue against. The free option is always one of them.",
+      "example": "Owning: storage, servicing, theft. Renting: per-day rates. A competing workshop: turnaround time."
     },
     {
       "id": "a4",
@@ -128,7 +134,10 @@
       "label": "A4 The problem in their words",
       "question": "What do they actually say the problem is?",
       "help": "Two or three short quotes with a source. Not your summary. If there are none, write TBC and say so.",
-      "type": "long"
+      "type": "long",
+      "why": "Real quotes, not your summary. If you have none yet, that is a fact about the brand, not a gap in the answer.",
+      "example": "\"I just want it back before Saturday.\" — collect the words, not the feeling.",
+      "tbcHint": "No customer conversations yet? Mark TBC. Interviews belong to the first four weeks."
     },
     {
       "id": "b1",
@@ -137,7 +146,9 @@
       "question": "What changes for them, by when, and through what mechanism?",
       "help": "Outcome + mechanism + timeframe. The mechanism must be a real feature. No 'seamless', 'world-class', 'revolutionary'.",
       "type": "long",
-      "required": true
+      "required": true,
+      "why": "The promise is what changes for the visitor, by when, and through what mechanism. Tone words here are answering the wrong slot — tone belongs in C1 Voice.",
+      "example": "Bike collected by 9am, serviced and returned the same day. — outcome + mechanism + timeframe, no tone words."
     },
     {
       "id": "b2-now",
@@ -145,21 +156,26 @@
       "label": "B2 Proof — exists now",
       "question": "What can you show today?",
       "help": "One per line. 'No customers yet' is a valid entry and must appear if true.",
-      "type": "list"
+      "type": "list",
+      "why": "What exists today. \"No site yet\" is a valid entry and must appear if true."
     },
     {
       "id": "b2-earn",
       "section": "position",
       "label": "B2 Proof — earnable in 90 days",
       "question": "What could you honestly earn within ninety days?",
-      "type": "list"
+      "type": "list",
+      "why": "What you could honestly earn in ninety days. Nothing stated, nothing to record.",
+      "tbcHint": "No plan yet? Mark TBC rather than guess a number."
     },
     {
       "id": "b2-forbid",
       "section": "position",
       "label": "B2 Proof — never claim",
       "question": "What must never be claimed, by you or an agent writing for you?",
-      "type": "list"
+      "type": "list",
+      "why": "Agents and designers writing beside you must never claim these. This list is the only thing standing between copy and a fabricated claim.",
+      "example": "No testimonials from people we have not asked. No 5-star ratings that came from nowhere."
     },
     {
       "id": "b3",
@@ -168,7 +184,9 @@
       "question": "What exactly do they buy, at what price, with what included and excluded, and what happens if it does not work?",
       "help": "Quote the authoritative price. Never invent a trial length or a free tier; use TBC.",
       "type": "long",
-      "required": true
+      "required": true,
+      "why": "The nav labels (\"Hire\", \"Repairs\"), the CTA text and the pricing page all come from this one slot. Quote the real price, or write TBC.",
+      "example": "Repair service from £19. Hire from £8/day. Includes lock and lights; excludes helmets."
     },
     {
       "id": "b4",
@@ -176,7 +194,9 @@
       "label": "B4 The category",
       "question": "What shelf is it on, and what is the comparison set?",
       "help": "'X for Y' in one line, plus the two or three products a buyer will compare it with.",
-      "type": "text"
+      "type": "text",
+      "why": "The category is what the buyer compares you to, so \"X for Y\" names the shelf.",
+      "example": "The local workshop alternative to a big-box online retailer."
     },
     {
       "id": "b5",
@@ -184,7 +204,9 @@
       "label": "B5 The enemy",
       "question": "What practice or status quo is this against?",
       "help": "Not a named competitor. Paper cards, the group chat, the spreadsheet, the agency retainer.",
-      "type": "text"
+      "type": "text",
+      "why": "What you are against, that is not a person. It shapes the tone of the site copy and the heading voice.",
+      "example": "The council bike shed. The spreadsheet of repairs. The scroll past a competitor who would charge more for less."
     },
     {
       "id": "c1-rules",
@@ -193,14 +215,17 @@
       "question": "Five rules that make a sentence sound like this brand.",
       "help": "Each must be checkable by reading a sentence aloud. One per line.",
       "type": "list",
-      "required": true
+      "required": true,
+      "why": "These are the checkable voice rules an agent obeys before writing the first paragraph. Each one must be checkable by reading a sentence aloud.",
+      "example": "Second person, active voice. Name the reader. One idea per sentence. No weak hedges."
     },
     {
       "id": "c1-banned",
       "section": "operate",
       "label": "C1 Voice — banned words",
       "question": "Five words or phrases this brand never uses.",
-      "type": "list"
+      "type": "list",
+      "why": "These are the words your copy agent must refuse. Five is a workable number."
     },
     {
       "id": "c1-keepers",
@@ -208,7 +233,9 @@
       "label": "C1 Voice — keeper lines",
       "question": "Three lines already written and approved that show the voice.",
       "help": "Approved, not newly written.",
-      "type": "list"
+      "type": "list",
+      "why": "Three approved lines that show the voice, not new lines written to fill the slot.",
+      "tbcHint": "Nothing approved yet? Mark TBC — inventing a keeper line defeats the slot."
     },
     {
       "id": "c2",
@@ -216,7 +243,9 @@
       "label": "C2 Economics",
       "question": "Price, margin, the most you can pay to acquire a customer, and how many you can serve.",
       "help": "Show the arithmetic. Break-even count, intake cap, hours available.",
-      "type": "long"
+      "type": "long",
+      "why": "Price, margin, the most you can pay to acquire a customer — this sets whether the site is a booking site or a brochure, and what the performance budget is.",
+      "tbcHint": "Late? Mark TBC and note it as a gap. The site can be designed around the gaps."
     },
     {
       "id": "c3",
@@ -224,7 +253,10 @@
       "label": "C3 The one motion",
       "question": "Which single motion for the next four weeks — to whom, saying what, at what cadence, with what number says stop?",
       "help": "One motion, not three. A named list, a first sentence, a date, a number and a kill rule.",
-      "type": "long"
+      "type": "long",
+      "why": "One motion for four weeks. The home page and the first email are built around it.",
+      "example": "Collect 20 booking requests via one flyer and one landing page. Kill rule: fewer than 5 in a week.",
+      "tbcHint": "Not decided yet? Mark TBC — do not assign a motion from the interview chair."
     },
     {
       "id": "v1",
@@ -232,7 +264,9 @@
       "label": "V1 Logo",
       "question": "What is the mark, the wordmark, and their lockups — with three misuses?",
       "help": "Name the files or paths if they exist. If there is only a wordmark, say that.",
-      "type": "long"
+      "type": "long",
+      "why": "The mark, the wordmark, and their lockups feed the assets document. Naming what does not exist is as useful as naming what does.",
+      "example": "Wordmark only, set in the display face. No symbol yet. Misuse: against dark green, stretched."
     },
     {
       "id": "v2-paper",
@@ -241,7 +275,8 @@
       "question": "What is the page colour?",
       "help": "A hex value. This is the base everything is read against.",
       "type": "colour",
-      "placeholder": "#faf0e6"
+      "placeholder": "#faf0e6",
+      "why": "The page base colour. Everything is read against it, so it starts the contrast table."
     },
     {
       "id": "v2-ink",
@@ -249,7 +284,8 @@
       "label": "V2 Colour — ink",
       "question": "What is the primary text colour?",
       "type": "colour",
-      "placeholder": "#2d2938"
+      "placeholder": "#2d2938",
+      "why": "Primary text colour. This is the second pair entered into contrast."
     },
     {
       "id": "v2-accent",
@@ -258,7 +294,9 @@
       "question": "What is the one accent, and what is it allowed to do?",
       "help": "Hex plus a limit: links only, one CTA per screen, etc.",
       "type": "text",
-      "placeholder": "#a4452e — CTA fills only, never body text"
+      "placeholder": "#a4452e — CTA fills only, never body text",
+      "why": "One accent, and where it is permitted. \"CTA fills only\" is a statement about spending, not decoration.",
+      "example": "#a4452e — CTA fills and headings; never body text."
     },
     {
       "id": "v2-surface",
@@ -266,7 +304,9 @@
       "label": "V2 Colour — surface",
       "question": "What is the card or raised surface colour?",
       "type": "colour",
-      "placeholder": "#f5ebe0"
+      "placeholder": "#f5ebe0",
+      "why": "Card and raised-surface colour. This is where two more contrast pairs come from (ink, accent on surface).",
+      "tbcHint": "No colour yet? Mark TBC. The contrast table skips it until you have one."
     },
     {
       "id": "v3-display",
@@ -275,7 +315,8 @@
       "question": "Which face carries display, at what role, and is it licensed?",
       "help": "Name the family and the licence. If it cannot be identified, describe the voice — never invent a name.",
       "type": "text",
-      "placeholder": "Arco — self-hosted, display only, 48–96px"
+      "placeholder": "Arco — self-hosted, display only, 48–96px",
+      "why": "The face that carries display at scale. Named from a file, a licence, or a pairing chosen below. If you cannot identify it, describe the voice."
     },
     {
       "id": "v3-body",
@@ -283,14 +324,16 @@
       "label": "V3 Type — body",
       "question": "Which face carries reading text, and at what size and measure?",
       "type": "text",
-      "placeholder": "Lora — 18px/1.6, 62–68ch"
+      "placeholder": "Lora — 18px/1.6, 62–68ch",
+      "why": "The reading face. It sets the measure and the tone of paragraphs across the site."
     },
     {
       "id": "v3-ui",
       "section": "identity",
       "label": "V3 Type — UI and labels",
       "question": "Which face carries nav, labels and buttons?",
-      "type": "text"
+      "type": "text",
+      "why": "The lábel face for nav, buttons, tags."
     },
     {
       "id": "v4",
@@ -298,28 +341,36 @@
       "label": "V4 Imagery",
       "question": "What is photographed or illustrated, in what treatment, and what is never shown?",
       "help": "Name the source. Never claim photography you do not have.",
-      "type": "long"
+      "type": "long",
+      "why": "What is photographed or illustrated, in what treatment, and what is never shown. Nothing is invented later; this is the assets document.",
+      "example": "Action riding photos, in weather and at odd angles. Never: posed catalog people not on a bike."
     },
     {
       "id": "v5",
       "section": "identity",
       "label": "V5 Layout signatures",
       "question": "What recurs on every page — grid, section rhythm, the one device?",
-      "type": "long"
+      "type": "long",
+      "why": "What recurs on every page of the site. Device and behaviour, not a subject. \"Bicycle\" is a subject; \"one CTA per viewport, photo leads every section\" is a signature.",
+      "example": "One CTA per viewport. A photo leads every section. Wide margins, narrow text column."
     },
     {
       "id": "v6",
       "section": "identity",
       "label": "V6 Motion",
       "question": "What moves, what never moves, and what happens with reduced motion?",
-      "type": "long"
+      "type": "long",
+      "why": "What moves, what never moves, and what happens with reduced motion on.",
+      "example": "Page transitions only, 200–520ms; nothing loops. Reduced motion removes all of it."
     },
     {
       "id": "v7",
       "section": "identity",
       "label": "V7 Texture and detail",
       "question": "Grain, rules, radii, icon style — what are the small recurring decisions?",
-      "type": "long"
+      "type": "long",
+      "why": "Small recurring decisions: grain, radii, rules, icon style. They make the site recognisable at 5% scale.",
+      "example": "Grain at 3.5%, 16px radius, hairline rules, no drop shadows on text."
     },
     {
       "id": "v8",
@@ -328,7 +379,9 @@
       "question": "What would make this look like someone else?",
       "help": "The clichés of the category, the competitor's signature, the trend you refuse. One per line.",
       "type": "list",
-      "required": true
+      "required": true,
+      "why": "What would make this look like someone else. Checked before the build; the more concrete, the easier to say no at build time.",
+      "example": "Neon gradients. A blue-purple hero. Three equal cards. Anything the top-3 competitors already are."
     },
     {
       "id": "d1-1",
@@ -336,21 +389,25 @@
       "label": "D1 Decision one",
       "question": "First decision that makes the next direction specific.",
       "type": "text",
-      "placeholder": "Lora at 64px for the statement, not the wordmark"
+      "placeholder": "Lora at 64px for the statement, not the wordmark",
+      "why": "Decision one of the direction. It names what the next design does, so the interview is not writing the design for you.",
+      "example": "Lora at 64px for the statement, Arco only for the wordmark."
     },
     {
       "id": "d1-2",
       "section": "direction",
       "label": "D1 Decision two",
       "question": "Second decision.",
-      "type": "text"
+      "type": "text",
+      "why": "Decision two."
     },
     {
       "id": "d1-3",
       "section": "direction",
       "label": "D1 Decision three",
       "question": "Third decision.",
-      "type": "text"
+      "type": "text",
+      "why": "Decision three."
     },
     {
       "id": "d1-refusal",
@@ -358,7 +415,8 @@
       "label": "D1 Refusal",
       "question": "What does this direction refuse to do?",
       "help": "A decision with no refusal drifts back to the category default.",
-      "type": "text"
+      "type": "text",
+      "why": "What the direction refuses. A decision with no refusal drifts back to the category default."
     },
     {
       "id": "dials",
@@ -392,7 +450,8 @@
           "id": "motion",
           "label": "Motion"
         }
-      ]
+      ],
+      "why": "Current = the site you have today (leave unchecked pre-launch); target = where the brand should go. The gap is the brief for the visual work."
     }
   ],
   "contrastPairs": [

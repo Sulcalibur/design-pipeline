@@ -29,8 +29,32 @@ const answersPath = path.join(brandDir, 'data/answers.json')
 const projectConfig = path.join(brandDir, 'brand.config.json')
 const toolConfig = path.join(here, 'brand.config.json')
 const configPath = existsSync(projectConfig) ? projectConfig : toolConfig
+const defaultConfig = () => JSON.parse(readFileSync(toolConfig, 'utf8'))
 
-const loadConfig = () => JSON.parse(readFileSync(configPath, 'utf8'))
+/**
+ * Project config wins on shape; the tool default supplies the explanations
+ * (why, example, tbcHint), so an old copied project config is not guaranteed
+ * to hold stale wording forever.
+ */
+function loadConfig() {
+  const config = JSON.parse(readFileSync(configPath, 'utf8'))
+  const defaults = JSON.parse(readFileSync(toolConfig, 'utf8'))
+  const byId = new Map(defaults.questions.map((q) => [q.id, q]))
+  for (const q of config.questions ?? []) {
+    const d = byId.get(q.id)
+    if (!d) continue
+    for (const [key, doc] of Object.entries(d)) {
+      if (!['why', 'example', 'tbcHint', 'help'].includes(key)) continue
+      if (q[key] == null) q[key] = doc
+    }
+    if (q.help == null) q.help = d.help
+  }
+  for (const section of config.sections ?? []) {
+    const d = (defaults.sections ?? []).find((x) => x.id === section.id)
+    if (d && section.note == null) section.note = d.note
+  }
+  return config
+}
 const loadAnswers = () => (existsSync(answersPath) ? JSON.parse(readFileSync(answersPath, 'utf8')) : { answers: {} })
 
 const effectiveStatus = (answer) => answer?.status || (hasValue(answer?.value) ? 'assumption' : 'tbc')
@@ -299,7 +323,7 @@ function serve() {
         return send(200, readFileSync(path.join(appDir, 'index.html')), MIME['.html'])
       }
       if (req.method === 'GET' && url.pathname === '/brand.config.json') {
-        return send(200, readFileSync(configPath), MIME['.json'])
+        return send(200, JSON.stringify(loadConfig()), MIME['.json'])
       }
       if (req.method === 'GET' && url.pathname === '/api/answers') {
         return send(200, JSON.stringify(loadAnswers()), MIME['.json'])
