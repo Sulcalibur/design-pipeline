@@ -265,6 +265,7 @@ function help() {
   node probe.mjs links             resolve a gallery capture to the site it depicts
   node probe.mjs preview           write a static pair page for review
   node probe.mjs brand             brand interview: scaffold | serve | status | emit
+  node probe.mjs fonts             index the type specimens in the Eagle library
   node probe.mjs serve [--port]    run the probe at http://127.0.0.1:4210
   node probe.mjs emit [--dry]      write 05-probe.md + design-spec.json
   node probe.mjs record [--apply]  write verdicts back into Eagle
@@ -313,6 +314,9 @@ switch (cmd) {
     break
   case 'brand':
     runScript('brand.mjs', rest)
+    break
+  case 'fonts':
+    runScript('fonts.mjs', rest)
     break
   case 'serve':
     serve(rest)

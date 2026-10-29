@@ -293,6 +293,16 @@ function serve() {
         const result = spawnSync(process.execPath, [path.join(here, 'brand.mjs'), 'emit', '--project', project, '--dir', path.relative(project, brandDir)], { encoding: 'utf8' })
         return send(result.status === 0 ? 200 : 500, JSON.stringify({ ok: result.status === 0, out: result.stdout, err: result.stderr }), MIME['.json'])
       }
+      if (req.method === 'GET' && url.pathname === '/api/fonts') {
+        const file = path.join(brandDir, 'data/fonts.json')
+        if (!existsSync(file)) return send(200, JSON.stringify({ specimens: [] }), MIME['.json'])
+        return send(200, readFileSync(file), MIME['.json'])
+      }
+      if (req.method === 'GET' && url.pathname.startsWith('/fonts/')) {
+        const file = path.resolve(brandDir, url.pathname.replace(/^\/+/, ''))
+        if (!file.startsWith(path.join(brandDir, 'fonts') + path.sep) || !existsSync(file)) return send(404, 'not found')
+        return send(200, readFileSync(file), MIME[path.extname(file)] ?? 'application/octet-stream')
+      }
       if (req.method === 'GET' && url.pathname === '/brand.md') {
         const file = path.join(brandDir, 'brand.md')
         if (!existsSync(file)) return send(404, 'not generated yet')

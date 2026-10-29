@@ -130,6 +130,94 @@
     )
   }
 
+  let fontsLoaded = false
+  function loadGoogleFonts() {
+    if (fontsLoaded) return
+    fontsLoaded = true
+    const families = []
+    for (const pair of config.fontPairings ?? []) {
+      for (const role of ['display', 'body', 'ui']) {
+        const f = pair[role]
+        if (f) families.push(`family=${encodeURIComponent(f.family).replace(/%20/g, '+')}:wght@${f.weights ?? '400'}`)
+      }
+    }
+    if (!families.length) return
+    const link = document.createElement('link')
+    link.rel = 'stylesheet'
+    link.href = `https://fonts.googleapis.com/css2?${[...new Set(families)].join('&')}&display=swap`
+    document.head.append(link)
+  }
+
+  function fontPairings() {
+    const pairs = config.fontPairings ?? []
+    if (!pairs.length) return null
+    loadGoogleFonts()
+    const current = String(answers['v3-display']?.value ?? '')
+    const wrap = el('div', { class: 'pairings' },
+      el('p', { class: 'qhead' }, 'Choose a pairing', el('span', {}, ' — or keep your own faces below')),
+      el('p', { class: 'help' }, 'Suggestions are OFL families rendered live. Picking one fills display, body and UI; you can still edit them.'),
+    )
+    const grid = el('div', { class: 'pairgrid' })
+    for (const pair of pairs) {
+      const chosen = current.startsWith(pair.display.family)
+      const card = el('button', {
+        type: 'button',
+        class: `paircard${chosen ? ' chosen' : ''}`,
+        'aria-pressed': chosen ? 'true' : 'false',
+        onclick: () => {
+          const note = `chosen in the brand interview: ${pair.name}`
+          answers['v3-display'] = { value: `${pair.display.family} — display, 48–96px, ${pair.licence}`, status: 'assumption', source: note }
+          answers['v3-body'] = { value: `${pair.body.family} — 18px/1.6, 62–68ch, ${pair.licence}`, status: 'assumption', source: note }
+          answers['v3-ui'] = { value: `${pair.ui.family} — nav, labels, buttons, ${pair.licence}`, status: 'assumption', source: note }
+          scheduleSave()
+          render()
+        },
+      },
+        el('span', { class: 'pairname' }, pair.name, chosen ? ' · chosen' : ''),
+        el('span', { class: 'spec-display', style: `font-family:'${pair.display.family}', Georgia, serif` }, 'Stories, pixels & warm places.'),
+        el('span', { class: 'spec-body', style: `font-family:'${pair.body.family}', Georgia, serif` }, 'A quiet place to read something made by hand. The body carries the page while the display earns the first glance.'),
+        el('span', { class: 'spec-ui', style: `font-family:'${pair.ui.family}', system-ui, sans-serif` }, 'Writing · Photos · Now · Uses'),
+        el('span', { class: 'pairwhy' }, pair.rationale),
+      )
+      grid.append(card)
+    }
+    wrap.append(grid)
+    wrap.append(libraryFonts())
+    return wrap
+  }
+
+  function libraryFonts() {
+    const box = el('div', { class: 'lib', id: 'lib-fonts' }, el('p', { class: 'qhead' }, 'From your library', el('span', {}, ' — Eagle specimens')))
+    fetch('/api/fonts')
+      .then((r) => r.json())
+      .then((data) => {
+        const list = data.specimens ?? []
+        if (!list.length) {
+          box.append(el('p', { class: 'help' }, 'None indexed yet. With the library on a local path, run: probe fonts --project .'))
+          return
+        }
+        const grid = el('div', { class: 'libgrid' })
+        for (const s of list.slice(0, 18)) {
+          grid.append(
+            el('button', {
+              type: 'button', class: 'libcard', title: 'Use this name in the display field',
+              onclick: () => {
+                answers['v3-display'] = { value: `${s.name} — from an Eagle specimen`, status: 'assumption', source: `Eagle item ${s.id}` }
+                scheduleSave()
+                render()
+              },
+            },
+              el('img', { src: `/${s.image}`, alt: s.name, loading: 'lazy' }),
+              el('span', {}, s.name),
+            ),
+          )
+        }
+        box.append(grid)
+      })
+      .catch(() => box.append(el('p', { class: 'help' }, 'Could not read the specimen index.')))
+    return box
+  }
+
   function renderQuestion() {
     const q = config.questions[index]
     const section = config.sections.find((s) => s.id === q.section)
@@ -144,6 +232,7 @@
     )
 
     const field = el('div', { class: 'field' })
+    if (q.id === 'v3-display') field.append(fontPairings())
     field.append(inputFor(q, a))
     field.append(statusChips(q, a))
     field.append(

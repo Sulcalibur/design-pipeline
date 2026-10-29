@@ -116,8 +116,10 @@ node probe/probe.mjs brand serve    --project .
 
 A local app asking 39 brand questions one at a time — positioning (the twelve from `brand-breakdown`),
 visual identity (logo, colour roles, type roles, imagery, motion, forbidden territory) and direction (three
-decisions, one refusal, six dials). Every answer carries a status and a source. It emits
-`docs/brand/brand.md` with a computed contrast table and a gap table, plus `brand.json` for agents.
+decisions, one refusal, six dials). The type question offers six curated pairings rendered live in Google
+Fonts; `probe fonts --project .` indexes the specimens in your Eagle library so they appear beside them.
+Every answer carries a status and a source. It emits `docs/brand/brand.md` with a computed contrast table
+and a gap table, plus `brand.json` for agents.
 
 ## Preview a run
 

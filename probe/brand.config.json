@@ -43,7 +43,7 @@
       "help": "The name a customer would recognise, and one line beside it.",
       "type": "text",
       "required": true,
-      "placeholder": "Sulcalibur \u2014 a personal digital garden"
+      "placeholder": "Sulcalibur — a personal digital garden"
     },
     {
       "id": "oneLine",
@@ -83,7 +83,7 @@
       "label": "Owner and date",
       "question": "Who owns this record, and when was it last verified?",
       "type": "text",
-      "placeholder": "Sulei \u2014 2026-10-29"
+      "placeholder": "Sulei — 2026-10-29"
     },
     {
       "id": "sources",
@@ -108,7 +108,7 @@
       "id": "a2",
       "section": "define",
       "label": "A2 Who",
-      "question": "Who buys, who uses, and who pays \u2014 and are they the same person?",
+      "question": "Who buys, who uses, and who pays — and are they the same person?",
       "help": "A named segment with a size you can count, a place they gather, and what they already spend money on. 'Small businesses' fails.",
       "type": "long",
       "required": true
@@ -142,7 +142,7 @@
     {
       "id": "b2-now",
       "section": "position",
-      "label": "B2 Proof \u2014 exists now",
+      "label": "B2 Proof — exists now",
       "question": "What can you show today?",
       "help": "One per line. 'No customers yet' is a valid entry and must appear if true.",
       "type": "list"
@@ -150,14 +150,14 @@
     {
       "id": "b2-earn",
       "section": "position",
-      "label": "B2 Proof \u2014 earnable in 90 days",
+      "label": "B2 Proof — earnable in 90 days",
       "question": "What could you honestly earn within ninety days?",
       "type": "list"
     },
     {
       "id": "b2-forbid",
       "section": "position",
-      "label": "B2 Proof \u2014 never claim",
+      "label": "B2 Proof — never claim",
       "question": "What must never be claimed, by you or an agent writing for you?",
       "type": "list"
     },
@@ -189,7 +189,7 @@
     {
       "id": "c1-rules",
       "section": "operate",
-      "label": "C1 Voice \u2014 five rules",
+      "label": "C1 Voice — five rules",
       "question": "Five rules that make a sentence sound like this brand.",
       "help": "Each must be checkable by reading a sentence aloud. One per line.",
       "type": "list",
@@ -198,14 +198,14 @@
     {
       "id": "c1-banned",
       "section": "operate",
-      "label": "C1 Voice \u2014 banned words",
+      "label": "C1 Voice — banned words",
       "question": "Five words or phrases this brand never uses.",
       "type": "list"
     },
     {
       "id": "c1-keepers",
       "section": "operate",
-      "label": "C1 Voice \u2014 keeper lines",
+      "label": "C1 Voice — keeper lines",
       "question": "Three lines already written and approved that show the voice.",
       "help": "Approved, not newly written.",
       "type": "list"
@@ -222,7 +222,7 @@
       "id": "c3",
       "section": "operate",
       "label": "C3 The one motion",
-      "question": "Which single motion for the next four weeks \u2014 to whom, saying what, at what cadence, with what number says stop?",
+      "question": "Which single motion for the next four weeks — to whom, saying what, at what cadence, with what number says stop?",
       "help": "One motion, not three. A named list, a first sentence, a date, a number and a kill rule.",
       "type": "long"
     },
@@ -230,14 +230,14 @@
       "id": "v1",
       "section": "identity",
       "label": "V1 Logo",
-      "question": "What is the mark, the wordmark, and their lockups \u2014 with three misuses?",
+      "question": "What is the mark, the wordmark, and their lockups — with three misuses?",
       "help": "Name the files or paths if they exist. If there is only a wordmark, say that.",
       "type": "long"
     },
     {
       "id": "v2-paper",
       "section": "identity",
-      "label": "V2 Colour \u2014 paper",
+      "label": "V2 Colour — paper",
       "question": "What is the page colour?",
       "help": "A hex value. This is the base everything is read against.",
       "type": "colour",
@@ -246,7 +246,7 @@
     {
       "id": "v2-ink",
       "section": "identity",
-      "label": "V2 Colour \u2014 ink",
+      "label": "V2 Colour — ink",
       "question": "What is the primary text colour?",
       "type": "colour",
       "placeholder": "#2d2938"
@@ -254,16 +254,16 @@
     {
       "id": "v2-accent",
       "section": "identity",
-      "label": "V2 Colour \u2014 accent",
+      "label": "V2 Colour — accent",
       "question": "What is the one accent, and what is it allowed to do?",
       "help": "Hex plus a limit: links only, one CTA per screen, etc.",
       "type": "text",
-      "placeholder": "#a4452e \u2014 CTA fills only, never body text"
+      "placeholder": "#a4452e — CTA fills only, never body text"
     },
     {
       "id": "v2-surface",
       "section": "identity",
-      "label": "V2 Colour \u2014 surface",
+      "label": "V2 Colour — surface",
       "question": "What is the card or raised surface colour?",
       "type": "colour",
       "placeholder": "#f5ebe0"
@@ -271,24 +271,24 @@
     {
       "id": "v3-display",
       "section": "identity",
-      "label": "V3 Type \u2014 display",
+      "label": "V3 Type — display",
       "question": "Which face carries display, at what role, and is it licensed?",
-      "help": "Name the family and the licence. If it cannot be identified, describe the voice \u2014 never invent a name.",
+      "help": "Name the family and the licence. If it cannot be identified, describe the voice — never invent a name.",
       "type": "text",
-      "placeholder": "Arco \u2014 self-hosted, display only, 48\u201396px"
+      "placeholder": "Arco — self-hosted, display only, 48–96px"
     },
     {
       "id": "v3-body",
       "section": "identity",
-      "label": "V3 Type \u2014 body",
+      "label": "V3 Type — body",
       "question": "Which face carries reading text, and at what size and measure?",
       "type": "text",
-      "placeholder": "Lora \u2014 18px/1.6, 62\u201368ch"
+      "placeholder": "Lora — 18px/1.6, 62–68ch"
     },
     {
       "id": "v3-ui",
       "section": "identity",
-      "label": "V3 Type \u2014 UI and labels",
+      "label": "V3 Type — UI and labels",
       "question": "Which face carries nav, labels and buttons?",
       "type": "text"
     },
@@ -304,7 +304,7 @@
       "id": "v5",
       "section": "identity",
       "label": "V5 Layout signatures",
-      "question": "What recurs on every page \u2014 grid, section rhythm, the one device?",
+      "question": "What recurs on every page — grid, section rhythm, the one device?",
       "type": "long"
     },
     {
@@ -318,7 +318,7 @@
       "id": "v7",
       "section": "identity",
       "label": "V7 Texture and detail",
-      "question": "Grain, rules, radii, icon style \u2014 what are the small recurring decisions?",
+      "question": "Grain, rules, radii, icon style — what are the small recurring decisions?",
       "type": "long"
     },
     {
@@ -326,7 +326,7 @@
       "section": "identity",
       "label": "V8 Forbidden territory",
       "question": "What would make this look like someone else?",
-      "help": "The clich\u00e9s of the category, the competitor's signature, the trend you refuse. One per line.",
+      "help": "The clichés of the category, the competitor's signature, the trend you refuse. One per line.",
       "type": "list",
       "required": true
     },
@@ -365,7 +365,7 @@
       "section": "direction",
       "label": "D2 Dials",
       "question": "Score each dial now and where it should be.",
-      "help": "1\u20135. The gap is the brief for the visual work.",
+      "help": "1–5. The gap is the brief for the visual work.",
       "type": "dials",
       "dials": [
         {
@@ -409,6 +409,116 @@
       "fg": "v2-ink",
       "bg": "v2-surface",
       "min": 4.5
+    }
+  ],
+  "fontPairings": [
+    {
+      "id": "editorial-warm",
+      "name": "Editorial warmth",
+      "display": {
+        "family": "Fraunces",
+        "weights": "400;600"
+      },
+      "body": {
+        "family": "Lora",
+        "weights": "400;600"
+      },
+      "ui": {
+        "family": "Inter",
+        "weights": "400;600"
+      },
+      "rationale": "A high-contrast serif display over a reading serif. The UI stays quiet so the words carry the page.",
+      "licence": "OFL"
+    },
+    {
+      "id": "modern-minimal",
+      "name": "Modern minimal",
+      "display": {
+        "family": "Instrument Serif",
+        "weights": "400"
+      },
+      "body": {
+        "family": "Instrument Sans",
+        "weights": "400;500"
+      },
+      "ui": {
+        "family": "Instrument Sans",
+        "weights": "400;500"
+      },
+      "rationale": "One serif moment, one neutral sans for everything else. Reads as considered rather than decorated.",
+      "licence": "OFL"
+    },
+    {
+      "id": "swiss-technical",
+      "name": "Swiss technical",
+      "display": {
+        "family": "Space Grotesk",
+        "weights": "500;700"
+      },
+      "body": {
+        "family": "IBM Plex Sans",
+        "weights": "400;600"
+      },
+      "ui": {
+        "family": "IBM Plex Mono",
+        "weights": "400;500"
+      },
+      "rationale": "A grotesk with a mechanical body and mono for labels. Precise, systematic, no warmth claimed.",
+      "licence": "OFL"
+    },
+    {
+      "id": "publication",
+      "name": "Publication",
+      "display": {
+        "family": "Libre Caslon Display",
+        "weights": "400"
+      },
+      "body": {
+        "family": "Public Sans",
+        "weights": "400;600"
+      },
+      "ui": {
+        "family": "Public Sans",
+        "weights": "400;600"
+      },
+      "rationale": "A text-first serif for headlines, a civic sans for body and chrome. Built to survive long reading.",
+      "licence": "OFL"
+    },
+    {
+      "id": "playful-editorial",
+      "name": "Playful editorial",
+      "display": {
+        "family": "Bricolage Grotesque",
+        "weights": "600;800"
+      },
+      "body": {
+        "family": "Newsreader",
+        "weights": "400;500"
+      },
+      "ui": {
+        "family": "DM Sans",
+        "weights": "400;500"
+      },
+      "rationale": "An expressive display face against a calm reading serif. One wink, not a clown.",
+      "licence": "OFL"
+    },
+    {
+      "id": "quiet-luxe",
+      "name": "Quiet luxe",
+      "display": {
+        "family": "Cormorant Garamond",
+        "weights": "400;500"
+      },
+      "body": {
+        "family": "Jost",
+        "weights": "300;400"
+      },
+      "ui": {
+        "family": "Jost",
+        "weights": "400;500"
+      },
+      "rationale": "Thin high-contrast display, geometric body, generous space. Expensive because it is quiet.",
+      "licence": "OFL"
     }
   ]
 }
