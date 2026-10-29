@@ -99,6 +99,12 @@ function eagleImage(id, preferThumb) {
 
 /** Resolve one id to a file path, a remote URL, or null. */
 function resolveImage(id, preferThumb) {
+  // A preview server that runs inside Eagle has file access we lack. If one is
+  // configured we hand the browser straight to it; it serves what we cannot read.
+  const mediaTemplate = process.env.EAGLE_MEDIA_URL || source.mediaServer
+  if (mediaTemplate && !/^(?:success|error)/i.test(mediaTemplate)) {
+    return { url: mediaTemplate.replace('{id}', id) }
+  }
   const option = options.get(id)
   const src = option?.src
   if (src && /^https?:\/\//i.test(src)) return { url: src }

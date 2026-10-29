@@ -19,6 +19,7 @@
  *   node analyze.mjs --config … --ids a,b,c [--refresh]
  */
 import { readFileSync, writeFileSync, existsSync, mkdirSync, statSync } from 'node:fs'
+import os from 'node:os'
 import path from 'node:path'
 import { resolvePaths, loadConfig, loadCandidates, fail, rel } from './paths.mjs'
 import { loadPixels, measure, imageFileFor, cacheKey, cacheDir, METHOD, LIMITS } from './image.mjs'
@@ -67,6 +68,9 @@ for (const id of ids) {
   // live screenshot instead of skipping the reference.
   const liveShot = existing.images?.[id]?.live?.screenshot
   if ((!file || !existsSync(file)) && liveShot && existsSync(liveShot)) file = liveShot
+  if ((!file || !existsSync(file)) && process.env.EAGLE_MEDIA_URL) {
+    file = await fetchThroughMediaServer(id, process.env.EAGLE_MEDIA_URL)
+  }
   if (!file || !existsSync(file)) {
     skipped.push({ id, reason: candidate ? 'no local image file' : 'not in candidates.json' })
     continue
