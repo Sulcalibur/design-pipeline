@@ -1,0 +1,11 @@
+:root {
+  --page: #F6F3EC;
+  --paper: #18211D;
+  --muted: #5A635D;
+  --accent: #1F5C45;
+  --surface: #FFFFFF;
+  --rule: #DCD5C7;
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'Newsreader', Georgia, serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+}

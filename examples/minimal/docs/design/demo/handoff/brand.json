@@ -1,0 +1,20 @@
+{
+  "product": "Northwind",
+  "oneLine": "A small studio that makes public-sector services easier to use.",
+  "slots": {
+    "product": { "value": "Northwind", "status": "verified", "source": "example brief" },
+    "oneLine": { "value": "A small studio that makes public-sector services easier to use.", "status": "verified", "source": "example brief" },
+    "b1": { "value": "A commissioner can tell, in one screen, whether this studio has done the work before.", "status": "verified", "source": "example brief" },
+    "a2": { "value": "Commissioners and service owners in local government.", "status": "verified", "source": "example brief" },
+    "c1-rules": { "value": ["Plain English, first person", "Every claim carries a receipt"], "status": "assumption", "source": "example" },
+    "c1-banned": { "value": ["seamless", "world-class", "revolutionary"], "status": "assumption", "source": "example" },
+    "v8": { "value": ["gradients", "stock photography", "fake metrics"], "status": "verified", "source": "example" },
+    "v2-paper": { "value": "#F6F3EC", "status": "verified", "source": "tokens" },
+    "v2-ink": { "value": "#18211D", "status": "verified", "source": "tokens" },
+    "v2-accent": { "value": "#1F5C45", "status": "verified", "source": "tokens" },
+    "v2-surface": { "value": "#FFFFFF", "status": "verified", "source": "tokens" },
+    "v3-display": { "value": "Fraunces", "status": "verified", "source": "tokens" },
+    "v3-body": { "value": "Newsreader", "status": "verified", "source": "tokens" },
+    "v3-ui": { "value": "IBM Plex Mono", "status": "verified", "source": "tokens" }
+  }
+}
