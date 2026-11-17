@@ -88,7 +88,7 @@
       render()
     })
     .catch((e) => {
-      main.innerHTML = `<p class="hint">Could not load the probe: ${esc(e.message)}. Run it through <code>serve.mjs</code>.</p>`
+      main.innerHTML = `<p class="hint">Could not load the probe: ${esc(e.message)}. Build it first with <code>probe build --config …</code>, then reload.</p>`
     })
 
   /* --------------------------------------------------------------- state -- */

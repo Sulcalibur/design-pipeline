@@ -18,7 +18,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from 
 import { spawnSync } from 'node:child_process'
 import { homedir } from 'node:os'
 import path from 'node:path'
-import { resolvePaths, loadConfig, loadCandidates } from './paths.mjs'
+import { resolvePaths, loadConfig, loadCandidates, probeCommand, rel } from './paths.mjs'
 import { resolveLibrary, mediaSource, mediaUrl } from './library.mjs'
 
 const here = import.meta.dirname
@@ -30,6 +30,17 @@ const noEmit = args.has('no-emit')
 const appDir = path.join(here, 'app')
 
 const config = loadConfig(paths.config)
+
+// The app is a client of build/probe.json. Without it there is no probe to
+// serve, and the browser would show a load error after the server had already
+// claimed to start.
+if (!existsSync(paths.runtime)) {
+  console.error('✗ probe.json not built — there is nothing to serve yet.')
+  console.error(`  build it first: ${probeCommand()} build --config ${rel(paths.config)}`)
+  console.error('  a probe needs curated pairs; before that, serve is not the next step.')
+  process.exit(1)
+}
+
 const source = config.sources ?? {}
 const sourceKind = source.kind ?? 'eagle'
 const lib = await resolveLibrary(source.path ? path.resolve(paths.root, source.path) : args.get('library-path'))
