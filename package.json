@@ -10,7 +10,8 @@
   "scripts": {
     "probe": "node probe/probe.mjs",
     "probe:help": "node probe/probe.mjs help",
-    "test": "node --test test/*.test.mjs"
+    "test": "node --test test/*.test.mjs",
+    "evals": "node evals/check.mjs"
   },
   "optionalDependencies": {
     "puppeteer-core": "^24.43.1"

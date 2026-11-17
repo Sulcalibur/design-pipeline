@@ -1,0 +1,33 @@
+{
+  "$about": "Mechanical expectations for a generated artifact. A case is not a critique; it is the part of the context that can be checked without a model.",
+  "cases": [
+    {
+      "id": "work-index",
+      "title": "Work index — first screen",
+      "h1": 1,
+      "expect": ["\\bWork\\b", "(Live|Paused|Experiment|In development)"],
+      "forbid": ["lorem ipsum", "coming soon"]
+    },
+    {
+      "id": "case-study",
+      "title": "Case study — opening",
+      "h1": 1,
+      "expect": ["(Challenge|Process|Decision|Outcome|Receipt)"],
+      "forbid": ["lorem ipsum", "coming soon"]
+    },
+    {
+      "id": "404",
+      "title": "Designed 404",
+      "h1": 1,
+      "expect": ["(wrong turn|not found|back)", "href=\"/\""],
+      "forbid": ["lorem ipsum"]
+    },
+    {
+      "id": "holding",
+      "title": "Holding page",
+      "h1": 1,
+      "expect": ["(launch|opening|soon|2026)"],
+      "forbid": ["lorem ipsum"]
+    }
+  ]
+}
