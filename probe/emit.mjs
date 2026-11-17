@@ -14,7 +14,7 @@
  */
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs'
 import path from 'node:path'
-import { resolvePaths, loadConfig, fail, rel } from './paths.mjs'
+import { resolvePaths, loadConfig, fail, rel, probeCommand } from './paths.mjs'
 import { loadBrandRecord, brandBlock } from './brand-link.mjs'
 import { writeDesignIndex } from './design-index.mjs'
 
@@ -28,7 +28,7 @@ const touchDirection = !args.has('no-touch')
 
 if (!existsSync(answersPath)) {
   console.error(`✗ no answers at ${answersPath}`)
-  console.error('  Run the probe first: node probe.mjs serve')
+  console.error(`  Run the probe first: ${probeCommand()} serve`)
   process.exit(1)
 }
 

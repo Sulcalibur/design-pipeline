@@ -21,7 +21,7 @@
  */
 import { readFileSync, writeFileSync, mkdirSync, existsSync, statSync } from 'node:fs'
 import path from 'node:path'
-import { parseArgs, fail, rel } from './paths.mjs'
+import { parseArgs, fail, rel, probeCommand } from './paths.mjs'
 import { resolveContext, readJson, nowDate, chromePath } from './checks.mjs'
 import { EAGLE, eagleStatus } from './library.mjs'
 
@@ -262,7 +262,7 @@ if (!args.get('device')) {
 for (const file of frames) console.log(`  png  ${rel(file)} (${Math.round(statSync(file).size / 1024)} KB)`)
 console.log(`  manifest ${rel(manifestFile)}`)
 if (eagle) console.log(eagle.error ? `  eagle failed: ${eagle.error}` : eagle.added ? `  eagle +${eagle.added} → folder ${eagle.folder}` : `  eagle skipped: ${eagle.note}`)
-console.log(`\nnext: bin/probe ingest --config <probe.config.json> --source folder  (manifest at ${rel(path.dirname(manifestFile))})`)
+console.log(`\nnext: ${probeCommand()} ingest --config <probe.config.json> --source folder  (manifest at ${rel(path.dirname(manifestFile))})`)
 
 if (args.has('json')) {
   console.log(JSON.stringify({ url: parsed.href, viewport: vp.label, files: frames.map((f) => rel(f)), manifest: rel(manifestFile), eagle }, null, 2))

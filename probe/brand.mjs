@@ -18,7 +18,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync, copyFileSync } from
 import { createServer } from 'node:http'
 import { spawnSync, spawn } from 'node:child_process'
 import path from 'node:path'
-import { parseArgs, fail, rel } from './paths.mjs'
+import { parseArgs, fail, rel, probeCommand } from './paths.mjs'
 import { writeDesignIndex } from './design-index.mjs'
 
 const here = import.meta.dirname
@@ -540,9 +540,9 @@ function scaffold() {
   }
   console.log(`
 next:
-  node probe.mjs brand serve --project ${rel(project)}
+  ${probeCommand()} brand serve --project ${rel(project)}
   # answer, then "Generate brand.md" — or:
-  node probe.mjs brand emit --project ${rel(project)}`)
+  ${probeCommand()} brand emit --project ${rel(project)}`)
 }
 
 /* ------------------------------------------------------------------ main -- */

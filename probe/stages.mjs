@@ -310,7 +310,7 @@ export function commandsFor(stage, ctx) {
     case 'setup':
       return [`${probe} init --project ${project} --slug ${slug}`]
     case 'brand':
-      return [`${probe} brand scaffold --project ${project}`, `${probe} ask --stage brand --next`]
+      return [`${probe} brand scaffold --project ${project}`, `${probe} brand serve --project ${project}`]
     case 'brand-review':
       return [`${probe} brand review --project ${project}`]
     case 'intake':

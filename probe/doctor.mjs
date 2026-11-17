@@ -15,7 +15,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { spawnSync } from 'node:child_process'
 import path from 'node:path'
-import { parseArgs } from './paths.mjs'
+import { parseArgs, probeCommand } from './paths.mjs'
 import { chromePath } from './checks.mjs'
 import { mediaSource, eagleStatus } from './library.mjs'
 import { enabledSourceNames, findBinary, inspirationSettings } from './inspiration.mjs'
@@ -89,7 +89,7 @@ add(
   inspiration
     ? inspirationNames.length
       ? `${inspirationNames.join(', ')} enabled · eagle ${inspiration.eagle}`
-      : 'no sources enabled — bin/probe inspire --list'
+      : `no sources enabled — ${probeCommand()} inspire --list`
     : `no config at ${path.relative(process.cwd(), configPath) || configPath} — pass --config`,
   'inspiration',
 )

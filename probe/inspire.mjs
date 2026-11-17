@@ -21,7 +21,7 @@
 import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { spawnSync } from 'node:child_process'
-import { parseArgs, resolvePaths, loadConfig, fail, rel } from './paths.mjs'
+import { parseArgs, resolvePaths, loadConfig, fail, rel, probeCommand } from './paths.mjs'
 import { connectMcp } from './mcp.mjs'
 import { eagleStatus } from './library.mjs'
 import {
@@ -101,7 +101,7 @@ function selectedSources() {
     fail(
       'no inspiration sources enabled.\n' +
         '  Turn one on in probe.config.json → inspiration.sources, or pick one for this run:\n' +
-        `  bin/probe inspire --source ${SOURCE_NAMES[0]}`,
+        `  ${probeCommand()} inspire --source ${SOURCE_NAMES[0]}`,
     )
   }
   return enabled.map((name) => ({ name, block: settings.sources[name], forced: false }))
@@ -458,7 +458,7 @@ if (json) {
   console.log(
     `\n${captured.length} captured · ${failed.length} failed · ${rel(manifestFile)}` +
       `\nseed ${seed} — rerun with --seed ${seed} for the same picks.` +
-      (captured.length ? `\nnext: bin/probe refs --config ${rel(paths.config)}` : ''),
+      (captured.length ? `\nnext: ${probeCommand()} refs --config ${rel(paths.config)}` : ''),
   )
   if (failed.length) {
     console.error('\nfailed:')
