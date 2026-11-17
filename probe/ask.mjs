@@ -15,7 +15,7 @@
  * State lives in <docDir>/interview.json. The answers are a working record, not
  * the brand record: `probe brand emit` still writes brand.json from answers.json.
  */
-import { existsSync, readFileSync, writeFileSync, rmSync } from 'node:fs'
+import { existsSync, readFileSync, writeFileSync, rmSync, readdirSync } from 'node:fs'
 import path from 'node:path'
 import { parseArgs, fail, rel } from './paths.mjs'
 import { resolveContext, loadBrand, slotValue, readJson, writeDoc } from './checks.mjs'
@@ -23,6 +23,27 @@ import { resolveContext, loadBrand, slotValue, readJson, writeDoc } from './chec
 const here = import.meta.dirname
 const args = parseArgs(process.argv.slice(2))
 const stage = args.get('stage', 'brand')
+
+// Brief and direction are design-scoped. With several design folders and no
+// --config/--slug, resolveContext falls back to <project>/docs, which silently
+// puts the interview state in the wrong place. Refuse instead.
+if (stage !== 'brand' && !args.get('config') && !args.get('slug') && !args.get('out')) {
+  const project = path.resolve(process.cwd(), args.get('project', '.'))
+  const designRoot = path.join(project, 'docs', 'design')
+  let dirs = []
+  try {
+    dirs = readdirSync(designRoot, { withFileTypes: true })
+      .filter((entry) => entry.isDirectory() && !entry.name.startsWith('.') && !entry.name.startsWith('_') && !entry.name.startsWith('audit-'))
+      .map((entry) => entry.name)
+      .sort()
+  } catch {
+    dirs = []
+  }
+  if (dirs.length > 1) {
+    fail(`several design folders under ${path.relative(process.cwd(), designRoot) || designRoot}:\n  ${dirs.join('\n  ')}\n  Pass --config <probe.config.json> or --slug <slug>.`)
+  }
+}
+
 const ctx = resolveContext(args)
 const packPath = path.join(here, 'packs', `${stage}.json`)
 if (!existsSync(packPath)) fail(`no question pack for "${stage}" at ${packPath}`)

@@ -72,6 +72,15 @@ test('a company reveals a branch that a person hides', () => {
   assert.doesNotMatch(companyList.stdout, /c2\s+hidden/)
 })
 
+test('brief ask refuses to guess between several design folders', () => {
+  const dir = project()
+  mkdirSync(path.join(dir, 'docs/design/other'), { recursive: true })
+  const out = run(['--project', dir, '--stage', 'brief', '--next'], dir)
+  assert.equal(out.status, 1)
+  assert.match(out.stderr, /several design folders/)
+  assert.match(out.stderr, /--config/)
+})
+
 test('list answers accept commas and semicolons', () => {
   const dir = project()
   const out = run(['--project', dir, '--stage', 'brief', '--answer', 'out=One; Two, Three'], dir)
