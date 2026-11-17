@@ -10,7 +10,7 @@ The engine is an **adaptive reference probe** and a set of **gated stages**: bra
 copy, content, build routing, audit, launch and maintenance. It emits a portable spec — a direction
 someone can build from, with the tensions you resolved recorded as evidence.
 
-No model calls at runtime. Node 24+; `puppeteer-core` is optional for capture and the render tier; Eagle
+No model calls at runtime. Node 22.12+; `puppeteer-core` is optional for capture and the render tier; Eagle
 is optional. Nothing here needs a particular agent.
 
 ## Install
@@ -366,4 +366,4 @@ node ../../probe/context.mjs --project . --target generic --scope "Work index �
   wrote five frames and ran the gates.
 
 `npm audit`: 0 vulnerabilities. The Node-side tree moved to `puppeteer-core@25.18.1`, which requires
-Node ≥ 22.12; the project floor is Node 24.
+Node ≥ 22.12; the project floor is the same.

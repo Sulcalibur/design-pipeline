@@ -1,7 +1,7 @@
 # Environment reality (verified on this machine)
 
 > This file records the machine the engine grew up on. Run `probe doctor` for yours; treat these values
-> as examples, not requirements. The engine only requires Node 24+; rendering additionally needs a
+> as examples, not requirements. The engine only requires Node 22.12+; rendering additionally needs a
 > Chrome/Chromium binary, and Eagle is optional.
 
 Not assumptions. Re-verify before relying on any of it after an upgrade.
@@ -61,9 +61,8 @@ variables:
 It prefers `CHROME_PATH` if set, then Playwright's Chrome for Testing 156, then Puppeteer's 131. It never
 picks `/Applications` — that is where the daily browser lives.
 
-`npm audit`: 0 vulnerabilities. `puppeteer-core@25.18.1` requires Node ≥ 22.12; the project floor is
-Node 24. The engine still runs without the optional dependency; only capture and the render tier need
-it.
+`npm audit`: 0 vulnerabilities. `puppeteer-core@25.18.1` requires Node ≥ 22.12; the project floor is the
+same. The engine still runs without the optional dependency; only capture and the render tier need it.
 
 Puppeteer 25.18 is current. It launches the Playwright 156 build and writes the same five render frames;
 if a future render misbehaves, fall back to the 131 build and record which pair produced the
