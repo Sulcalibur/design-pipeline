@@ -9,6 +9,7 @@
  */
 import os from 'node:os'
 import path from 'node:path'
+import { existsSync } from 'node:fs'
 
 const API = 'http://localhost:41595/api/v2'
 
@@ -33,8 +34,12 @@ export async function resolveLibrary(explicit) {
   }
   const active = await activeLibrary()
   if (active) return active
-  const p = path.join(os.homedir(), 'Library/Mobile Documents/com~apple~CloudDocs/Eagle/Inspirations.library')
-  return { path: p, name: 'Inspirations', source: 'default' }
+  // Legacy default from the machine this engine grew up on. Only use it when it
+  // actually exists; otherwise report that no library was found rather than
+  // handing callers an invented path.
+  const legacy = path.join(os.homedir(), 'Library/Mobile Documents/com~apple~CloudDocs/Eagle/Inspirations.library')
+  if (existsSync(legacy)) return { path: legacy, name: 'Inspirations', source: 'legacy-default' }
+  return { path: null, name: 'not found', source: 'none' }
 }
 
 /** Flatten the folder tree from library/info into id -> name. */
@@ -57,4 +62,20 @@ export async function apiAvailable(timeoutMs = 2000) {
   } catch {
     return false
   }
+}
+
+/**
+ * The media server can be configured as a full template
+ * (`http://host:41532/api/items/{id}/file`) or as a bare base
+ * (`http://host:41532`). `EAGLE_MEDIA_BASE` is the shorthand for the base form.
+ */
+export function mediaSource(sources) {
+  return process.env.EAGLE_MEDIA_URL || process.env.EAGLE_MEDIA_BASE || sources?.mediaServer || null
+}
+
+export function mediaUrl(source, id) {
+  if (!source) return null
+  const s = String(source).trim()
+  if (s.includes('{id}')) return s.replaceAll('{id}', encodeURIComponent(id))
+  return `${s.replace(/\/+$/, '')}/api/items/${encodeURIComponent(id)}/file`
 }

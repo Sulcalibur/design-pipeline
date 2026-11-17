@@ -18,12 +18,20 @@ scope/
 
 | # | Stage | Ends in | Gate |
 |---|-------|---------|------|
+| 0b | Brand | `docs/brand/brand.md` | Every slot has a status and a source |
+| 0c | Brand review | `docs/brand/review.md` | 0 blocking; contrast passes; banned words exist |
 | 1 | Intake | `00-brief.md` | A stranger could build from it without asking a question |
 | 2 | Collect | `01-references.md` | Every reference names a transferable device and a thing not to copy |
-| 3 | Direct | `02-direction.md` | One direction chosen in writing, with three named decisions |
+| 3 | Direct | `02-direction.md` + `05-decision.md` | One direction chosen in writing, with three named decisions |
 | 4 | Structure | `03-structure.md` | Every section has a job; every interactive element has states |
 | 5 | Assets | `04-assets.md` | Every image slot has a ratio, a prompt, and alt text before layout |
+| 5b | Copy | `copy.md` | 0 blocking: no banned words, no placeholders, voice honoured |
+| 5c | Content | `content.md` | 0 blocking: one h1, alt text, titles, no noindex |
+| 5d | Handoff | `handoff/` | Context and prompt compiled; missing sources listed, none invented |
 | 6 | Build + verify | code + `review.md` | Screenshots at five widths, axe, keyboard, reduced motion, cold read |
+| 7b | Audit an existing surface | `10-audit-<date>.md` | Scored 0–20; every finding fixed, waived or dismissed |
+| 8 | Launch | `launch.md` | 0 blocking: TLS, redirects, headers, robots, sitemap, 404, rollback |
+| 9 | Maintain | `check-<date>.md` | No new blocking finding against the last run |
 
 ## Rules that hold across stages
 

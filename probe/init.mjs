@@ -69,7 +69,8 @@ add('tokens', existsSync(path.join(owner, 'tokens.json')) ? 'tokens.json' : 'non
 add('framework', existsSync(path.join(owner, 'nuxt.config.ts')) ? 'Nuxt' : existsSync(path.join(owner, 'next.config.js')) ? 'Next' : existsSync(path.join(owner, 'astro.config.mjs')) ? 'Astro' : existsSync(path.join(owner, 'vite.config.ts')) ? 'Vite' : 'unknown')
 add('other design slugs', siblings.length ? siblings.join(', ') : 'none')
 add('hallmark state', existsSync(path.join(owner, '.hallmark')) ? '.hallmark/ present' : 'not used')
-add('reference source', args.get('source', 'eagle'))
+const sourceKind = args.get('source', 'folder')
+add('reference source', sourceKind)
 
 const existingDocs = ['00-brief.md', '01-references.md', '02-direction.md', '03-structure.md', '04-assets.md', 'review.md'].filter((f) =>
   existsSync(path.join(target, f)),
@@ -82,7 +83,7 @@ mkdirSync(path.join(target, 'build'), { recursive: true })
 
 const created = []
 const templateDir = path.join(toolRoot, 'templates')
-for (const file of ['00-brief.md', '01-references.md', '02-direction.md', '03-structure.md', '04-assets.md', 'review.md', 'reference-set.schema.json']) {
+for (const file of ['00-brief.md', '01-references.md', '02-direction.md', '03-structure.md', '04-assets.md', 'review.md', 'reference-set.schema.json', 'content-model.example.json']) {
   const from = path.join(templateDir, file)
   const to = path.join(target, file)
   if (!existsSync(to) && existsSync(from)) {
@@ -107,9 +108,9 @@ if (!existsSync(probeConfigPath) || args.has('force')) {
     id,
     created: new Date().toISOString().slice(0, 10),
     sources:
-      args.get('source') === 'folder'
+      sourceKind === 'folder'
         ? { kind: 'folder', path: 'references' }
-        : { kind: 'eagle', library: args.get('library', 'Inspirations') },
+        : { kind: 'eagle', ...(args.get('library') ? { library: args.get('library') } : {}) },
     ui: { title: id, mark: '', storageKey: `probe:${id}`, note: '' },
   })
   writeFileSync(probeConfigPath, JSON.stringify(starter, null, 2) + '\n')

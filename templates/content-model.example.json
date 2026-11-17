@@ -1,0 +1,45 @@
+{
+  "$about": "A minimal content model. Copy to content-model.json and edit. The content stage validates it and the pages that use it.",
+  "collections": [
+    {
+      "name": "pages",
+      "kind": "collection",
+      "slugField": "slug",
+      "seo": true,
+      "fields": [
+        { "name": "title", "type": "string", "required": true },
+        { "name": "description", "type": "text", "required": true },
+        { "name": "slug", "type": "string", "required": true },
+        { "name": "body", "type": "richtext", "required": false },
+        { "name": "hero", "type": "image", "required": false },
+        { "name": "published", "type": "date", "required": false }
+      ]
+    },
+    {
+      "name": "site",
+      "kind": "singleton",
+      "seo": false,
+      "fields": [
+        { "name": "name", "type": "string", "required": true },
+        { "name": "tagline", "type": "string", "required": false },
+        { "name": "logo", "type": "image", "required": false }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "name": "richText",
+      "fields": [
+        { "name": "body", "type": "richtext", "required": true }
+      ]
+    },
+    {
+      "name": "figure",
+      "fields": [
+        { "name": "image", "type": "image", "required": true },
+        { "name": "caption", "type": "string", "required": true },
+        { "name": "alt", "type": "string", "required": true }
+      ]
+    }
+  ]
+}

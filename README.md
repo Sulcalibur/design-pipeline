@@ -2,6 +2,9 @@
 
 One shared engine, one skill, one agent. Projects hold only their own content.
 
+**New here:** [`docs/quickstart.md`](docs/quickstart.md) — install, `probe doctor`, and the first run
+end to end. The full stage map is in `~/.agents/skills/design-pipeline/references/stages.md`.
+
 The engine is an **adaptive reference probe**: an intake interview, then image pairs chosen by the
 answers, then a consistency check and conditional follow-ups. It emits a portable spec — a direction
 someone can build from, with the tensions you resolved recorded as evidence.
@@ -29,7 +32,16 @@ A project gets exactly one folder:
   03-structure.md
   04-assets.md
   05-decision.md (legacy: 05-decision.md)            generated readback
+  05-decision.md (legacy: 05-decision.md)            generated readback
   build-spec.json       generated machine spec
+  copy.md               voice gate (copy)
+  content.md            completeness gate (content)
+  launch.md             pre-flight + rollback target (launch)
+  10-audit-<date>.md    scored audit (review)
+  audit-<date>/         its evidence: Lighthouse, sloplint, detector
+  check-<date>.md       recurring check (maintain)
+  maintain.json         the baseline the next check diffs against
+  handoff/              compiled context + prompt for a design tool or agent
   data/                  answers.json, candidates.json (gitignored)
   build/                 probe.json, sheet.html (generated, gitignored)
   references/manifest.json   only when sources.kind is "folder"
@@ -76,6 +88,28 @@ not half-written.
 
 `record` writes verdicts back into Eagle (`probe:<id>`, `axis:<axis>`, `verdict:picked|rejected|neither`).
 Dry run unless `--apply`; needs Eagle running on `:41595`.
+
+## After the build
+
+The gates that do not need a model, in the order a project meets them:
+
+```bash
+bin/probe brand     review --project .                     # the brand record can be trusted
+bin/probe copy      --project . --url https://acme.test/   # the voice gate
+bin/probe content   --project . --url https://acme.test/   # headings, alt, titles, noindex
+bin/probe review    --project . --url https://acme.test/    # scored audit + evidence
+bin/probe launch    --project . --url https://acme.test/ --previous <ref>
+bin/probe maintain  --project . --url https://acme.test/    # diff against the last run
+bin/probe context   --project . --target open-design --scope "Work index, first screen"
+```
+
+`review` composes brand review, copy, content, launch, Lighthouse, Hallmark's `sloplint --render` and
+the Impeccable detector into one 0–20 audit with a disposition for every finding. `launch` checks the
+invisible failures: TLS, redirects, security headers, robots, sitemap, a real 404, noindex. `maintain`
+records a baseline and reports only what changed.
+
+The complete stage map, entry points and surface adapters live in
+`~/.agents/skills/design-pipeline/references/stages.md`.
 
 ## Reference profiles
 

@@ -116,6 +116,7 @@ if (cmd === 'validate') {
 
 const lib = await resolveLibrary(args.get('library') ?? args.get('library-path'))
 const library = lib.path
+if (!library) fail('no Eagle library found. Open Eagle, set EAGLE_LIBRARY, or pass --library <path>.')
 
 const imagesDir = path.join(library, 'images')
 if (!existsSync(imagesDir)) fail(`library images not found: ${imagesDir}\n  Move the library to a local path and set EAGLE_LIBRARY, or pass --library <path>.`)

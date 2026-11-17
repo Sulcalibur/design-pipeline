@@ -23,7 +23,7 @@ import os from 'node:os'
 
 /** Pixels can reach us over HTTP thanks to a preview server running inside Eagle. */
 async function fetchThroughMediaServer(id, template) {
-  const url = template.replace('{id}', id)
+  const url = mediaUrl(template, id)
   try {
     const res = await fetch(url, { signal: AbortSignal.timeout(15000) })
     if (!res.ok) return null
@@ -44,6 +44,7 @@ async function fetchThroughMediaServer(id, template) {
 
 import path from 'node:path'
 import { resolvePaths, loadConfig, loadCandidates, fail, rel } from './paths.mjs'
+import { mediaSource, mediaUrl } from './library.mjs'
 import { loadPixels, measure, imageFileFor, cacheKey, cacheDir, METHOD, LIMITS } from './image.mjs'
 
 const paths = resolvePaths(process.argv.slice(2))
@@ -90,8 +91,8 @@ for (const id of ids) {
   // live screenshot instead of skipping the reference.
   const liveShot = existing.images?.[id]?.live?.screenshot
   if ((!file || !existsSync(file)) && liveShot && existsSync(liveShot)) file = liveShot
-  if ((!file || !existsSync(file)) && process.env.EAGLE_MEDIA_URL) {
-    file = await fetchThroughMediaServer(id, process.env.EAGLE_MEDIA_URL)
+  if ((!file || !existsSync(file)) && mediaSource(config.sources)) {
+    file = await fetchThroughMediaServer(id, mediaSource(config.sources))
     if (file) console.log(`  · via media server`)
   }
   if (!file || !existsSync(file)) {

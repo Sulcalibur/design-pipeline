@@ -19,7 +19,7 @@ import { spawnSync } from 'node:child_process'
 import { homedir } from 'node:os'
 import path from 'node:path'
 import { resolvePaths, loadConfig, loadCandidates } from './paths.mjs'
-import { resolveLibrary } from './library.mjs'
+import { resolveLibrary, mediaSource, mediaUrl } from './library.mjs'
 
 const here = import.meta.dirname
 const paths = resolvePaths(process.argv.slice(2))
@@ -33,6 +33,10 @@ const config = loadConfig(paths.config)
 const source = config.sources ?? {}
 const sourceKind = source.kind ?? 'eagle'
 const lib = await resolveLibrary(source.path ? path.resolve(paths.root, source.path) : args.get('library-path'))
+if (sourceKind === 'eagle' && !lib.path) {
+  console.error('✗ no Eagle library found. Open Eagle, set EAGLE_LIBRARY, or switch sources.kind to "folder".')
+  process.exit(1)
+}
 const libraryName = lib.name
 const libraryPath = lib.path
 const itemsDir = path.join(libraryPath, 'images')
@@ -52,7 +56,7 @@ function optionById() {
 }
 const options = optionById()
 
-if (sourceKind === 'eagle' && !(process.env.EAGLE_MEDIA_URL || source.mediaServer)) {
+if (sourceKind === 'eagle' && !mediaSource(source)) {
   try {
     readdirSync(itemsDir)
   } catch (error) {
@@ -101,9 +105,9 @@ function eagleImage(id, preferThumb) {
 function resolveImage(id, preferThumb) {
   // A preview server that runs inside Eagle has file access we lack. If one is
   // configured we hand the browser straight to it; it serves what we cannot read.
-  const mediaTemplate = process.env.EAGLE_MEDIA_URL || source.mediaServer
-  if (mediaTemplate && !/^(?:success|error)/i.test(mediaTemplate)) {
-    return { url: mediaTemplate.replace('{id}', id) }
+  const media = mediaSource(source)
+  if (media && !/^(?:success|error)/i.test(media)) {
+    return { url: mediaUrl(media, id) }
   }
   const option = options.get(id)
   const src = option?.src

@@ -296,7 +296,17 @@ function help() {
   node probe.mjs live              read the reference's live page (fonts, colours, sections)
   node probe.mjs links             resolve a gallery capture to the site it depicts
   node probe.mjs preview           write a static pair page for review
-  node probe.mjs brand             brand interview: scaffold | serve | status | emit
+  node probe.mjs compare           put 2–4 HTML files or screenshots side by side
+  node probe.mjs capture           screenshot a URL into references/ (+ Eagle if running)
+  node probe.mjs refs              review the reference pack; gate on device + avoid
+  node probe.mjs context           compile a handoff folder for a design tool or agent
+  node probe.mjs doctor            report what this machine can run
+  node probe.mjs brand             brand interview: scaffold | serve | status | emit | review
+  node probe.mjs copy              voice gate: banned words, voice, placeholders, spelling
+  node probe.mjs content           page and content-model completeness
+  node probe.mjs launch            pre-flight: transport, headers, robots, sitemap, 404, TLS
+  node probe.mjs review            composite audit: Lighthouse + sloplint + detector + stages
+  node probe.mjs maintain          run the audit again and diff it against the last run
   node probe.mjs fonts             index type specimens · validate named families
   node probe.mjs audit             Lighthouse: performance, accessibility, SEO
   node probe.mjs serve [--port]    run the probe at http://127.0.0.1:4210
@@ -345,8 +355,39 @@ switch (cmd) {
   case 'preview':
     runScript('preview.mjs', rest)
     break
+  case 'compare':
+    runScript('compare.mjs', rest)
+    break
+  case 'capture':
+    runScript('capture.mjs', rest)
+    break
+  case 'refs':
+    runScript('refs.mjs', rest)
+    break
+  case 'context':
+    runScript('context.mjs', rest)
+    break
+  case 'doctor':
+    runScript('doctor.mjs', rest)
+    break
   case 'brand':
-    runScript('brand.mjs', rest)
+    if (rest[0] === 'review') runScript('brand-review.mjs', rest.slice(1))
+    else runScript('brand.mjs', rest)
+    break
+  case 'copy':
+    runScript('copy.mjs', rest)
+    break
+  case 'content':
+    runScript('content.mjs', rest)
+    break
+  case 'launch':
+    runScript('launch.mjs', rest)
+    break
+  case 'review':
+    runScript('review.mjs', rest)
+    break
+  case 'maintain':
+    runScript('maintain.mjs', rest)
     break
   case 'fonts':
     runScript('fonts.mjs', rest)

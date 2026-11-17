@@ -1,0 +1,223 @@
+#!/usr/bin/env node
+// brandlint - does each product's identity survive to the live page?
+// Dependency-free, Node 18+. Reads a brand registry, then checks:
+//   1 records   every declared brand file exists on disk
+//   2 stock     brand anchors that are stock palette values (identity is a default)
+//   3 shipped   the anchor hex actually appears in the live page's CSS or HTML
+//   4 rank      the anchor is among the live page's five most-used colours
+//   5 filler    the live page still carries template placeholder text
+//   6 authored  share of the declared token palette that is not a stock value
+// Usage: brandlint [--registry <path>] [--only <id>] [--offline] [--json]
+// Exit 1 when anything Blocking is found.
+
+import { readFileSync, existsSync } from 'node:fs';
+import { homedir } from 'node:os';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const HERE = dirname(fileURLToPath(import.meta.url));
+const DEFAULT_REGISTRY = [
+  process.env.BRAND_REGISTRY,
+  join(homedir(), '.config/design-pipeline/brand-registry.json'),
+  join(homedir(), 'Developer/ai-config/brand-registry.json'),
+].filter(Boolean).find((p) => existsSync(p)) ?? join(homedir(), '.config/design-pipeline/brand-registry.json');
+
+const argv = process.argv.slice(2);
+const flag = (n) => argv.includes('--' + n);
+const opt = (n, d) => { const i = argv.indexOf('--' + n); return i >= 0 && argv[i + 1] ? argv[i + 1] : d; };
+
+const REGISTRY = opt('registry', DEFAULT_REGISTRY);
+const ONLY = opt('only', null);
+const OFFLINE = flag('offline');
+const AS_JSON = flag('json');
+
+// ---- stock palette (the values a model reaches for without a decision) ------
+const RAMP = {
+  slate:  ['#f8fafc','#f1f5f9','#e2e8f0','#cbd5e1','#94a3b8','#64748b','#475569','#334155','#1e293b','#0f172a','#020617'],
+  gray:   ['#f9fafb','#f3f4f6','#e5e7eb','#d1d5db','#9ca3af','#6b7280','#4b5563','#374151','#1f2937','#111827','#030712'],
+  zinc:   ['#fafafa','#f4f4f5','#e4e4e7','#d4d4d8','#a1a1aa','#71717a','#52525b','#3f3f46','#27272a','#18181b','#09090b'],
+  indigo: ['#eef2ff','#e0e7ff','#c7d2fe','#a5b4fc','#818cf8','#6366f1','#4f46e5','#4338ca','#3730a3','#312e81','#1e1b4b'],
+  orange: ['#fff7ed','#ffedd5','#fed7aa','#fdba74','#fb923c','#f97316','#ea580c','#c2410c','#9a3412','#7c2d12','#431407']
+};
+const STEPS = ['50','100','200','300','400','500','600','700','800','900','950'];
+const PARTIAL = {
+  emerald: { 400:'#34d399', 500:'#10b981', 600:'#059669' },
+  amber:   { 400:'#fbbf24', 500:'#f59e0b', 600:'#d97706' },
+  red:     { 400:'#f87171', 500:'#ef4444', 600:'#dc2626' },
+  blue:    { 400:'#60a5fa', 500:'#3b82f6', 600:'#2563eb' },
+  violet:  { 400:'#a78bfa', 500:'#8b5cf6', 600:'#7c3aed' },
+  purple:  { 400:'#c084fc', 500:'#a855f7', 600:'#9333ea' },
+  teal:    { 400:'#2dd4bf', 500:'#14b8a6', 600:'#0d9488' },
+  cyan:    { 400:'#22d3ee', 500:'#06b6d4', 600:'#0891b2' },
+  sky:     { 400:'#38bdf8', 500:'#0ea5e9', 600:'#0284c7' },
+  green:   { 400:'#4ade80', 500:'#22c55e', 600:'#16a34a' },
+  yellow:  { 400:'#facc15', 500:'#eab308', 600:'#ca8a04' },
+  rose:    { 400:'#fb7185', 500:'#f43f5e', 600:'#e11d48' },
+  pink:    { 400:'#f472b6', 500:'#ec4899', 600:'#db2777' },
+  fuchsia: { 400:'#e879f9', 500:'#d946ef', 600:'#c026d3' },
+  lime:    { 400:'#a3e635', 500:'#84cc16', 600:'#65a30d' },
+  neutral: { 400:'#a3a3a3', 500:'#737373', 600:'#525252' },
+  stone:   { 400:'#a8a29e', 500:'#78716c', 600:'#57534e' }
+};
+const BOOTSTRAP = { '#f8f9fa':'bootstrap-gray-100','#e9ecef':'bootstrap-gray-200','#212529':'bootstrap-gray-900','#6c757d':'bootstrap-gray-600','#0d6efd':'bootstrap-blue-500','#4f46e5':'indigo-600' };
+
+const STOCK = new Map();
+for (const fam of Object.keys(RAMP)) RAMP[fam].forEach((h, i) => STOCK.set(h, fam + '-' + STEPS[i]));
+for (const fam of Object.keys(PARTIAL)) for (const s of Object.keys(PARTIAL[fam])) STOCK.set(PARTIAL[fam][s], fam + '-' + s);
+for (const h of Object.keys(BOOTSTRAP)) if (!STOCK.has(h)) STOCK.set(h, BOOTSTRAP[h]);
+
+const FILLER = [/lorem ipsum/i, /dolor sit amet/i, /adipisicing/i, /consectetur adipiscing/i, /\bFeature A\b/, /Markdown Examples/, /Runtime API Examples/, /Your title here/i];
+const HEX = /#[0-9a-fA-F]{6}\b/g;
+
+const norm = (h) => h.toLowerCase();
+const ord = (n) => { const s = ["th","st","nd","rd"], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); };
+const expand = (p) => (p && p.startsWith('~') ? join(homedir(), p.slice(1)) : p);
+
+function hexCounts(text) {
+  const m = new Map();
+  for (const raw of text.match(HEX) || []) {
+    const h = norm(raw);
+    m.set(h, (m.get(h) || 0) + 1);
+  }
+  return m;
+}
+
+function mergeInto(target, src) { for (const [k, v] of src) target.set(k, (target.get(k) || 0) + v); }
+
+async function get(url) {
+  const ac = new AbortController();
+  const t = setTimeout(() => ac.abort(), 20000);
+  try {
+    const r = await fetch(url, { signal: ac.signal, redirect: 'follow', headers: { 'user-agent': 'brandlint/1 (+design-pipeline)' } });
+    const body = await r.text();
+    return { ok: r.ok, status: r.status, url: r.url, body };
+  } catch (e) {
+    return { ok: false, status: 0, url, body: '', error: e.message };
+  } finally { clearTimeout(t); }
+}
+
+async function livePage(url) {
+  const page = await get(url);
+  if (!page.ok) return { error: 'fetch failed: ' + (page.error || page.status), counts: new Map(), html: '' };
+  const counts = hexCounts(page.body);
+  let css = '';
+  for (const m of page.body.match(/<style[^>]*>([\s\S]*?)<\/style>/gi) || []) css += m;
+  const hrefs = new Set();
+  const linkRe = /<link\b[^>]*>/gi;
+  let m;
+  while ((m = linkRe.exec(page.body))) {
+    const tag = m[0];
+    if (!/stylesheet/i.test(tag)) continue;
+    const h = /href=["']([^"']+)["']/i.exec(tag);
+    if (h) hrefs.add(h[1]);
+  }
+  let fetched = 0;
+  for (const href of hrefs) {
+    if (fetched >= 4) break;
+    let abs;
+    try { abs = new URL(href, page.url).toString(); } catch { continue; }
+    const r = await get(abs);
+    fetched++;
+    if (r.ok) css += r.body;
+  }
+  mergeInto(counts, hexCounts(css));
+  return { error: null, counts, html: page.body, cssBytes: css.length, sheets: fetched, finalUrl: page.url };
+}
+
+function loadRegistry() {
+  if (!existsSync(REGISTRY)) {
+    console.error('brandlint: registry not found: ' + REGISTRY);
+    console.error('brandlint: pass --registry <path>, or create one (see shared/design/DESIGN-STACK.md)');
+    process.exit(2);
+  }
+  return JSON.parse(readFileSync(REGISTRY, 'utf8'));
+}
+
+async function main() {
+  const reg = loadRegistry();
+  const products = (reg.products || []).filter((p) => !ONLY || p.id === ONLY);
+  const findings = [];
+  const rows = [];
+  const add = (sev, id, code, msg) => findings.push({ sev, id, code, msg });
+
+  for (const p of products) {
+    const rec = p.records || {};
+    for (const key of Object.keys(rec)) {
+      const rel = rec[key];
+      if (!rel) continue;
+      const abs = expand(join(p.local || '', rel));
+      if (!existsSync(abs)) add('Blocking', p.id, 'record-missing', key + ' declared but not on disk: ' + rel);
+    }
+
+    const tokenPath = rec.tokens ? expand(join(p.local || '', rec.tokens)) : null;
+    let tokenHexes = [];
+    if (tokenPath && existsSync(tokenPath)) {
+      tokenHexes = [...new Set((readFileSync(tokenPath, 'utf8').match(HEX) || []).map(norm))];
+      const stockOnes = tokenHexes.filter((h) => STOCK.has(h));
+      const authored = tokenHexes.length - stockOnes.length;
+      if (tokenHexes.length) {
+        const pct = Math.round((authored / tokenHexes.length) * 100);
+        rows.push({ id: p.id, metric: 'authored token palette', value: authored + '/' + tokenHexes.length + ' (' + pct + '%)' });
+        if (authored === 0) add('Blocking', p.id, 'palette-stock', 'every one of the ' + tokenHexes.length + ' token colours is a stock palette value');
+        else if (pct < 20) add('Major', p.id, 'palette-thin', 'only ' + authored + ' of ' + tokenHexes.length + ' token colours (' + pct + '%) are authored');
+      }
+    }
+
+    const anchors = (p.anchors || []).map(norm);
+    for (const a of anchors) {
+      if (STOCK.has(a)) add('Blocking', p.id, 'anchor-stock', 'brand anchor ' + a + ' is ' + STOCK.get(a) + ' verbatim');
+    }
+
+    if (OFFLINE || !p.live) { continue; }
+    const live = await livePage(p.live);
+    if (live.error) { add('Major', p.id, 'live-unreachable', p.live + ' - ' + live.error); continue; }
+
+    const total = live.counts.size;
+    const ranked = [...live.counts.entries()].sort((x, y) => y[1] - x[1]);
+    const top5 = ranked.slice(0, 5);
+    rows.push({ id: p.id, metric: 'live colours', value: total + ' distinct, ' + ranked.reduce((s, r) => s + r[1], 0) + ' uses' });
+    rows.push({ id: p.id, metric: 'live top 5', value: top5.map((r) => r[0] + (STOCK.has(r[0]) ? ' (' + STOCK.get(r[0]) + ')' : '')).join(', ') });
+
+    for (const a of anchors) {
+      const n = live.counts.get(a);
+      if (!n) add('Major', p.id, 'anchor-absent', 'brand anchor ' + a + ' never appears in the live CSS or HTML');
+      else {
+        const rank = ranked.findIndex((r) => r[0] === a) + 1;
+        if (rank > 5) add('Major', p.id, 'anchor-rank', 'brand anchor ' + a + ' is only the ' + ord(rank) + ' most-used colour (' + n + ' of ' + ranked.reduce((s, r) => s + r[1], 0) + ' uses)');
+        else rows.push({ id: p.id, metric: 'anchor ' + a, value: 'rank ' + rank + ', ' + n + ' uses' });
+      }
+    }
+
+    const hits = FILLER.filter((re) => re.test(live.html)).map((re) => re.source.replace(/\\b/g, ''));
+    if (hits.length) add('Blocking', p.id, 'filler', 'live page still carries placeholder text: ' + hits.join(' / '));
+  }
+
+  const order = { Blocking: 0, Major: 1, Minor: 2 };
+  findings.sort((a, b) => (order[a.sev] - order[b.sev]) || a.id.localeCompare(b.id));
+
+  if (AS_JSON) { console.log(JSON.stringify({ registry: REGISTRY, generated: new Date().toISOString(), findings, rows }, null, 2)); }
+  else {
+    console.log('# brandlint');
+    console.log('');
+    console.log('registry: ' + REGISTRY);
+    console.log('checked:  ' + products.map((p) => p.id).join(', '));
+    console.log('');
+    console.log('| Severity | Product | Check | Finding |');
+    console.log('|---|---|---|---|');
+    if (!findings.length) console.log('| - | - | - | nothing found |');
+    for (const f of findings) console.log('| ' + f.sev + ' | ' + f.id + ' | ' + f.code + ' | ' + f.msg + ' |');
+    if (rows.length) {
+      console.log('');
+      console.log('| Product | Measure | Value |');
+      console.log('|---|---|---|');
+      for (const r of rows) console.log('| ' + r.id + ' | ' + r.metric + ' | ' + r.value + ' |');
+    }
+    const b = findings.filter((f) => f.sev === 'Blocking').length;
+    const mj = findings.filter((f) => f.sev === 'Major').length;
+    console.log('');
+    console.log(b + ' blocking, ' + mj + ' major');
+  }
+  process.exit(findings.some((f) => f.sev === 'Blocking') ? 1 : 0);
+}
+
+main().catch((e) => { console.error('brandlint: ' + e.message); process.exit(2); });

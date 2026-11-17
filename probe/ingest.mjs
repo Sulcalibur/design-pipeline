@@ -161,6 +161,13 @@ async function ingestViaApi(lib, source) {
 if (kind === 'eagle') {
   const explicit = source.path ? path.resolve(paths.root, source.path) : paths.args.get('library-path')
   const lib = await resolveLibrary(explicit)
+  if (!lib.path) {
+    fail(
+      'no Eagle library found.\n' +
+        '  Open Eagle (it answers on :41595), set EAGLE_LIBRARY, pass --library-path,\n' +
+        '  or use a folder source: --source folder --library-path <dir>.',
+    )
+  }
   if (await ingestViaApi(lib, source)) process.exit(0)
 
   // Fallback: filesystem + index cache, for an Eagle too old for Web API v2.
@@ -340,6 +347,12 @@ const usable = entries.map((entry, index) => {
     folders: entry.folders ?? [],
     palette: entry.palette ?? [],
     kind: entry.kind ?? 'page',
+    device: entry.device ?? null,
+    avoid: entry.avoid ?? null,
+    fits: entry.fits ?? null,
+    evidence: entry.evidence ?? null,
+    note: entry.note ?? null,
+    capturedAt: entry.capturedAt ?? null,
     reason: entry.reason ?? 'curated in the folder manifest',
     file,
     src: entry.url && !file ? entry.url : null,
