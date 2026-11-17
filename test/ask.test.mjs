@@ -71,3 +71,11 @@ test('a company reveals a branch that a person hides', () => {
   assert.doesNotMatch(companyList.stdout, /owner\s+hidden/)
   assert.doesNotMatch(companyList.stdout, /c2\s+hidden/)
 })
+
+test('list answers accept commas and semicolons', () => {
+  const dir = project()
+  const out = run(['--project', dir, '--stage', 'brief', '--answer', 'out=One; Two, Three'], dir)
+  assert.equal(out.status, 0)
+  const state = JSON.parse(readFileSync(path.join(dir, 'docs/design/demo/interview.json'), 'utf8'))
+  assert.deepEqual(state.stages.brief.answers.out.value, ['One', 'Two', 'Three'])
+})

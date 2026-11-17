@@ -272,9 +272,11 @@ function printNext(q) {
   if (q.help) console.log(`\n${q.help}`)
   if (q.why) console.log(`\nWhy it matters: ${q.why}`)
   if (q.options) console.log(`\nOptions: ${optionLabel(q)}`)
+  if (q.type === 'list') console.log('\nList answer: comma- or semicolon-separated.')
   const rec = q.recommend ?? recommendationFor(q.id)
   if (rec?.value) console.log(`\nSuggested: ${rec.value}${rec.why ? ` — ${rec.why}` : ''}`)
-  console.log(`\nAnswer:\n  probe ask --stage ${stage} --answer ${q.id}=<value> --status verified --source "<where this came from>"`)
+  const example = q.type === 'list' ? `${q.id}="<item one>, <item two>"` : `${q.id}=<value>`
+  console.log(`\nAnswer:\n  probe ask --stage ${stage} --answer ${example} --status verified --source "<where this came from>"`)
   console.log(`  probe ask --stage ${stage} --tbc ${q.id}    (only when not knowing is the honest answer)\n`)
 }
 
@@ -378,7 +380,7 @@ if (args.get('answer')) {
   if (!q) fail(`no question "${id}" in the ${stage} pack`)
   const valueRaw = raw.slice(at + 1)
   if (!valueRaw) fail('--answer needs a value after "="')
-  const value = q.type === 'list' ? valueRaw.split(',').map((s) => s.trim()).filter(Boolean) : valueRaw
+  const value = q.type === 'list' ? valueRaw.split(/[,;]/).map((s) => s.trim()).filter(Boolean) : valueRaw
   state.answers[id] = {
     value,
     status: args.get('status', 'assumption'),
