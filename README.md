@@ -255,6 +255,29 @@ generic defaults elsewhere. With `semantics`, the authored prose wins.
 
 `probe.schema.json` describes the whole shape.
 
+## Evals
+
+`evals/` answers the part of “the AI understood the context” that can be checked mechanically: one
+`h1`, lang, title, banned words, token-only colours, case expectations, and mock copy that should not
+have shipped.
+
+```bash
+npm run evals -- --file path/to/artifact.html --case work-index \
+  --brand path/to/handoff/brand.json --tokens path/to/handoff/tokens.json
+```
+
+It is not a design critique. `review` and a person still do that.
+
+## Example
+
+`examples/minimal` is a neutral project — brand, brief, direction and tokens only — that compiles a
+handoff with no Eagle, no probe run and no network:
+
+```bash
+cd examples/minimal
+node ../../probe/context.mjs --project . --target generic --scope "Work index — first screen"
+```
+
 ## Rules the probe enforces
 
 - **Blind:** source names and links stay hidden until the run is saved.
