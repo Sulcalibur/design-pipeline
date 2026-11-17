@@ -296,8 +296,11 @@ export function recommendStage(stages, { mode = 'new' } = {}) {
   // already has a brief and captures is not sent back to the brand interview
   // just because docs/brand is absent; it is sent to the stage it is in.
   const ordered = stages.filter((stage) => !stage.optional && !stage.routed)
-  const lastProgress = [...ordered].reverse().find((stage) => stage.status === 'done' || stage.status === 'partial')
-  if (lastProgress?.status === 'partial') return lastProgress
+  // A blocked gate is not skipped just because later evidence exists. The brand
+  // review is the common case: a brief can be authored while 0c is still blocked.
+  const blocked = ordered.find((stage) => stage.status === 'partial')
+  if (blocked) return blocked
+  const lastProgress = [...ordered].reverse().find((stage) => stage.status === 'done')
   const index = lastProgress ? ordered.findIndex((stage) => stage.id === lastProgress.id) : -1
   return (
     ordered.slice(index + 1).find((stage) => ['missing', 'stub', 'partial'].includes(stage.status)) ??
