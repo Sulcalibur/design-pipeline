@@ -87,6 +87,17 @@ function checkboxes(md) {
   return out
 }
 
+function bullets(md) {
+  return (md?.match(/^-\s+(.+)$/gm) ?? []).map((line) => line.replace(/^-\s+/, '').trim())
+}
+
+function displayValue(value) {
+  if (value == null) return ''
+  if (Array.isArray(value)) return value.join(', ')
+  if (typeof value === 'object') return JSON.stringify(value)
+  return String(value)
+}
+
 const brand = loadBrand(ctx.project)?.data ?? null
 // Seed the working record from the brand record, without overwriting an answer
 // the interview already changed.
@@ -105,7 +116,7 @@ for (const p of pack.prefill ?? []) {
   const md = readIf(file)
   if (!md) continue
   const body = section(md, p.section)
-  const value = p.type === 'checkboxes' ? checkboxes(body) : body
+  const value = p.type === 'checkboxes' ? checkboxes(body) : p.type === 'bullets' ? bullets(body) : body
   if (value && (Array.isArray(value) ? value.length : String(value).trim())) {
     state.answers[p.id] = { value, status: 'verified', source: `${p.file} — ${p.section}`, prefilled: true }
   }
@@ -196,6 +207,37 @@ function recommendationFor(id) {
       ? { value: 'the owner and one approver', why: 'a company or public body needs one named decider' }
       : null
   }
+  if (id === 'referenceBasis') {
+    const has = [path.join(ctx.docDir, 'references/manifest.json'), path.join(ctx.project, 'references/manifest.json')].some(existsSync)
+    return has
+      ? { value: 'yes', why: 'a capture manifest with device/avoid notes exists' }
+      : { value: 'no', why: 'no references/manifest.json; Eagle alone is not a captured pack' }
+  }
+  if (id === 'colourField') {
+    const accent = String(slotValue(brand, 'v2-accent') ?? '')
+    if (/band|field/i.test(accent)) return { value: 'field on evidence', why: 'the accent slot says the band carries the field' }
+    return null
+  }
+  if (id === 'typeContrast') {
+    const display = String(slotValue(brand, 'v3-display') ?? '')
+    const body = String(slotValue(brand, 'v3-body') ?? '')
+    return display && body ? { value: `${display} display / ${body} body`, why: 'the brand record names both roles' } : null
+  }
+  if (id === 'motion') {
+    return { value: '200–250ms, one curve, reduced-motion neutralises all', why: 'the motion budget is one curve and one duration band' }
+  }
+  if (id === 'opening' || id === 'spine') {
+    const direction = readIf(path.join(ctx.docDir, '02-direction.md')) ?? ''
+    if (id === 'spine') {
+      if (/contents/i.test(direction)) return { value: 'contents page', why: 'the direction already describes a contents spine' }
+      if (/ledger/i.test(direction)) return { value: 'ledger', why: 'the direction is built on a ledger' }
+      if (/index/i.test(direction)) return { value: 'index first', why: 'the direction opens on an index' }
+      return null
+    }
+    if (/statement/i.test(direction)) return { value: 'statement first', why: 'the direction opens on a statement' }
+    if (/index/i.test(direction)) return { value: 'index first', why: 'the direction opens on an index' }
+    return null
+  }
   return null
 }
 
@@ -246,7 +288,7 @@ function list() {
       required: q.required ? 'yes' : '',
       visible: vis ? 'yes' : 'hidden',
       status: a?.status ?? (a ? 'answered' : ''),
-      value: a?.value == null ? '' : Array.isArray(a.value) ? a.value.join(', ') : String(a.value),
+      value: displayValue(a?.value),
     }
   })
   if (args.has('json')) {
@@ -308,7 +350,7 @@ function check() {
       '|---|---|---|---|',
       ...vis.map((q) => {
         const a = state.answers[q.id]
-        const value = a?.value == null ? '—' : Array.isArray(a.value) ? a.value.join(', ') : String(a.value)
+        const value = displayValue(a?.value)
         return `| ${q.id} | ${a?.status ?? 'unanswered'} | ${value.replace(/\|/g, '\\|').slice(0, 120)} | ${a?.source ?? '—'} |`
       }),
       '',

@@ -1,0 +1,155 @@
+{
+  "$about": "Direction pack. Turns brand and brief answers into a signed direction: opening, spine, colour field, one borrowed device, a refusal and a named cost.",
+  "id": "direction",
+  "title": "Direction",
+  "prefill": [
+    { "id": "decision", "file": "02-direction.md", "section": "Decision + what it gives up" },
+    { "id": "forbidden", "file": "02-direction.md", "section": "Forbidden list", "type": "bullets" }
+  ],
+  "askIf": {
+    "borrowedDevice": { "referenceBasis": ["yes"] },
+    "distanceReference": { "referenceBasis": ["no"] }
+  },
+  "context": [
+    {
+      "id": "dials",
+      "section": "calibration",
+      "question": "Set the six dials for this direction.",
+      "help": "Density, contrast, warmth, editoriality, ornament, motion — 0 to 5.",
+      "why": "The dials are the difference between 'editorial' as an adjective and editorial as a measurable setting.",
+      "type": "dials",
+      "required": true,
+      "gate": "blocking"
+    },
+    {
+      "id": "referenceBasis",
+      "section": "evidence",
+      "question": "Is there a reference pack to borrow a device from?",
+      "help": "A captured pack with device/avoid notes. Eagle alone does not count unless it has been captured into references/.",
+      "why": "A direction needs one named device or a stated reason there is none; 'no references' must be a decision, not an omission.",
+      "type": "single",
+      "required": true,
+      "gate": "blocking",
+      "options": ["yes", "no"]
+    },
+    {
+      "id": "borrowedDevice",
+      "section": "evidence",
+      "question": "Which single device are you borrowing, and what must not be copied?",
+      "help": "Name the device, the reference it came from, and the surface that stays theirs.",
+      "why": "Borrowing a device is research; copying a palette, wordmark or illustration style is imitation.",
+      "type": "long",
+      "required": true,
+      "gate": "blocking"
+    },
+    {
+      "id": "distanceReference",
+      "section": "evidence",
+      "question": "Which reference from outside the category is guiding this, or why is there none?",
+      "help": "Print, film, packaging, architecture, a museum label. Name it and the device it teaches.",
+      "why": "A shelf of competitor sites converges; the distance reference is what stops the direction becoming a category average.",
+      "type": "long",
+      "required": true,
+      "gate": "blocking"
+    },
+    {
+      "id": "opening",
+      "section": "direction",
+      "question": "What carries the first screen?",
+      "help": "One thing leads: a statement, an index, an image, or the ledger itself.",
+      "why": "The opening is the 10-second answer; everything below it is the second read.",
+      "type": "single",
+      "required": true,
+      "gate": "blocking",
+      "options": ["statement first", "index first", "image first", "ledger first"]
+    },
+    {
+      "id": "spine",
+      "section": "direction",
+      "question": "What is the page spine?",
+      "help": "The structural idea every page repeats.",
+      "why": "A spine is what makes pages siblings rather than templates.",
+      "type": "single",
+      "required": true,
+      "gate": "blocking",
+      "options": ["single column", "contents page", "index first", "ledger"]
+    },
+    {
+      "id": "colourField",
+      "section": "direction",
+      "question": "Where is the brand colour allowed to become a field?",
+      "help": "One rule, applied everywhere: evidence surfaces, every sheet, or nowhere.",
+      "why": "A field rule is a decision about where proof lives; leaving it implicit is how a brand colour ends up painted nowhere.",
+      "type": "single",
+      "required": true,
+      "gate": "blocking",
+      "options": ["field on evidence", "field on every sheet", "no field"]
+    },
+    {
+      "id": "typeContrast",
+      "section": "direction",
+      "question": "How do the display and reading roles differ?",
+      "help": "Family, size jump, optical-size axis, measure.",
+      "why": "Type contrast is the cheapest hierarchy device and the one most often replaced by decorative noise.",
+      "type": "text",
+      "required": false
+    },
+    {
+      "id": "signature",
+      "section": "direction",
+      "question": "What is the one signature device?",
+      "help": "The thing a reader would remember. One, capped.",
+      "why": "One deliberate device reads as authored; three read as a theme.",
+      "type": "text",
+      "required": false
+    },
+    {
+      "id": "motion",
+      "section": "direction",
+      "question": "What motion is permitted, and what happens under reduced motion?",
+      "help": "Duration, curve, what moves, and the fallback.",
+      "why": "Motion is part of the contract; a later 'small' animation is a reopened decision.",
+      "type": "text",
+      "required": false
+    },
+    {
+      "id": "refusal",
+      "section": "contract",
+      "question": "What does this direction refuse?",
+      "help": "The things it deliberately does not do, even when they would work.",
+      "why": "A refusal is the clearest statement of taste, and the easiest test for a later build.",
+      "type": "long",
+      "required": true,
+      "gate": "blocking"
+    },
+    {
+      "id": "cost",
+      "section": "contract",
+      "question": "What does it give up?",
+      "help": "The good thing this direction trades away.",
+      "why": "A direction without a cost is a wish; the cost is what makes it a decision.",
+      "type": "long",
+      "required": true,
+      "gate": "blocking"
+    },
+    {
+      "id": "forbidden",
+      "section": "contract",
+      "question": "Confirm the forbidden list.",
+      "help": "Inherited from the brand; amend only with a reason.",
+      "why": "The forbidden list is the guard against surface imitation and the defaults the category rewards.",
+      "type": "list",
+      "required": true,
+      "gate": "blocking"
+    },
+    {
+      "id": "decision",
+      "section": "contract",
+      "question": "Write the committed direction in one paragraph.",
+      "help": "One direction, three decisions, one refusal, one cost.",
+      "why": "This paragraph is the contract every later stage reads.",
+      "type": "long",
+      "required": false
+    }
+  ]
+}

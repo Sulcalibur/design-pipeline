@@ -71,6 +71,7 @@ with the device/avoid note in its annotation.
 ## 5. Direction
 
 ```bash
+bin/probe ask --stage direction --next   # dials, opening, spine, colour field, refusal, cost
 bin/probe compare previews/A.html previews/B.html previews/C.html --out previews/compare.html
 ```
 
