@@ -111,6 +111,21 @@ test('an unknown stage fails with the known ids', () => {
   assert.match(out.stderr, /unknown stage/)
 })
 
+test('a blocked brand review is not marked done', () => {
+  const { project } = scaffold()
+  mkdirSync(path.join(project, 'docs/brand'), { recursive: true })
+  writeFileSync(path.join(project, 'docs/brand/brand.json'), JSON.stringify({ slots: { a1: { value: 'x' } } }))
+  writeFileSync(
+    path.join(project, 'docs/brand/review.md'),
+    '# Brand review\n\n**Blocked.** 1 blocking finding(s) must be fixed or waived with a reason.\n',
+  )
+  const result = detect(project)
+  const review = result.stages.find((stage) => stage.id === '0c')
+  assert.equal(review.status, 'partial')
+  assert.match(review.detail, /gate blocked/)
+  assert.equal(result.recommended.id, '0c')
+})
+
 test('commands name the engine wrapper so they run from the project', () => {
   const { project } = scaffold()
   const brand = detect(project).stages.find((stage) => stage.name === 'brand')

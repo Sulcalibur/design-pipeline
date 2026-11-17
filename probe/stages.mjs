@@ -226,6 +226,15 @@ function baseStatus(stage, ctx) {
   if (stage.template && sameAsTemplate(file, stage.template, ctx.templatesDir)) {
     return { status: stage.optional ? 'optional' : 'stub', detail: `${path.relative(ctx.project, file)} (template)` }
   }
+  if (stage.name === 'brand-review') {
+    try {
+      if (/^\*\*Blocked\.\*\*/m.test(readFileSync(file, 'utf8'))) {
+        return { status: 'partial', detail: `${path.relative(ctx.project, file)} · gate blocked` }
+      }
+    } catch {
+      // an unreadable review is not a pass
+    }
+  }
   return { status: 'done', detail: path.relative(ctx.project, file) }
 }
 
