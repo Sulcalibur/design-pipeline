@@ -37,9 +37,55 @@ const questions = [...context, ...base].map((q) => ({ ...q, askIf: overrides[q.i
 const statePath = args.get('state')
   ? path.resolve(process.cwd(), args.get('state'))
   : path.join(ctx.docDir, 'interview.json')
-let state = readJson(statePath, { stage, answers: {} }) ?? { stage, answers: {} }
-state.stage = stage
+
+// One state file, one section per stage: the brief can branch on brand.kind.
+let all = readJson(statePath, { stages: {} }) ?? { stages: {} }
+if (all.stage && all.answers) {
+  // migrate the first single-stage shape
+  all = { stages: { [all.stage]: { answers: all.answers, updatedAt: all.updatedAt } } }
+}
+all.stages ??= {}
+const state = (all.stages[stage] ??= { answers: {}, updatedAt: null })
 state.answers ??= {}
+
+const readIf = (file) => (existsSync(file) ? readFileSync(file, 'utf8') : null)
+
+function section(md, title) {
+  if (!md) return null
+  const esc = title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const lines = md.split('\n')
+  const start = lines.findIndex((l) => new RegExp(`^##\\s+${esc}\\s*$`, 'i').test(l))
+  if (start < 0) return null
+  let end = lines.length
+  for (let i = start + 1; i < lines.length; i += 1) {
+    if (/^##\s+/.test(lines[i])) {
+      end = i
+      break
+    }
+  }
+  return lines.slice(start + 1, end).join('\n').trim() || null
+}
+
+function checkboxes(md) {
+  if (!md) return []
+  const out = []
+  let current = null
+  for (const line of md.split('\n')) {
+    const m = /^- \[[ x]\]\s+(.*)$/.exec(line)
+    if (m) {
+      if (current) out.push(current)
+      current = m[1].trim()
+      continue
+    }
+    if (current && /^\s{2,}\S/.test(line)) current += ' ' + line.trim()
+    else if (current && line.trim() !== '') {
+      out.push(current)
+      current = null
+    }
+  }
+  if (current) out.push(current)
+  return out
+}
 
 const brand = loadBrand(ctx.project)?.data ?? null
 // Seed the working record from the brand record, without overwriting an answer
@@ -52,9 +98,30 @@ for (const q of questions) {
   }
 }
 
+// Pack-declared prefill: read an existing document section instead of asking.
+for (const p of pack.prefill ?? []) {
+  if (state.answers[p.id]) continue
+  const file = path.resolve(ctx.docDir, p.file)
+  const md = readIf(file)
+  if (!md) continue
+  const body = section(md, p.section)
+  const value = p.type === 'checkboxes' ? checkboxes(body) : body
+  if (value && (Array.isArray(value) ? value.length : String(value).trim())) {
+    state.answers[p.id] = { value, status: 'verified', source: `${p.file} — ${p.section}`, prefilled: true }
+  }
+}
+
+function answerFor(key, answers = state.answers) {
+  if (key.includes('.')) {
+    const [otherStage, id] = key.split('.')
+    return all.stages[otherStage]?.answers?.[id]?.value
+  }
+  return answers[key]?.value
+}
+
 function visible(q, answers = state.answers) {
   for (const [key, allowed] of Object.entries(q.askIf ?? {})) {
-    const answer = answers[key]?.value
+    const answer = answerFor(key, answers)
     if (answer == null) return false
     const values = Array.isArray(answer) ? answer.map(String) : [String(answer)]
     if (!values.some((v) => allowed.map(String).includes(v))) return false
@@ -104,11 +171,31 @@ function detectCms() {
   return { value: 'no', why: 'no CMS signal in the project' }
 }
 
+function detectContent() {
+  const text = projectText()
+  if (/directus|contentful|sanity|strapi|payload|wordpress|ghost/i.test(text) || existsSync(path.join(ctx.project, 'shared/seed.ts'))) {
+    return { value: 'exists', why: 'the project already holds content in a CMS or seed file' }
+  }
+  if (existsSync(path.join(ctx.docDir, '00-brief.md'))) return { value: 'partial', why: 'a brief exists; the page copy may not' }
+  return { value: 'none', why: 'no content signal in the project' }
+}
+
 function recommendationFor(id) {
   if (id === 'kind') return detectKind()
   if (id === 'sector') return detectSector()
   if (id === 'identity') return detectIdentity()
   if (id === 'cms') return detectCms()
+  if (id === 'job') return slotValue(brand, 'b1') ? { value: slotValue(brand, 'b1'), why: 'the brand promise states the job' } : null
+  if (id === 'reader') return slotValue(brand, 'a2') ? { value: slotValue(brand, 'a2'), why: 'the brand audience is the reader' } : null
+  if (id === 'content') return detectContent()
+  if (id === 'mockPolicy') return { value: 'yes', why: 'marked mock keeps layout moving without shipping placeholders' }
+  if (id === 'language') return { value: 'en-GB', why: 'the site declares en-GB' }
+  if (id === 'stakeholders') {
+    const kind = answerFor('brand.kind')
+    return kind === 'company' || kind === 'public'
+      ? { value: 'the owner and one approver', why: 'a company or public body needs one named decider' }
+      : null
+  }
   return null
 }
 
@@ -116,11 +203,13 @@ function recommendationFor(id) {
 
 function save() {
   state.updatedAt = new Date().toISOString()
-  writeFileSync(statePath, JSON.stringify(state, null, 2) + '\n')
+  all.stages[stage] = state
+  writeFileSync(statePath, JSON.stringify(all, null, 2) + '\n')
 }
 
 function nextQuestion() {
-  return questions.find((q) => visible(q) && !state.answers[q.id])
+  const vis = questions.filter((q) => visible(q))
+  return vis.find((q) => q.required && !state.answers[q.id]) ?? vis.find((q) => !state.answers[q.id])
 }
 
 function optionLabel(q) {
@@ -182,6 +271,9 @@ function check() {
       if (q.required) blocking.push({ id: q.id, why: 'required, unanswered' })
       continue
     }
+    if (q.type === 'list' && Array.isArray(a.value) && a.value.length < (q.min ?? 1)) {
+      blocking.push({ id: q.id, why: `needs at least ${q.min ?? 1} item(s)` })
+    }
     if (a.status === 'tbc') {
       if (q.gate === 'blocking') blocking.push({ id: q.id, why: 'blocking question left TBC' })
       else warnings.push({ id: q.id, why: 'TBC' })
@@ -221,7 +313,7 @@ function check() {
       }),
       '',
     ]
-    const file = writeDoc(ctx.docDir, 'interview.md', lines.join('\n'))
+    const file = writeDoc(ctx.docDir, `interview-${stage}.md`, lines.join('\n'))
     console.log(`→ ${rel(file)}`)
   }
   process.exit(blocking.length ? 1 : 0)

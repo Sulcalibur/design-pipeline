@@ -41,6 +41,17 @@ with branches — a person is not asked a company's economics, a company is not 
 plus a recommendation and a blocking gate. Its state is `interview.json`; the brand record remains
 `brand.json`.
 
+## 3b. Brief
+
+```bash
+bin/probe ask --stage brief --next     # prefills from 00-brief.md, then asks what is missing
+bin/probe ask --stage brief --check    # required brief questions answered
+```
+
+The brief pack asks for the job, reader, one action, success criteria, scope, exclusions, whether content
+exists, and the mock-copy policy. Content missing reveals the mock question; a company or public body
+reveals the sign-off question. The gate refuses to close while a required answer is missing.
+
 ## 4. References
 
 ```bash

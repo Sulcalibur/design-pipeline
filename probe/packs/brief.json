@@ -1,0 +1,155 @@
+{
+  "$about": "Brief interview pack. The questions that decide whether a page is worth building, with prefill from an existing 00-brief.md.",
+  "id": "brief",
+  "title": "Brief",
+  "prefill": [
+    { "id": "job", "file": "00-brief.md", "section": "The one job" },
+    { "id": "reader", "file": "00-brief.md", "section": "Reader" },
+    { "id": "action", "file": "00-brief.md", "section": "Primary action" },
+    { "id": "success", "file": "00-brief.md", "section": "Success criteria", "type": "checkboxes" },
+    { "id": "scope", "file": "00-brief.md", "section": "Scope" }
+  ],
+  "askIf": {
+    "mockPolicy": { "content": ["none", "partial"] },
+    "stakeholders": { "brand.kind": ["company", "public"] }
+  },
+  "context": [
+    {
+      "id": "job",
+      "section": "job",
+      "question": "What is the one job this page or site has to do?",
+      "help": "One sentence. If it needs a second sentence to explain, the job is not decided.",
+      "why": "Every later decision is tested against this sentence; a page that does two jobs does neither.",
+      "type": "long",
+      "required": true,
+      "gate": "blocking"
+    },
+    {
+      "id": "reader",
+      "section": "job",
+      "question": "Who is the primary reader?",
+      "help": "Role, context and what they are trying to do — not a demographic.",
+      "why": "The scan order, the amount of proof and the tone all follow from who is reading.",
+      "type": "long",
+      "required": true,
+      "gate": "blocking"
+    },
+    {
+      "id": "readerSecondary",
+      "section": "job",
+      "question": "Who else must the page serve, if anyone?",
+      "help": "List them in priority order. Say 'none' if the primary reader is the only one.",
+      "why": "A second reader may add a route or a section; it must not dilute the first.",
+      "type": "list",
+      "required": false
+    },
+    {
+      "id": "action",
+      "section": "job",
+      "question": "What is the one action the page should drive?",
+      "help": "Contact, book, download, apply, subscribe, read — one.",
+      "why": "The primary action decides the CTA, the closing band and what the first screen points at.",
+      "type": "long",
+      "required": true,
+      "gate": "blocking"
+    },
+    {
+      "id": "success",
+      "section": "gate",
+      "question": "What must be true to call it working?",
+      "help": "Testable criteria, one per line. A stranger should be able to check each one.",
+      "why": "Without a check, 'working' becomes a matter of taste at review.",
+      "type": "list",
+      "required": true,
+      "min": 1,
+      "gate": "blocking"
+    },
+    {
+      "id": "scope",
+      "section": "gate",
+      "question": "Which pages or surfaces are in scope?",
+      "help": "Name routes or page types, not an entire site if only one page is being built.",
+      "why": "Scope decides the templates, the content model and the review surface.",
+      "type": "list",
+      "required": true,
+      "min": 1,
+      "gate": "blocking"
+    },
+    {
+      "id": "out",
+      "section": "gate",
+      "question": "What is explicitly out of scope?",
+      "help": "A page, a feature, a language, a theme. Exclusions are decisions too.",
+      "why": "An unstated exclusion comes back as scope creep at build time.",
+      "type": "list",
+      "required": false
+    },
+    {
+      "id": "content",
+      "section": "content",
+      "question": "Does the content for this surface exist?",
+      "help": "Existing copy and assets, some of it, or none yet.",
+      "why": "Content decides whether the layout can use real words or must mark mock copy.",
+      "type": "single",
+      "required": true,
+      "gate": "blocking",
+      "options": ["exists", "partial", "none"]
+    },
+    {
+      "id": "mockPolicy",
+      "section": "content",
+      "question": "If content is missing, is marked mock copy allowed at layout stage?",
+      "help": "Mock structure is allowed; invented numbers, quotes, testimonials and logos never are.",
+      "why": "It lets layout proceed without letting placeholders reach the build.",
+      "type": "single",
+      "required": true,
+      "gate": "blocking",
+      "options": ["yes", "no"]
+    },
+    {
+      "id": "constraints",
+      "section": "gate",
+      "question": "What hard constraints apply?",
+      "help": "Brand, legal, accessibility, platform, deadline, budget. Only the ones that can veto a design.",
+      "why": "A constraint discovered at build time is a rebuild.",
+      "type": "list",
+      "required": false
+    },
+    {
+      "id": "stakeholders",
+      "section": "gate",
+      "question": "Who signs off, and who has veto?",
+      "help": "Names or roles, and the one person whose 'no' matters.",
+      "why": "A design reviewed by a committee without a decider never converges.",
+      "type": "text",
+      "required": false
+    },
+    {
+      "id": "language",
+      "section": "gate",
+      "question": "What language and locale should the copy use?",
+      "help": "e.g. en-GB, en-US, fr-FR.",
+      "why": "Spelling and date formats are part of the voice, not a later localisation.",
+      "type": "text",
+      "required": false
+    },
+    {
+      "id": "deadline",
+      "section": "gate",
+      "question": "When does it need to be live?",
+      "help": "A date or a window. 'No deadline' is a valid answer.",
+      "why": "The launch date decides how much of the process can run before the first release.",
+      "type": "text",
+      "required": false
+    },
+    {
+      "id": "measure",
+      "section": "gate",
+      "question": "How will you know it worked after launch?",
+      "help": "One or two signals, not a dashboard.",
+      "why": "The success criteria are checked at review; this is what is checked in the weeks after.",
+      "type": "long",
+      "required": false
+    }
+  ]
+}
