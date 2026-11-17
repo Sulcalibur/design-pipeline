@@ -17,6 +17,10 @@ import { parseArgs, fail } from './paths.mjs'
 
 const here = import.meta.dirname
 const toolRoot = path.resolve(here, '..')
+const probeBin = path.join(toolRoot, 'bin', 'probe')
+const home = process.env.HOME ?? ''
+const shortProbe = home && !/\s/.test(probeBin) ? probeBin.replace(home, '~') : probeBin
+const probeCmd = /\s/.test(shortProbe) ? `"${shortProbe}"` : shortProbe
 const args = parseArgs(process.argv.slice(2))
 const slug = args.get('slug', null)
 const projectRoot = path.resolve(process.cwd(), args.get('project', '.'))
@@ -25,7 +29,7 @@ let target
 if (args.positionals.length) {
   target = path.resolve(process.cwd(), args.positionals[0])
 } else {
-  if (!slug) fail('init needs a slug: node probe.mjs init --project . --slug <slug>')
+  if (!slug) fail(`init needs a slug: ${probeCmd} init --project . --slug <slug>`)
   target = path.join(projectRoot, 'docs/design', slug)
 }
 
@@ -38,7 +42,7 @@ const isProjectRoot = (dir) =>
 
 const probeConfigPath = path.join(target, 'probe.config.json')
 if (existsSync(probeConfigPath) && !args.has('force')) {
-  fail(`probe.config.json already exists at ${probeConfigPath}\n  Pass --force to rewrite it, or run: node probe.mjs status --config ${probeConfigPath}`)
+  fail(`probe.config.json already exists at ${probeConfigPath}\n  Pass --force to rewrite it, or run: ${probeCmd} status --config ${probeConfigPath}`)
 }
 
 // Walk up from the target to the repo that owns it, so init works from any depth.
@@ -126,15 +130,15 @@ console.log(`  ${'existing documents'.padEnd(18)} ${existingDocs.length ? existi
 console.log(`\ncreated: ${created.length ? created.join(', ') : 'nothing (already complete)'}`)
 
 console.log(`
-map:   node probe.mjs start --config ${path.relative(process.cwd(), probeConfigPath)}
+map:   ${probeCmd} start --config ${path.relative(process.cwd(), probeConfigPath)}
 
 next:
   1. author intake, pairs and facts in ${path.relative(process.cwd(), probeConfigPath)}
      pairs are the judgement step: one axis per pair, two options, a source, alt, vocab, note
-  2. node probe.mjs ingest --config ${path.relative(process.cwd(), probeConfigPath)}
-  3. node probe.mjs sheet  --config ${path.relative(process.cwd(), probeConfigPath)}
-  4. node probe.mjs build  --config ${path.relative(process.cwd(), probeConfigPath)}
-  5. node probe.mjs serve  --config ${path.relative(process.cwd(), probeConfigPath)}
+  2. ${probeCmd} ingest --config ${path.relative(process.cwd(), probeConfigPath)}
+  3. ${probeCmd} sheet  --config ${path.relative(process.cwd(), probeConfigPath)}
+  4. ${probeCmd} build  --config ${path.relative(process.cwd(), probeConfigPath)}
+  5. ${probeCmd} serve  --config ${path.relative(process.cwd(), probeConfigPath)}
 
 Starting mid-pipeline is expected. If 00-brief.md or 02-direction.md already
 existed, they were left untouched; the probe writes only its own block into
