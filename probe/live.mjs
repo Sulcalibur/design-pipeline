@@ -72,7 +72,7 @@ async function loadPuppeteer() {
 }
 
 const puppeteer = await loadPuppeteer()
-if (!puppeteer) fail('puppeteer-core not found — run: npm i --save-optional puppeteer-core@24 in this repo')
+if (!puppeteer) fail('puppeteer-core not found — run: npm i --save-optional puppeteer-core in this repo')
 const chrome = resolveChrome()
 if (!chrome) fail('no Chrome for Testing found — set CHROME_PATH')
 

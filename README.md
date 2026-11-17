@@ -10,7 +10,7 @@ The engine is an **adaptive reference probe** and a set of **gated stages**: bra
 copy, content, build routing, audit, launch and maintenance. It emits a portable spec — a direction
 someone can build from, with the tensions you resolved recorded as evidence.
 
-No model calls at runtime. Node 20+; `puppeteer-core` is optional for capture and the render tier; Eagle
+No model calls at runtime. Node 24+; `puppeteer-core` is optional for capture and the render tier; Eagle
 is optional. Nothing here needs a particular agent.
 
 ## Install
@@ -362,9 +362,8 @@ node ../../probe/context.mjs --project . --target generic --scope "Work index �
   run and no network.
 - Fresh project, no Eagle: `init` → folder manifest → `ingest` → `sheet` → `build` → `serve` → save →
   `emit` completes, with generic fallbacks and no token file.
-- Render tier: `sloplint --render` with `puppeteer-core@24.43.1` + Playwright's Chrome for Testing 156
+- Render tier: `sloplint --render` with `puppeteer-core@25.18.1` + Playwright's Chrome for Testing 156
   wrote five frames and ran the gates.
 
-`npm audit` shows high-severity advisories inside puppeteer-core's tree. They are on paths this tool does
-not use (archive extraction, FTP) and `npm audit fix --force` breaks the pin. Leave them until puppeteer
-ships a fix.
+`npm audit`: 0 vulnerabilities. The Node-side tree moved to `puppeteer-core@25.18.1`, which requires
+Node ≥ 22.12; the project floor is Node 24.

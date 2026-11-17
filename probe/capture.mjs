@@ -137,7 +137,7 @@ if (!executablePath) fail('no Chrome/Chromium found — set CHROME_PATH to a Chr
 const vp = viewport()
 const browser = await puppeteer.launch({
   executablePath,
-  headless: 'new',
+  headless: true,
   args: ['--no-sandbox', '--disable-dev-shm-usage', '--hide-scrollbars'],
 })
 const page = await browser.newPage()

@@ -1,7 +1,7 @@
 # Environment reality (verified on this machine)
 
 > This file records the machine the engine grew up on. Run `probe doctor` for yours; treat these values
-> as examples, not requirements. The engine only requires Node 20+; rendering additionally needs a
+> as examples, not requirements. The engine only requires Node 24+; rendering additionally needs a
 > Chrome/Chromium binary, and Eagle is optional.
 
 Not assumptions. Re-verify before relying on any of it after an upgrade.
@@ -47,7 +47,7 @@ Automation binaries already on disk:
 | Playwright Chromium | Chrome for Testing 156.0.8078.4 | `~/Library/Caches/ms-playwright/chromium-1248/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing` |
 | Puppeteer cache | Chrome for Testing 131.0.6778.204 | `~/.cache/puppeteer/chrome/mac_arm-131.0.6778.204/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing` |
 
-`puppeteer-core` is installed in `~/Developer/tools/design-pipeline` (24.43.1) and the render tier is
+`puppeteer-core` is installed in `~/Developer/tools/design-pipeline` (25.18.1) and the render tier is
 **verified working** with the Playwright 156 binary: `sloplint --render` wrote five frames (1280×800,
 1440×900, 1920×1080 folds, plus 1440 and 375 full pages) and ran the gates.
 
@@ -61,14 +61,13 @@ variables:
 It prefers `CHROME_PATH` if set, then Playwright's Chrome for Testing 156, then Puppeteer's 131. It never
 picks `/Applications` — that is where the daily browser lives.
 
-`npm audit` reports high-severity advisories in puppeteer-core's tree (`extract-zip`, `basic-ftp`,
-`chromium-bidi`, `zod`). They sit on paths this pipeline does not use — no archive extraction, no FTP,
-local browser only — so the practical risk is low. **Do not run `npm audit fix --force`**: it moves
-puppeteer-core off the pinned major and breaks the render tier. Revisit when puppeteer ships a fixed
-release.
+`npm audit`: 0 vulnerabilities. `puppeteer-core@25.18.1` requires Node ≥ 22.12; the project floor is
+Node 24. The engine still runs without the optional dependency; only capture and the render tier need
+it.
 
-Puppeteer 24.43 targets a slightly older Chrome than 156; if a future render misbehaves, fall back to the
-131 build and record which pair produced the screenshots.
+Puppeteer 25.18 is current. It launches the Playwright 156 build and writes the same five render frames;
+if a future render misbehaves, fall back to the 131 build and record which pair produced the
+screenshots.
 
 ## Penpot
 

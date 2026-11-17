@@ -14,9 +14,9 @@
     "evals": "node evals/check.mjs"
   },
   "optionalDependencies": {
-    "puppeteer-core": "^24.43.1"
+    "puppeteer-core": "^25.18.1"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=24"
   }
 }
