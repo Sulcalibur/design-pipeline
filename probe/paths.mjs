@@ -109,3 +109,20 @@ export const rel = (p) => {
   const r = path.relative(process.cwd(), p)
   return r && !r.startsWith('..') && !path.isAbsolute(r) ? r : p
 }
+
+/**
+ * The engine wrapper, as a copy-pasteable shell word.
+ *
+ * Generated commands must run from a project directory, where `bin/probe`
+ * does not exist unless the user put it on PATH. Shorten the home directory
+ * only when the path has no spaces; a tilde inside quotes does not expand.
+ */
+function wrapperCommand(name) {
+  const bin = path.resolve(import.meta.dirname, '..', 'bin', name)
+  const home = process.env.HOME ?? ''
+  const short = home && !/\s/.test(bin) ? bin.replace(home, '~') : bin
+  return /\s/.test(short) ? `"${short}"` : short
+}
+
+export const probeCommand = () => wrapperCommand('probe')
+export const sloplintCommand = () => wrapperCommand('sloplint')

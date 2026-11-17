@@ -13,14 +13,11 @@
  */
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, copyFileSync } from 'node:fs'
 import path from 'node:path'
-import { parseArgs, fail } from './paths.mjs'
+import { parseArgs, fail, probeCommand } from './paths.mjs'
 
 const here = import.meta.dirname
 const toolRoot = path.resolve(here, '..')
-const probeBin = path.join(toolRoot, 'bin', 'probe')
-const home = process.env.HOME ?? ''
-const shortProbe = home && !/\s/.test(probeBin) ? probeBin.replace(home, '~') : probeBin
-const probeCmd = /\s/.test(shortProbe) ? `"${shortProbe}"` : shortProbe
+const probeCmd = probeCommand()
 const args = parseArgs(process.argv.slice(2))
 const slug = args.get('slug', null)
 const projectRoot = path.resolve(process.cwd(), args.get('project', '.'))

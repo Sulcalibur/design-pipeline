@@ -8,6 +8,7 @@
  */
 import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import path from 'node:path'
+import { probeCommand, sloplintCommand } from './paths.mjs'
 
 export const STAGES = [
   {
@@ -298,6 +299,8 @@ export function recommendStage(stages, { mode = 'new' } = {}) {
 
 /** The commands a stage actually runs. Authored stages have none. */
 export function commandsFor(stage, ctx) {
+  const probe = probeCommand()
+  const sloplint = sloplintCommand()
   const cfg = path.relative(process.cwd(), path.join(ctx.slugDir, 'probe.config.json')) || 'probe.config.json'
   const project = path.relative(process.cwd(), ctx.project) || '.'
   const slug = ctx.slug ?? path.basename(ctx.slugDir)
@@ -305,48 +308,48 @@ export function commandsFor(stage, ctx) {
   const prev = '<previous-deploy>'
   switch (stage.name) {
     case 'setup':
-      return [`bin/probe init --project ${project} --slug ${slug}`]
+      return [`${probe} init --project ${project} --slug ${slug}`]
     case 'brand':
-      return [`bin/probe brand scaffold --project ${project}`, 'bin/probe ask --stage brand --next']
+      return [`${probe} brand scaffold --project ${project}`, `${probe} ask --stage brand --next`]
     case 'brand-review':
-      return [`bin/probe brand review --project ${project}`]
+      return [`${probe} brand review --project ${project}`]
     case 'intake':
-      return ['bin/probe ask --stage brief --next']
+      return [`${probe} ask --stage brief --next`]
     case 'collect':
       return [
-        `bin/probe inspire --config ${cfg} --dry-run`,
-        `bin/probe capture --url ${url} --slug ${slug}`,
-        `bin/probe refs --config ${cfg}`,
-        `bin/probe ingest --config ${cfg} --source folder`,
-        `bin/probe analyze --config ${cfg}`,
-        `bin/probe sheet --config ${cfg}`,
+        `${probe} inspire --config ${cfg} --dry-run`,
+        `${probe} capture --url ${url} --slug ${slug}`,
+        `${probe} refs --config ${cfg}`,
+        `${probe} ingest --config ${cfg} --source folder`,
+        `${probe} analyze --config ${cfg}`,
+        `${probe} sheet --config ${cfg}`,
       ]
     case 'direction':
       return [
-        'bin/probe ask --stage direction --next',
-        `bin/probe emit --config ${cfg}`,
-        'bin/probe compare a.html b.html --out previews/compare.html',
+        `${probe} ask --stage direction --next`,
+        `${probe} emit --config ${cfg}`,
+        `${probe} compare a.html b.html --out previews/compare.html`,
       ]
     case 'structure':
       return [`edit ${path.relative(process.cwd(), path.join(ctx.slugDir, '03-structure.md'))}`]
     case 'assets':
       return [`edit ${path.relative(process.cwd(), path.join(ctx.slugDir, '04-assets.md'))}`]
     case 'copy':
-      return [`bin/probe copy --config ${cfg} --url ${url}`]
+      return [`${probe} copy --config ${cfg} --url ${url}`]
     case 'content':
-      return [`bin/probe content --config ${cfg} --url ${url} --model content-model.json`]
+      return [`${probe} content --config ${cfg} --url ${url} --model content-model.json`]
     case 'handoff':
-      return [`bin/probe context --config ${cfg}`]
+      return [`${probe} context --config ${cfg}`]
     case 'build':
       return ['build with the surface the project already uses — the pipeline does not build']
     case 'verify':
-      return [`bin/probe audit --url ${url} --slug ${slug}`, 'bin/sloplint <files|--url ' + url + '>']
+      return [`${probe} audit --url ${url} --slug ${slug}`, `${sloplint} <files|--url ${url}>`]
     case 'audit':
-      return [`bin/probe review --config ${cfg} --url ${url}`]
+      return [`${probe} review --config ${cfg} --url ${url}`]
     case 'launch':
-      return [`bin/probe launch --config ${cfg} --url ${url} --previous ${prev}`]
+      return [`${probe} launch --config ${cfg} --url ${url} --previous ${prev}`]
     case 'maintain':
-      return [`bin/probe maintain --config ${cfg} --url ${url} --previous ${prev}`]
+      return [`${probe} maintain --config ${cfg} --url ${url} --previous ${prev}`]
     default:
       return []
   }

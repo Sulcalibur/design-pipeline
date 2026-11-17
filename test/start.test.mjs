@@ -110,3 +110,10 @@ test('an unknown stage fails with the known ids', () => {
   assert.equal(out.status, 1)
   assert.match(out.stderr, /unknown stage/)
 })
+
+test('commands name the engine wrapper so they run from the project', () => {
+  const { project } = scaffold()
+  const brand = detect(project).stages.find((stage) => stage.name === 'brand')
+  assert.match(brand.commands[0], /\/bin\/probe brand scaffold/)
+  assert.doesNotMatch(brand.commands[0], /^bin\/probe /)
+})
