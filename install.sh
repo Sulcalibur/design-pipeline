@@ -12,7 +12,9 @@ TARGET="$SKILLS/design-pipeline"
 
 mkdir -p "$SKILLS"
 if [ -e "$TARGET" ] && [ ! -L "$TARGET" ]; then
-  BACKUP="$TARGET.backup-$(date +%s)"
+  BACKUP_DIR="${AGENTS_SKILL_BACKUP_DIR:-$HOME/.agents/skill-backups}"
+  mkdir -p "$BACKUP_DIR"
+  BACKUP="$BACKUP_DIR/design-pipeline-$(date +%s)"
   mv "$TARGET" "$BACKUP"
   echo "moved existing skill to $BACKUP"
 fi
