@@ -43,9 +43,9 @@
       "help": "The name as it would appear on the door.",
       "type": "text",
       "required": true,
-      "placeholder": "Sulcalibur — a personal digital garden",
+      "placeholder": "Acme — a personal digital garden",
       "why": "Every later slot references this name — the record title, the browser tab, the first headline. It must be unambiguous, including spelling and capitalisation.",
-      "example": "Beagles Bikes — not BeeGles, not beagles bikes. Write it the way you want to read it back."
+      "example": "Acme Bikes — not ACME, not acme bikes. Write it the way you want to read it back."
     },
     {
       "id": "oneLine",
@@ -91,10 +91,10 @@
       "label": "Owner and date",
       "question": "Who owns this record, and when was it last verified?",
       "type": "owner",
-      "placeholder": "Sulei",
+      "placeholder": "Acme",
       "help": "Who maintains this record, and when was it last checked against reality.",
       "why": "A brand record drifts. Named ownership and a date make the next agent treat stale slots as stale rather than as truth.",
-      "example": "Sulei — last verified 2026-10-29 after the shop sign was fitted.",
+      "example": "Acme — last verified 2026-10-29 after the shop sign was fitted.",
       "tbcHint": "Solo? Still write your own name. \"Not stated\" gets flagged as a gap later."
     },
     {

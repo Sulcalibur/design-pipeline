@@ -2,3 +2,4 @@
 node_modules/
 .hallmark/
 examples/**/handoff/
+.DS_Store

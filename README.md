@@ -1,24 +1,43 @@
 # Design pipeline
 
-One shared engine, one skill, one agent. Projects hold only their own content.
+A portable process for brand interviews, design direction, build gates and audits. One engine, one
+runbook, one folder of project content.
 
-**New here:** [`docs/quickstart.md`](docs/quickstart.md) — install, `probe doctor`, and the first run
-end to end. The full stage map is in `~/.agents/skills/design-pipeline/references/stages.md`.
+**New here:** [`docs/quickstart.md`](docs/quickstart.md) — install, `probe doctor`, and the first run end
+to end. The stage map is in [`skill/references/stages.md`](skill/references/stages.md).
 
-The engine is an **adaptive reference probe**: an intake interview, then image pairs chosen by the
-answers, then a consistency check and conditional follow-ups. It emits a portable spec — a direction
+The engine is an **adaptive reference probe** and a set of **gated stages**: brand, brief, direction,
+copy, content, build routing, audit, launch and maintenance. It emits a portable spec — a direction
 someone can build from, with the tensions you resolved recorded as evidence.
 
-No model calls at runtime. No dependencies. Everything the probe needs is a config and some images.
+No model calls at runtime. Node 20+; `puppeteer-core` is optional for capture and the render tier; Eagle
+is optional. Nothing here needs a particular agent.
+
+## Install
+
+```bash
+git clone https://github.com/Sulcalibur/design-pipeline.git
+cd design-pipeline
+./install.sh
+export DESIGN_PIPELINE_HOME="$PWD"
+bin/probe doctor
+```
+
+`install.sh` symlinks `skill/` into `~/.agents/skills/design-pipeline` and prints the export line. It
+does not edit your shell profile.
 
 ## What lives where
 
 ```
-~/Developer/tools/design-pipeline/     this repo — code only, no project content
-  probe/                                the engine (probe.mjs is the entry point)
-  templates/                            the five design documents + a starter config
-  presets/                              one worked example (Sulcalibur), for reference
-~/.agents/skills/design-pipeline/       the runbook every agent loads
+<repo>/
+  probe/                 the engine (probe.mjs is the entry point)
+  probe/packs/           question packs for `probe ask`
+  skill/                 the runbook every agent loads + the stage map
+  evals/                 mechanical context checks for a generated artifact
+  examples/minimal/      a neutral project that compiles a handoff
+  templates/             the design documents + a starter config
+  bin/                   probe and sloplint wrappers
+  docs/                  quickstart
 ```
 
 A project gets exactly one folder:
@@ -31,7 +50,6 @@ A project gets exactly one folder:
   02-direction.md        gets a generated "Probe result" block; never overwritten
   03-structure.md
   04-assets.md
-  05-decision.md (legacy: 05-decision.md)            generated readback
   05-decision.md (legacy: 05-decision.md)            generated readback
   build-spec.json       generated machine spec
   copy.md               voice gate (copy)
@@ -109,7 +127,7 @@ invisible failures: TLS, redirects, security headers, robots, sitemap, a real 40
 records a baseline and reports only what changed.
 
 The complete stage map, entry points and surface adapters live in
-`~/.agents/skills/design-pipeline/references/stages.md`.
+`skill/references/stages.md`.
 
 ## Reference profiles
 
@@ -289,8 +307,10 @@ node ../../probe/context.mjs --project . --target generic --scope "Work index �
 
 ## Verified
 
-- Sulcalibur parity: the ported engine reproduces `05-decision.md (legacy: 05-decision.md)` and `build-spec.json` byte-identically
-  except the generator attribution line and `generatedAt`.
+- `npm test`: 15 tests across the shared checks, the refs gate, the context compiler, the mock-copy
+  stages and the brand/brief/direction ask packs.
+- `examples/minimal`: a handoff compiles from brand, brief, direction and tokens with no Eagle, no probe
+  run and no network.
 - Fresh project, no Eagle: `init` → folder manifest → `ingest` → `sheet` → `build` → `serve` → save →
   `emit` completes, with generic fallbacks and no token file.
 - Render tier: `sloplint --render` with `puppeteer-core@24.43.1` + Playwright's Chrome for Testing 156
