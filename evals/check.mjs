@@ -72,6 +72,25 @@ if (tokenPath && existsSync(tokenPath)) {
   const used = [...new Set([...html.matchAll(/#[0-9a-f]{6}\b/gi)].map((m) => m[0].toLowerCase()))]
   const unknown = used.filter((h) => !known.has(h))
   check(unknown.length === 0, 'colours come from the tokens', unknown.join(', '))
+
+  const fontProps = Object.entries(props).filter(([k]) => /font/i.test(k))
+  const knownFamilies = new Set(
+    fontProps
+      .flatMap(([, v]) => String(v).split(','))
+      .map((f) => f.trim().replace(/^['"]|['"]$/g, '').toLowerCase())
+      .filter(Boolean),
+  )
+  const generic = new Set([
+    'serif', 'sans-serif', 'monospace', 'system-ui', 'ui-sans-serif', 'ui-serif', 'ui-monospace',
+    'georgia', 'times new roman', 'arial', 'helvetica', 'menlo', 'consolas', 'inherit', 'initial',
+  ])
+  const usedFamilies = [...html.matchAll(/font-family\s*:\s*([^;}]+)/gi)]
+    .flatMap((m) => m[1].split(','))
+    .map((f) => f.trim().replace(/^['"]|['"]$/g, '').split(/\s+/).slice(0, 3).join(' ').toLowerCase())
+    .filter((f) => f && !f.startsWith('var('))
+  const unknownFamilies = [...new Set(usedFamilies)].filter((f) => !knownFamilies.has(f) && !generic.has(f))
+  check(unknownFamilies.length === 0, 'fonts come from the tokens', unknownFamilies.join(', '))
+  check(!/fonts\.googleapis\.com|fonts\.gstatic\.com/i.test(html), 'no external font stylesheet')
 }
 
 /* -------------------------------------------------------------- case rules -- */
