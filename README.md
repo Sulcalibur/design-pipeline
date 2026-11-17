@@ -10,8 +10,9 @@ The engine is an **adaptive reference probe** and a set of **gated stages**: bra
 copy, content, build routing, audit, launch and maintenance. It emits a portable spec — a direction
 someone can build from, with the tensions you resolved recorded as evidence.
 
-No model calls at runtime. Node 22.12+; `puppeteer-core` is optional for capture and the render tier; Eagle
-is optional. Nothing here needs a particular agent.
+No model calls at runtime except the brand interview's opt-in **AI help**, which shells out to your
+local OpenCode CLI. Node 22.12+; `puppeteer-core` is optional for capture and the render tier; Eagle is
+optional. Nothing here needs a particular agent.
 
 ## Install
 
@@ -207,6 +208,11 @@ decisions, one refusal, six dials). The type question offers six curated pairing
 Fonts; `probe fonts --project .` indexes the specimens in your Eagle library so they appear beside them.
 Every answer carries a status and a source. It emits `docs/brand/brand.md` with a computed contrast table
 and a gap table, plus `brand.json` for agents.
+
+**AI help** is opt-in per slot. It spawns `opencode run` by default (override the command with
+`BRAND_AI_CMD`, the model with `BRAND_AI_MODEL`), drafts from the answers so far, and stores the result
+as `assumption` with the source **“AI draft — replace with the real answer”**. It never marks a slot
+verified.
 
 ## Verify a built page
 

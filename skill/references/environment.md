@@ -17,7 +17,8 @@ consequences:
 - **Name skills explicitly.** Do not rely on a weaker model auto-selecting the right skill from
   descriptions. The agent's runbook names the stage, the skill and the command.
 
-No part of this pipeline calls a model at runtime.
+No part of this pipeline calls a model at runtime except the brand interview's opt-in **AI help**,
+which spawns the local OpenCode CLI (`opencode run` by default).
 
 ## Eagle
 
