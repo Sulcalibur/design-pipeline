@@ -126,6 +126,8 @@ console.log(`  ${'existing documents'.padEnd(18)} ${existingDocs.length ? existi
 console.log(`\ncreated: ${created.length ? created.join(', ') : 'nothing (already complete)'}`)
 
 console.log(`
+map:   node probe.mjs start --config ${path.relative(process.cwd(), probeConfigPath)}
+
 next:
   1. author intake, pairs and facts in ${path.relative(process.cwd(), probeConfigPath)}
      pairs are the judgement step: one axis per pair, two options, a source, alt, vocab, note

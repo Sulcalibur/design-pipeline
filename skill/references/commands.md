@@ -14,6 +14,31 @@ All commands accept the same global flags.
 | `--run <id>` | latest | `emit`, `record`: choose a saved run |
 | `--apply` | off | `record`: actually write tags into Eagle |
 
+## start
+
+```bash
+node probe/probe.mjs start --project . [--slug <slug>] [--config <cfg>]
+     [--stage <id|name> | --all | --ask | --next] [--existing] [--json]
+```
+
+Read-only orientation. Reads the project's artifacts, prints the 0→9 stage map with a status per stage,
+and recommends where to start. It never runs a stage and never writes.
+
+- `done` means the artifact exists and is not the template. It does **not** mean the gate passed.
+- `stub` is an authored document that still matches `templates/`; `partial` is a stage with evidence
+  but an unfinished document (captures without an authored `01-references.md`, a direction without
+  `build-spec.json`).
+- The recommendation advances from the furthest evidence, not from the beginning: a project with a
+  brief and captures is not sent back to the brand interview just because `docs/brand` is absent.
+- `--existing` switches to the existing-surface entry: 7b audit first, then 9 maintain.
+- `--stage <id|name>` prints one stage's gate, missing prerequisites and commands. IDs are `0`, `0b`,
+  `0c`, `1`, `2`, `3`, `4`, `5`, `5b`, `5c`, `5d`, `6`, `7`, `7b`, `8`, `9`; names and common aliases
+  (`brief`, `references`, `direct`) work too.
+- `--all` prints the full command path; `--next` prints only the recommendation; `--ask` prompts for a
+  stage when run in a terminal; `--json` is for agents.
+
+This is the command to run after each stage: it advances as the artifacts appear.
+
 ## init
 
 ```bash
@@ -128,6 +153,47 @@ project manifest stays the portable record; Eagle is a copy, not the source of t
 
 Requires `puppeteer-core` and a Chrome for Testing binary (the same ones `audit` and `sloplint` use).
 
+## inspire
+
+```bash
+node probe/probe.mjs inspire [--list | --check] [--dry-run]
+     [--source awwwards|pinterest|feed] [--count <n>] [--seed <s>]
+     [--to auto|eagle|folder] [--viewport desktop|mobile|WxH] [--no-full] [--json]
+```
+
+Pulls candidate references from a discovery source and runs each through `capture`, so the result is the
+same manifest item a manual capture would write. Sources are toggles in `probe.config.json`:
+
+```json
+"inspiration": {
+  "eagle": "auto",
+  "count": 4,
+  "sources": {
+    "awwwards":  { "enabled": true, "award": "sotd", "tags": [], "technology": "" },
+    "pinterest": { "enabled": false, "query": "web design landing page", "media": "image" },
+    "feed":      { "enabled": false, "path": "references/inspiration.json" }
+  }
+}
+```
+
+- `--list` shows the toggles and whether Eagle answers; `--check` hand-shakes each enabled MCP server.
+- `--source` forces a source for one run even when its config toggle is off.
+- `--dry-run` prints the picks and writes nothing; `--seed` reproduces a pick (the seed is always
+  printed).
+- Picking shuffles each source deterministically, then interleaves sources so one cannot crowd out the
+  other. A URL that appears twice is kept once.
+- `awwwards` uses `search_sites` (award, tags, technology, dominant colour, query, sort by newest/score).
+  `pinterest` uses `pinterest_search`; a pin with no source page is counted and skipped because there is
+  nothing live to capture. `feed` reads a JSON array (or `{ items: [] }`) of URLs or
+  `{ url, title, note, tags }` objects.
+- Every auto-pulled capture is written with `device` and `avoid` set to `unsorted — …`. `refs` treats
+  that as blocking, so the pack still requires someone to name the device and the thing not to copy.
+- Eagle: `auto` writes to Eagle when it answers, `on` fails before capture when it does not, `off` keeps
+  the run folder-only. `--to` overrides the config for one run.
+
+Awwwards is personal, non-commercial inspiration use. Pinterest pins are reference-only. Mobbin, Refero
+or any other source can enter through `feed` until an adapter exists.
+
 ## refs
 
 ```bash
@@ -139,9 +205,9 @@ Reviews the reference pack as a pack. Reads `manifest.json`, shows every capture
 avoid, fits, evidence and note, and adds the measured palette from `data/analysis.json` when present.
 Writes `references/refs.html` (and `refs.md` with `--md`).
 
-The gate: every item needs a **device** and an **avoid**. A missing either is blocking; missing `fits`
-or `evidence` is a warning. `--lenient` turns the gate into a warning for exploratory packs. Exit 1
-until every picture has earned its place.
+The gate: every item needs a **device** and an **avoid**. A missing either is blocking; a value starting
+with `unsorted` is treated as missing; missing `fits` or `evidence` is a warning. `--lenient` turns the
+gate into a warning for exploratory packs. Exit 1 until every picture has earned its place.
 
 ## context
 

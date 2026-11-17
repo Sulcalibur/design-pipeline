@@ -48,9 +48,12 @@ const entries = items.map((item, index) => {
   const exists = !!file && existsSync(file)
   const blocking = []
   const warnings = []
+  const unsorted = /^\s*unsorted\b/i
   if (!exists) blocking.push('file missing')
   if (!item.device) blocking.push('no device')
+  else if (unsorted.test(item.device)) blocking.push('device not named')
   if (!item.avoid) blocking.push('no avoid')
+  else if (unsorted.test(item.avoid)) blocking.push('avoid not named')
   if (!item.fits) warnings.push('no fits')
   if (!item.evidence) warnings.push('no evidence')
   return {

@@ -68,19 +68,52 @@ A project gets exactly one folder:
 ## Start, at any stage
 
 ```bash
+node probe/probe.mjs start --project .            # where this project is, and the next step
+node probe/probe.mjs start --all                  # the full path from setup to maintain
+node probe/probe.mjs start --stage 3              # start at Direct
+node probe/probe.mjs start --existing             # an already-built surface: audit first
 node probe/probe.mjs init --project ~/Developer/projects/SomeProject --slug home-refresh
 ```
+
+`start` is a read-only read-out: it detects which artifacts exist, marks a document that still matches
+its template as a stub, and recommends the stage the project is actually in. It does not run a stage —
+the gates need judgement, and stage 6 is a build on the surface the project already uses.
 
 `init` inspects the project and reports what it found — `design.md`, `tokens.json`, framework, other
 design slugs, `.hallmark/` — then creates only what is missing. Existing briefs and directions are
 left untouched. Starting mid-pipeline is expected: a project may already have a brief, or a built
 page, or nothing.
 
+## The stages
+
+| # | Stage | Ends in | Run |
+|---|---|---|---|
+| 0 | Setup | `probe.config.json` | `probe init` |
+| 0b | Brand | `docs/brand/brand.md` + `brand.json` | `probe brand scaffold` · `probe ask --stage brand` |
+| 0c | Brand review | `docs/brand/review.md` | `probe brand review` |
+| 1 | Intake | `00-brief.md` | `probe ask --stage brief` |
+| 2 | Collect | `01-references.md` | `probe inspire` → `capture` → `refs` → `ingest` → `analyze` → `sheet` |
+| 3 | Direct | `05-decision.md` + `build-spec.json` | `probe ask --stage direction` → `emit` → `compare` |
+| 4 | Structure | `03-structure.md` | authored |
+| 5 | Assets | `04-assets.md` | authored |
+| 5b | Copy | `copy.md` | `probe copy` |
+| 5c | Content | `content.md` | `probe content` |
+| 5d | Handoff | `handoff/` | `probe context` |
+| 6 | Build | the build | routed to the project's surface |
+| 7 | Verify | `review.md` | `probe audit` + `bin/sloplint` |
+| 7b | Audit an existing surface | `10-audit-<date>.md` + evidence | `probe review` |
+| 8 | Launch | `launch.md` | `probe launch` |
+| 9 | Maintain | `check-<date>.md` + `maintain.json` | `probe maintain` |
+
+Every stage ends in a document and a gate; no stage starts before the previous one has one. Run
+`probe start` between stages to see where the project actually is. The gates and surface adapters are
+in [`skill/references/stages.md`](skill/references/stages.md).
+
 ## Wrappers
 
 ```bash
-bin/probe    status|init|ingest|sheet|build|serve|emit|record    # from any project
-bin/sloplint <files|--url …> [--render]                          # Hallmark's sweep
+bin/probe    start|status|init|inspire|ingest|sheet|build|serve|emit|record   # from any project
+bin/sloplint <files|--url …> [--render]                                       # Hallmark's sweep
 ```
 
 `bin/sloplint` sets `HALLMARK_PUPPETEER` to this repo and `CHROME_PATH` to an isolated automation
@@ -88,6 +121,8 @@ browser, so `--render` works from a project directory with no environment variab
 `PATH` to call them as `probe` and `sloplint`.
 
 ## The loop
+
+`probe start` says which stage of this loop comes next. The probe itself is these commands:
 
 ```bash
 node probe/probe.mjs ingest  --config <project>/docs/design/<slug>/probe.config.json
@@ -256,6 +291,13 @@ alone is served by redirect.
 An option may also carry its own `src`, which wins over any index — an absolute file path or an
 http(s) URL.
 
+**Discovery.** `bin/probe inspire` pulls candidates from an MCP source and runs each one through
+`capture`, so a pulled reference lands in the same manifest as a manual one. Sources are opt-in in
+`inspiration.sources`: `awwwards` (Site of the Day, tags, technology, colour), `pinterest` (search and
+boards) and `feed` (any JSON list of URLs). `inspiration.eagle` is `auto` (write back when Eagle is
+running), `on` (fail if it is not) or `off`. Pulled captures are marked `unsorted`, and `refs` blocks
+them until someone names the device and what not to copy.
+
 ## Config surface
 
 | Block | Purpose |
@@ -267,6 +309,7 @@ http(s) URL.
 | `output` | `readbackTitle`, `systemNote`, `assetsNote`, `directionFile`, `agentBrief`, `doNot` |
 | `semantics` | `vocabulary`, `implications`, `details`, `crossMedia`, `conflictNotes`, `assets`, `pendingTokens`, `openQuestions` |
 | `sources`, `paths` | where images and files come from/go |
+| `inspiration` | discovery source toggles, pick count, seed and Eagle write-back mode |
 
 With no `semantics`, the emitter falls back to each chosen option's `vocab` as its build rule, and
 generic defaults elsewhere. With `semantics`, the authored prose wins.
@@ -307,8 +350,14 @@ node ../../probe/context.mjs --project . --target generic --scope "Work index �
 
 ## Verified
 
-- `npm test`: 15 tests across the shared checks, the refs gate, the context compiler, the mock-copy
-  stages and the brand/brief/direction ask packs.
+- `npm test`: 36 tests across the shared checks, the refs gate, the context compiler, the mock-copy
+  stages, the brand/brief/direction ask packs, the inspiration adapters and the stage detector.
+- `probe start`: an empty project recommends 0 setup; a scaffolded project advances through brand,
+  brand review and intake; captures without an authored references document mark collect `partial`;
+  `--existing` starts at 7b audit; a named stage prints its gate and commands.
+- `probe inspire --check`: hand-shakes with the Awwwards (39 tools) and Pinterest (6 tools) MCP servers.
+  Live dry-runs from both sources returned usable candidates; one capture was filed into a folder
+  manifest and correctly blocked by `refs` as `unsorted`.
 - `examples/minimal`: a handoff compiles from brand, brief, direction and tokens with no Eagle, no probe
   run and no network.
 - Fresh project, no Eagle: `init` → folder manifest → `ingest` → `sheet` → `build` → `serve` → save →

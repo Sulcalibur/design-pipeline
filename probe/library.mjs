@@ -11,7 +11,39 @@ import os from 'node:os'
 import path from 'node:path'
 import { existsSync } from 'node:fs'
 
-const API = 'http://localhost:41595/api/v2'
+export const EAGLE = 'http://localhost:41595'
+const API = `${EAGLE}/api/v2`
+
+/**
+ * Is Eagle running, and which library does it have open?
+ *
+ * Every caller needs the same three answers (running, app info, library), and
+ * they must agree: capture writes into the library that inspire reported, not
+ * a different one discovered a second later.
+ */
+export async function eagleStatus(timeoutMs = 1800) {
+  let info = null
+  for (const pathname of ['/api/v2/app/info', '/api/application/info']) {
+    try {
+      const res = await fetch(EAGLE + pathname, { signal: AbortSignal.timeout(timeoutMs) })
+      if (res.ok) {
+        info = await res.json()
+        break
+      }
+    } catch {
+      // try the next shape
+    }
+  }
+  if (!info) return { running: false, info: null, library: null }
+  let library = null
+  try {
+    const res = await fetch(`${API}/library/info`, { signal: AbortSignal.timeout(timeoutMs) })
+    if (res.ok) library = (await res.json())?.data ?? null
+  } catch {
+    // library is optional; the app is still usable
+  }
+  return { running: true, info, library }
+}
 
 export async function activeLibrary(timeoutMs = 2500) {
   try {

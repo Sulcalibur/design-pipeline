@@ -15,7 +15,9 @@ surface adapters (see the end).
 | A direction, no structure | 4 structure | Re-run the probe |
 | A brief, no references | 2 collect | Ask the brief questions again |
 
-`probe init` reports what already exists and never overwrites a document.
+`probe init` reports what already exists and never overwrites a document. `probe start` applies this
+table from the artifacts: it shows the whole map, recommends an entry stage and prints the next
+command. Neither one runs a stage.
 
 ## The map
 
@@ -25,7 +27,7 @@ surface adapters (see the end).
 | 0b | Brand | `probe brand scaffold` → `serve` → `emit` · `probe ask` | `docs/brand/brand.md` + `brand.json` | 39 slots, each with a status and a source; no slot silently blank; required interview questions answered, blocking TBC cleared |
 | 0c | Brand review | `probe brand review` | `docs/brand/review.md` | 0 blocking; TBC within budget; contrast pairs pass; banned words and forbidden territory non-empty |
 | 1 | Intake | `probe ask --stage brief` · authored | `00-brief.md` | A stranger could build from it; success criteria are checkable |
-| 2 | Collect | `probe capture` → `refs` → `ingest` → `sheet` → `analyze` → `live` | `01-references.md` | Every reference names a transferable device and a thing not to copy; at least one distance reference |
+| 2 | Collect | `probe inspire` (optional) → `probe capture` → `refs` → `ingest` → `sheet` → `analyze` → `live` | `01-references.md` | Every reference names a transferable device and a thing not to copy; at least one distance reference |
 | 3 | Direct | `probe ask --stage direction` · `probe emit` · `probe compare` | `05-decision.md`, `build-spec.json`, direction block | One direction, three decisions, one refusal, a named cost; `status` is not `needs-decision`; a side-by-side board exists when the options were visual |
 | 4 | Structure | authored | `03-structure.md` | Every section has a job; every control has states; a content model exists |
 | 5 | Assets | authored | `04-assets.md` | Every slot has a ratio, a prompt and alt text before layout |
@@ -61,6 +63,7 @@ being mistaken for a defect.
 PIPE="${DESIGN_PIPELINE_HOME:-$HOME/Developer/tools/design-pipeline}"
 
 "$PIPE/bin/probe" init      --project . --slug home
+"$PIPE/bin/probe" start     --project . --slug home
 "$PIPE/bin/probe" brand     scaffold --project .
 "$PIPE/bin/probe" brand     review   --project .
 "$PIPE/bin/probe" copy      --project . --url https://example.com/

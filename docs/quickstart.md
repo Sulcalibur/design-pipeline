@@ -12,8 +12,9 @@ npm install                     # optional: puppeteer-core for capture/render
 bin/probe doctor
 ```
 
-`doctor` reports Node, Chrome, Eagle, Lighthouse, Hallmark, the Impeccable detector and the brand
-registry. Only Node is required. Rendering needs Chrome; everything else runs without Eagle.
+`doctor` reports Node, Chrome, Eagle, the enabled inspiration sources, Lighthouse, Hallmark, the
+Impeccable detector and the brand registry. Only Node is required. Rendering needs Chrome; everything
+else runs without Eagle.
 
 ## 2. Start a project
 
@@ -25,6 +26,18 @@ cd /path/to/your-project
 This creates `docs/design/home/` with the five templates and `probe.config.json`, and leaves existing
 documents alone. The default reference source is a **folder** (`references/`), so no Eagle install is
 needed. Use `--source eagle` if you have it.
+
+Then find the honest entry point:
+
+```bash
+bin/probe start --project .        # 0→9 map, what exists, recommended stage, next command
+bin/probe start --all              # the full path
+bin/probe start --stage 3          # pin a stage (3 = Direct)
+bin/probe start --existing         # built surface: 7b audit first
+```
+
+`start` only reads. It marks an authored document that still matches its template as a stub, and a
+generated artifact as done; “done” is not a claim that the gate passed.
 
 ## 3. Brand first
 
@@ -67,6 +80,43 @@ bin/probe sheet  --config docs/design/home/probe.config.json
 
 Eagle is optional. When it is running, `capture --to auto` also copies the shot into an Eagle folder
 with the device/avoid note in its annotation.
+
+## 4b. Pull inspiration (optional)
+
+Discovery is a separate layer from storage. `inspire` asks an MCP source for candidate sites, then runs
+each pick through `capture` — so the screenshot, provenance and manifest entry are the same as a manual
+capture. Sources are toggles in `probe.config.json`:
+
+```json
+"inspiration": {
+  "eagle": "auto",
+  "count": 4,
+  "sources": {
+    "awwwards":  { "enabled": true,  "award": "sotd", "sortBy": "newest" },
+    "pinterest": { "enabled": false, "query": "web design landing page" },
+    "feed":      { "enabled": false, "path": "references/inspiration.json" }
+  }
+}
+```
+
+```bash
+bin/probe inspire --list                  # what is on, and whether Eagle is reachable
+bin/probe inspire --dry-run               # pick, do not screenshot
+bin/probe inspire --count 6               # pull six
+bin/probe inspire --source pinterest      # override the toggles for one run
+bin/probe inspire --check                 # hand-shake with enabled MCP sources
+bin/probe inspire --to folder             # never write to Eagle this run
+```
+
+`eagle` is `auto` (use Eagle when running, otherwise folder), `on` (fail if Eagle is not running) or
+`off` (folder only). `--seed` reproduces a pick; the seed is printed on every run.
+
+Auto-pulled captures are marked `unsorted` on purpose. `bin/probe refs` blocks them until someone names
+the transferable device and what not to copy — a screenshot is not a reference yet.
+
+Awwwards is personal, non-commercial inspiration use. Pinterest pins are reference only, and a pin with
+no source page is skipped because there is nothing live to capture. Mobbin or Refero can enter through
+`feed` (a JSON list of URLs) until a dedicated adapter exists.
 
 ## 5. Direction
 
@@ -127,6 +177,8 @@ docs/design/<slug>/handoff/            compiled context for a design tool or age
 |---|---|---|
 | Chrome for Testing | capture, render tier, Lighthouse | text stages still run |
 | Eagle | visual library, write-back, media server | folder references work |
+| Awwwards MCP | `inspire --source awwwards` | manual captures work |
+| Pinterest MCP | `inspire --source pinterest` | manual captures work |
 | Hallmark / sloplint | mechanical sweep | `review` skips that pass and says so |
 | Impeccable detector | detector findings | `review` skips that pass and says so |
 | Lighthouse | performance/axe scores | `review` reports no scores |

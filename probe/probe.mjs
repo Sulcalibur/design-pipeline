@@ -171,6 +171,38 @@ function validate(config, candidates) {
   }
   for (const [axis, n] of axes) if (n === 1) warnings.push(`axis "${axis}" has only one pair; no "try another pair"`)
 
+  if (config.inspiration) {
+    const inspiration = config.inspiration
+    const knownSources = ['awwwards', 'pinterest', 'feed']
+    if (inspiration.eagle && !['auto', 'on', 'off'].includes(inspiration.eagle)) {
+      errors.push('inspiration.eagle must be auto, on or off')
+    }
+    if (inspiration.count != null && (!Number.isInteger(inspiration.count) || inspiration.count < 1 || inspiration.count > 24)) {
+      errors.push('inspiration.count must be an integer from 1 to 24')
+    }
+    for (const [name, block] of Object.entries(inspiration.sources ?? {})) {
+      if (!knownSources.includes(name)) warnings.push(`inspiration.sources.${name}: no adapter — use feed or an --source override`)
+      if (typeof block?.enabled !== 'boolean') warnings.push(`inspiration.sources.${name}: enabled should be true or false`)
+    }
+    const awwwards = inspiration.sources?.awwwards
+    if (awwwards?.sortBy && !['newest', 'score'].includes(awwwards.sortBy)) {
+      errors.push('inspiration.sources.awwwards.sortBy must be newest or score')
+    }
+    if (awwwards?.color && !/^#?[0-9A-Fa-f]{6}$/.test(awwwards.color)) {
+      errors.push('inspiration.sources.awwwards.color must be a 6-digit hex colour')
+    }
+    if (awwwards?.page != null && (!Number.isInteger(awwwards.page) || awwwards.page < 1)) {
+      errors.push('inspiration.sources.awwwards.page must be a positive integer')
+    }
+    const pinterest = inspiration.sources?.pinterest
+    if (pinterest?.media && !['any', 'image', 'video'].includes(pinterest.media)) {
+      errors.push('inspiration.sources.pinterest.media must be any, image or video')
+    }
+    if (pinterest?.limit != null && (!Number.isInteger(pinterest.limit) || pinterest.limit < 1 || pinterest.limit > 100)) {
+      errors.push('inspiration.sources.pinterest.limit must be an integer from 1 to 100')
+    }
+  }
+
   return { errors, warnings, basePairs, axisKeys, constraintKeys }
 }
 
@@ -241,6 +273,12 @@ function status() {
   printReport(report, config)
 
   console.log(`\nconfig: ${rel(configPath)}`)
+  if (config.inspiration) {
+    const names = Object.entries(config.inspiration.sources ?? {})
+      .filter(([, block]) => block?.enabled === true)
+      .map(([name]) => name)
+    console.log(`inspiration: ${names.length ? names.join(', ') : 'none enabled'} · eagle ${config.inspiration.eagle ?? 'auto'}`)
+  }
   const libFile = path.join(paths.data, 'library.json')
   if (existsSync(libFile)) {
     try {
@@ -287,6 +325,7 @@ function help() {
   console.log(`Reference probe — shared engine, per-project config
 
   node probe.mjs init <dir>        scaffold docs/design/<slug>/ from templates
+  node probe.mjs start             show the stage map, where this project is, and the next step
   node probe.mjs build             validate probe.config.json + write build/probe.json
   node probe.mjs validate          check the config only
   node probe.mjs status            config, library pool, last run, last spec
@@ -298,6 +337,7 @@ function help() {
   node probe.mjs preview           write a static pair page for review
   node probe.mjs compare           put 2–4 HTML files or screenshots side by side
   node probe.mjs capture           screenshot a URL into references/ (+ Eagle if running)
+  node probe.mjs inspire           pull references from Awwwards, Pinterest or a feed
   node probe.mjs refs              review the reference pack; gate on device + avoid
   node probe.mjs context           compile a handoff folder for a design tool or agent
   node probe.mjs doctor            report what this machine can run
@@ -314,6 +354,9 @@ function help() {
   node probe.mjs emit [--dry]      write 05-decision.md + build-spec.json
   node probe.mjs record [--apply]  write verdicts back into Eagle
 
+inspire: --list · --check · --dry-run · --source awwwards,pinterest,feed
+         --count <n> · --seed <s> · --to auto|eagle|folder · --json
+
 Global flags, valid on every command:
   --config <path>   the project's probe.config.json (default ./probe.config.json)
   --out <dir>       where 05-decision.md, build-spec.json and 02-direction.md land
@@ -328,6 +371,9 @@ Only editing probe.config.json needs judgement. Everything else is deterministic
 switch (cmd) {
   case 'init':
     runScript('init.mjs', rest)
+    break
+  case 'start':
+    runScript('start.mjs', rest)
     break
   case 'build':
     build()
@@ -361,6 +407,9 @@ switch (cmd) {
     break
   case 'capture':
     runScript('capture.mjs', rest)
+    break
+  case 'inspire':
+    runScript('inspire.mjs', rest)
     break
   case 'refs':
     runScript('refs.mjs', rest)

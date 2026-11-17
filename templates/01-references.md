@@ -6,6 +6,8 @@
 |---|---|---|---|
 | Eagle | `tag:<project>` | | |
 | Eagle | `tag:<facet>` | | |
+| Awwwards | `bin/probe inspire --source awwwards --dry-run` | | |
+| Pinterest | `bin/probe inspire --source pinterest --dry-run` | | |
 | Live URL | <url> | | |
 
 ## Reference table

@@ -143,6 +143,150 @@
         }
       }
     },
+    "inspiration": {
+      "type": "object",
+      "properties": {
+        "eagle": {
+          "enum": [
+            "auto",
+            "on",
+            "off"
+          ]
+        },
+        "eagleFolder": {
+          "type": "string"
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 24
+        },
+        "seed": {
+          "type": [
+            "string",
+            "number",
+            "null"
+          ]
+        },
+        "sources": {
+          "type": "object",
+          "properties": {
+            "awwwards": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "award": {
+                  "enum": [
+                    "sotd",
+                    "sotm",
+                    "soty",
+                    "nominees",
+                    "developer",
+                    "honorable",
+                    "ecommerce",
+                    "portfolio",
+                    "product",
+                    "typography",
+                    "businessServices",
+                    "noCode"
+                  ]
+                },
+                "sortBy": {
+                  "enum": [
+                    "newest",
+                    "score"
+                  ]
+                },
+                "query": {
+                  "type": "string"
+                },
+                "tags": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "technology": {
+                  "type": "string"
+                },
+                "color": {
+                  "type": "string",
+                  "pattern": "^$|^#?[0-9A-Fa-f]{6}$"
+                },
+                "page": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "count": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 12
+                },
+                "command": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "timeoutMs": {
+                  "type": "integer",
+                  "minimum": 5000
+                }
+              }
+            },
+            "pinterest": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "query": {
+                  "type": "string"
+                },
+                "media": {
+                  "enum": [
+                    "any",
+                    "image",
+                    "video"
+                  ]
+                },
+                "limit": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                },
+                "package": {
+                  "type": "string"
+                },
+                "command": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "timeoutMs": {
+                  "type": "integer",
+                  "minimum": 5000
+                }
+              }
+            },
+            "feed": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "path": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "ui": {
       "type": "object",
       "properties": {

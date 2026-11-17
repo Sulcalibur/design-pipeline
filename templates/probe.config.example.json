@@ -390,6 +390,35 @@
     "kind": "eagle",
     "library": "Inspirations"
   },
+  "inspiration": {
+    "eagle": "auto",
+    "eagleFolder": "inspiration",
+    "count": 4,
+    "seed": null,
+    "sources": {
+      "awwwards": {
+        "enabled": true,
+        "award": "sotd",
+        "sortBy": "newest",
+        "page": 1,
+        "count": 12,
+        "query": "",
+        "tags": [],
+        "technology": "",
+        "color": ""
+      },
+      "pinterest": {
+        "enabled": false,
+        "query": "web design landing page",
+        "media": "image",
+        "limit": 30
+      },
+      "feed": {
+        "enabled": false,
+        "path": "references/inspiration.json"
+      }
+    }
+  },
   "system": {},
   "output": {},
   "semantics": {}

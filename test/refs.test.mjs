@@ -45,3 +45,19 @@ test('refs passes once every capture has a device and an avoid', () => {
   assert.equal(out.status, 0)
   assert.match(out.stdout, /2 complete/)
 })
+
+test('refs treats an unsorted placeholder as unsorted, not as a device', () => {
+  const dir = project()
+  const manifest = JSON.parse(readFileSync(path.join(dir, 'manifest.json'), 'utf8'))
+  for (const item of manifest.items) {
+    item.device = 'unsorted — classify before borrowing'
+    item.avoid = 'unsorted — name what not to copy'
+    item.fits = 'candidate'
+    item.evidence = 'inspire'
+  }
+  writeFileSync(path.join(dir, 'manifest.json'), JSON.stringify(manifest))
+  const out = run('refs.mjs', ['--project', dir, '--dir', '.', '--html', 'refs.html'], dir)
+  assert.equal(out.status, 1)
+  assert.match(out.stdout, /2 blocked/)
+  assert.match(readFileSync(path.join(dir, 'refs.html'), 'utf8'), /device not named/)
+})

@@ -23,8 +23,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync, statSync } from 'no
 import path from 'node:path'
 import { parseArgs, fail, rel } from './paths.mjs'
 import { resolveContext, readJson, nowDate, chromePath } from './checks.mjs'
-
-const EAGLE = 'http://localhost:41595'
+import { EAGLE, eagleStatus } from './library.mjs'
 
 const args = parseArgs(process.argv.slice(2))
 const url = args.get('url')
@@ -62,15 +61,7 @@ function viewport() {
 /* ----------------------------------------------------------------- eagle -- */
 
 async function eagleAvailable() {
-  for (const pathname of ['/api/v2/app/info', '/api/application/info']) {
-    try {
-      const res = await fetch(EAGLE + pathname, { signal: AbortSignal.timeout(1800) })
-      if (res.ok) return true
-    } catch {
-      // keep trying
-    }
-  }
-  return false
+  return (await eagleStatus()).running
 }
 
 function findFolder(nodes, name) {

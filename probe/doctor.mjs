@@ -11,13 +11,14 @@
  *   node doctor.mjs --json
  *   node doctor.mjs --strict        # exit 1 when a required item is missing
  */
-import { existsSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { spawnSync } from 'node:child_process'
 import path from 'node:path'
 import { parseArgs } from './paths.mjs'
 import { chromePath } from './checks.mjs'
-import { mediaSource } from './library.mjs'
+import { mediaSource, eagleStatus } from './library.mjs'
+import { enabledSourceNames, findBinary, inspirationSettings } from './inspiration.mjs'
 
 const args = parseArgs(process.argv.slice(2))
 const here = import.meta.dirname
@@ -45,28 +46,14 @@ try {
 
 /* ------------------------------------------------------------------ eagle -- */
 
-async function eagleInfo() {
-  for (const p of ['/api/v2/app/info', '/api/application/info']) {
-    try {
-      const res = await fetch('http://localhost:41595' + p, { signal: AbortSignal.timeout(1800) })
-      if (res.ok) return res.json()
-    } catch {
-      // try the next shape
-    }
-  }
-  return null
-}
-
-const eagle = await eagleInfo()
-if (eagle) {
-  let library = null
-  try {
-    const res = await fetch('http://localhost:41595/api/v2/library/info', { signal: AbortSignal.timeout(1800) })
-    if (res.ok) library = (await res.json())?.data ?? null
-  } catch {
-    // library is optional
-  }
-  add('eagle', 'ok', library?.path ? `${library.name ?? 'library'} · ${library.path}` : 'running, no library reported', 'eagle')
+const eagle = await eagleStatus()
+if (eagle.running) {
+  add(
+    'eagle',
+    'ok',
+    eagle.library?.path ? `${eagle.library.name ?? 'library'} · ${eagle.library.path}` : 'running, no library reported',
+    'eagle',
+  )
 } else {
   add('eagle', 'optional', 'not running — folder references work without it', 'eagle')
 }
@@ -83,6 +70,54 @@ try {
 }
 add('eagle media', mediaOk ? 'ok' : 'optional', mediaOk ? media : 'set EAGLE_MEDIA_BASE or EAGLE_MEDIA_URL when file access is denied', 'eagle')
 
+/* ------------------------------------------------------------ inspiration -- */
+
+const npx = spawnSync('npx', ['--version'], { encoding: 'utf8' })
+const npxOk = npx.status === 0
+const configPath = path.resolve(process.cwd(), args.get('config', 'probe.config.json'))
+let projectConfig = null
+try {
+  if (existsSync(configPath)) projectConfig = JSON.parse(readFileSync(configPath, 'utf8'))
+} catch {
+  projectConfig = null
+}
+const inspiration = projectConfig ? inspirationSettings(projectConfig) : null
+const inspirationNames = inspiration ? enabledSourceNames(inspiration) : []
+add(
+  'inspiration',
+  inspirationNames.length ? 'ok' : 'optional',
+  inspiration
+    ? inspirationNames.length
+      ? `${inspirationNames.join(', ')} enabled · eagle ${inspiration.eagle}`
+      : 'no sources enabled — bin/probe inspire --list'
+    : `no config at ${path.relative(process.cwd(), configPath) || configPath} — pass --config`,
+  'inspiration',
+)
+for (const name of inspirationNames) {
+  if (name === 'feed') {
+    const feedPath = inspiration.sources.feed.path ?? 'references/inspiration.json'
+    const file = path.isAbsolute(feedPath) ? feedPath : path.resolve(path.dirname(configPath), feedPath)
+    add('feed', existsSync(file) ? 'ok' : 'optional', existsSync(file) ? file : `not found: ${file}`, 'inspiration')
+    continue
+  }
+  if (name === 'awwwards') {
+    const binary = process.env.AWWWARDS_MCP_BIN || findBinary('awwwards-mcp')
+    add(
+      'awwwards mcp',
+      binary ? 'ok' : npxOk ? 'optional' : 'missing',
+      binary ?? (npxOk ? 'not on PATH — npx fallback' : 'install: npm i -g awwwards-mcp'),
+      'inspiration',
+    )
+    continue
+  }
+  add(
+    'pinterest mcp',
+    npxOk ? 'ok' : 'missing',
+    npxOk ? 'npx @sunkimkk/pinterest-mcp@1.2.0' : 'npx not found',
+    'inspiration',
+  )
+}
+
 /* ------------------------------------------------------------ verification -- */
 
 const hallmark = process.env.HALLMARK_HOME ?? path.join(home, '.agents/skills/hallmark')
@@ -95,8 +130,7 @@ const detector = [
 ].find((p) => existsSync(p))
 add('impeccable detector', detector ? 'ok' : 'optional', detector ?? 'install Impeccable for the detector pass', 'verify')
 
-const npx = spawnSync('npx', ['--version'], { encoding: 'utf8' })
-add('lighthouse', npx.status === 0 ? 'ok' : 'optional', npx.status === 0 ? 'npx lighthouse@12 (first run downloads)' : 'npx not found', 'verify')
+add('lighthouse', npxOk ? 'ok' : 'optional', npxOk ? 'npx lighthouse@12 (first run downloads)' : 'npx not found', 'verify')
 
 /* ---------------------------------------------------------------- project -- */
 
@@ -122,7 +156,7 @@ if (args.has('json')) {
   console.log(JSON.stringify({ generatedAt: new Date().toISOString(), node: process.version, rows, missingRequired: missingRequired.map((r) => r.name) }, null, 2))
 } else {
   console.log('\nprobe doctor\n')
-  for (const group of ['required', 'render', 'eagle', 'verify', 'project']) {
+  for (const group of ['required', 'render', 'eagle', 'inspiration', 'verify', 'project']) {
     const items = rows.filter((r) => r.group === group)
     if (!items.length) continue
     console.log(`  ${group}`)

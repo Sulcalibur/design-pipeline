@@ -33,7 +33,9 @@ stop. Do not reimplement the probe inline.
 | Nothing | `init` + intake | Invent a brand |
 
 `init` detects `design.md`, tokens, framework, sibling design slugs and `.hallmark/`, then creates only
-what is missing. Existing documents are never overwritten.
+what is missing. Existing documents are never overwritten. `probe start` applies the entry-point table
+from the artifacts: it prints the 0→9 map, recommends a stage and gives the next command, without
+running or writing anything.
 
 ## Stage map
 
