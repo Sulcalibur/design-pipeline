@@ -1,0 +1,52 @@
+{
+  "$about": "Brand interview pack. The 39 slots come from brand.config.json; this file adds the branching context and the conditions that decide which slots are asked.",
+  "id": "brand",
+  "title": "Brand interview",
+  "include": "../brand.config.json",
+  "context": [
+    {
+      "id": "kind",
+      "section": "context",
+      "question": "Is this brand a person, a company, or a public body?",
+      "help": "The answer changes which questions are relevant, not the standard.",
+      "type": "single",
+      "required": true,
+      "gate": "blocking",
+      "options": ["person", "company", "public"]
+    },
+    {
+      "id": "sector",
+      "section": "context",
+      "question": "Does the organisation work in a regulated or public-sector context?",
+      "help": "This decides the accessibility, procurement and tone obligations.",
+      "type": "single",
+      "required": true,
+      "gate": "blocking",
+      "options": ["public", "regulated", "neither"]
+    },
+    {
+      "id": "identity",
+      "section": "context",
+      "question": "Do identity assets already exist — a wordmark, palette and type?",
+      "help": "Yes or partial means the interview records and tests them; no means the direction has to create them.",
+      "type": "single",
+      "required": true,
+      "gate": "blocking",
+      "options": ["yes", "partial", "no"]
+    },
+    {
+      "id": "cms",
+      "section": "context",
+      "question": "Will the content be edited outside the codebase?",
+      "help": "A CMS adds roles, workflow and publish states to the brand's operating rules.",
+      "type": "single",
+      "required": true,
+      "gate": "blocking",
+      "options": ["yes", "planned", "no"]
+    }
+  ],
+  "askIf": {
+    "owner": { "kind": ["company", "public"] },
+    "c2": { "kind": ["company", "public"] }
+  }
+}

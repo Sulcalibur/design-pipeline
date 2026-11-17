@@ -301,6 +301,7 @@ function help() {
   node probe.mjs refs              review the reference pack; gate on device + avoid
   node probe.mjs context           compile a handoff folder for a design tool or agent
   node probe.mjs doctor            report what this machine can run
+  node probe.mjs ask               one-question interview with branches and a gate
   node probe.mjs brand             brand interview: scaffold | serve | status | emit | review
   node probe.mjs copy              voice gate: banned words, voice, placeholders, spelling
   node probe.mjs content           page and content-model completeness
@@ -369,6 +370,9 @@ switch (cmd) {
     break
   case 'doctor':
     runScript('doctor.mjs', rest)
+    break
+  case 'ask':
+    runScript('ask.mjs', rest)
     break
   case 'brand':
     if (rest[0] === 'review') runScript('brand-review.mjs', rest.slice(1))

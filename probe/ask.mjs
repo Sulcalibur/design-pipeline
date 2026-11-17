@@ -1,0 +1,286 @@
+#!/usr/bin/env node
+/**
+ * probe/ask.mjs — one question at a time, with branches and a gate.
+ *
+ * A pack is a constant spine plus conditions. The engine shows the next visible
+ * question, offers a recommendation with a reason, records the answer and its
+ * source, and refuses to close the stage while a required question is unanswered.
+ *
+ *   node ask.mjs --project . --stage brand --next
+ *   node ask.mjs --project . --stage brand --answer kind=person --status verified --source "owner"
+ *   node ask.mjs --project . --stage brand --tbc a4
+ *   node ask.mjs --project . --stage brand --check
+ *   node ask.mjs --project . --stage brand --list
+ *
+ * State lives in <docDir>/interview.json. The answers are a working record, not
+ * the brand record: `probe brand emit` still writes brand.json from answers.json.
+ */
+import { existsSync, readFileSync, writeFileSync, rmSync } from 'node:fs'
+import path from 'node:path'
+import { parseArgs, fail, rel } from './paths.mjs'
+import { resolveContext, loadBrand, slotValue, readJson, writeDoc } from './checks.mjs'
+
+const here = import.meta.dirname
+const args = parseArgs(process.argv.slice(2))
+const stage = args.get('stage', 'brand')
+const ctx = resolveContext(args)
+const packPath = path.join(here, 'packs', `${stage}.json`)
+if (!existsSync(packPath)) fail(`no question pack for "${stage}" at ${packPath}`)
+
+const pack = JSON.parse(readFileSync(packPath, 'utf8'))
+const include = pack.include ? JSON.parse(readFileSync(path.resolve(path.dirname(packPath), pack.include), 'utf8')) : { questions: [] }
+const base = include.questions ?? []
+const context = pack.context ?? []
+const overrides = pack.askIf ?? {}
+const questions = [...context, ...base].map((q) => ({ ...q, askIf: overrides[q.id] ?? q.askIf ?? null }))
+
+const statePath = args.get('state')
+  ? path.resolve(process.cwd(), args.get('state'))
+  : path.join(ctx.docDir, 'interview.json')
+let state = readJson(statePath, { stage, answers: {} }) ?? { stage, answers: {} }
+state.stage = stage
+state.answers ??= {}
+
+const brand = loadBrand(ctx.project)?.data ?? null
+// Seed the working record from the brand record, without overwriting an answer
+// the interview already changed.
+for (const q of questions) {
+  if (state.answers[q.id]) continue
+  const slot = brand?.slots?.[q.id]
+  if (slot && slot.value != null) {
+    state.answers[q.id] = { value: slot.value, status: slot.status ?? 'assumption', source: slot.source ?? 'brand.json', prefilled: true }
+  }
+}
+
+function visible(q, answers = state.answers) {
+  for (const [key, allowed] of Object.entries(q.askIf ?? {})) {
+    const answer = answers[key]?.value
+    if (answer == null) return false
+    const values = Array.isArray(answer) ? answer.map(String) : [String(answer)]
+    if (!values.some((v) => allowed.map(String).includes(v))) return false
+  }
+  return true
+}
+
+/* --------------------------------------------------------- recommendation -- */
+
+function projectText() {
+  const files = ['package.json', 'nuxt.config.ts', 'README.md', 'docs/brand/brand.md']
+  return files
+    .filter((f) => existsSync(path.join(ctx.project, f)))
+    .map((f) => readFileSync(path.join(ctx.project, f), 'utf8'))
+    .join('\n')
+}
+
+function detectKind() {
+  const product = String(slotValue(brand, 'product') ?? '')
+  const who = String(slotValue(brand, 'a2') ?? '')
+  const oneLine = String(slotValue(brand, 'oneLine') ?? '')
+  const text = `${who} ${product} ${oneLine}`
+  if (/\b(council|department|ministry|authority|nhs)\b/i.test(product)) return { value: 'public', why: 'the product name reads as a public body' }
+  if (/\b(ltd|limited|llc|studio|agency|consultancy|partners)\b/i.test(product)) return { value: 'company', why: 'the product name reads as a company' }
+  if (/public[-\s]sector|government|council|nhs|dwp|department/i.test(text)) return { value: 'person', why: 'the record describes one person working in the public sector' }
+  return { value: 'person', why: 'no company or public-body signal in the record' }
+}
+
+function detectSector() {
+  const text = ['product', 'oneLine', 'a2', 'b1'].map((id) => String(slotValue(brand, id) ?? '')).join(' ')
+  if (/public[-\s]sector|government|council|nhs|dwp|department|ministry/i.test(text)) return { value: 'public', why: 'the record names a public-sector context' }
+  if (/financial|health|legal|education|safeguarding|fca|ofsted|gdpr/i.test(text)) return { value: 'regulated', why: 'the record names a regulated field' }
+  return { value: 'neither', why: 'no regulated or public-sector signal' }
+}
+
+function detectIdentity() {
+  const marks = ['v1', 'v2-paper', 'v2-ink', 'v2-accent', 'v3-display', 'v3-body', 'v3-ui'].filter((id) => slotValue(brand, id))
+  if (marks.length >= 5) return { value: 'yes', why: 'the record already carries a mark, palette and type roles' }
+  if (marks.length) return { value: 'partial', why: 'some identity slots are filled, not all' }
+  return { value: 'no', why: 'no mark, palette or type in the record' }
+}
+
+function detectCms() {
+  const text = projectText()
+  if (/directus|contentful|sanity|strapi|payload|wordpress|ghost/i.test(text)) return { value: 'yes', why: 'the project names a CMS' }
+  if (/\bcms\b|content model|content-model/i.test(text)) return { value: 'planned', why: 'a content model is mentioned but no CMS is installed' }
+  return { value: 'no', why: 'no CMS signal in the project' }
+}
+
+function recommendationFor(id) {
+  if (id === 'kind') return detectKind()
+  if (id === 'sector') return detectSector()
+  if (id === 'identity') return detectIdentity()
+  if (id === 'cms') return detectCms()
+  return null
+}
+
+/* --------------------------------------------------------------- commands -- */
+
+function save() {
+  state.updatedAt = new Date().toISOString()
+  writeFileSync(statePath, JSON.stringify(state, null, 2) + '\n')
+}
+
+function nextQuestion() {
+  return questions.find((q) => visible(q) && !state.answers[q.id])
+}
+
+function optionLabel(q) {
+  return (q.options ?? [])
+    .map((o) => (typeof o === 'string' ? o : o.value ?? o.id ?? o.label))
+    .filter(Boolean)
+    .join(' · ')
+}
+
+function printNext(q) {
+  if (!q) {
+    console.log('\nNo visible unanswered questions.\n')
+    console.log(`check the gate: probe ask --stage ${stage} --check`)
+    return
+  }
+  console.log(`\nNext: ${q.id}  ·  ${q.section ?? 'general'}${q.required ? '  ·  required' : ''}`)
+  console.log(`\n${q.question}`)
+  if (q.help) console.log(`\n${q.help}`)
+  if (q.why) console.log(`\nWhy it matters: ${q.why}`)
+  if (q.options) console.log(`\nOptions: ${optionLabel(q)}`)
+  const rec = q.recommend ?? recommendationFor(q.id)
+  if (rec?.value) console.log(`\nSuggested: ${rec.value}${rec.why ? ` — ${rec.why}` : ''}`)
+  console.log(`\nAnswer:\n  probe ask --stage ${stage} --answer ${q.id}=<value> --status verified --source "<where this came from>"`)
+  console.log(`  probe ask --stage ${stage} --tbc ${q.id}    (only when not knowing is the honest answer)\n`)
+}
+
+function list() {
+  const rows = questions.map((q) => {
+    const a = state.answers[q.id]
+    const vis = visible(q)
+    return {
+      id: q.id,
+      section: q.section ?? '',
+      required: q.required ? 'yes' : '',
+      visible: vis ? 'yes' : 'hidden',
+      status: a?.status ?? (a ? 'answered' : ''),
+      value: a?.value == null ? '' : Array.isArray(a.value) ? a.value.join(', ') : String(a.value),
+    }
+  })
+  if (args.has('json')) {
+    console.log(JSON.stringify({ stage, state: statePath, questions: rows }, null, 2))
+    return
+  }
+  console.log(`\n${pack.title ?? stage} — ${rows.filter((r) => r.visible === 'yes').length} visible of ${rows.length}\n`)
+  for (const r of rows) {
+    if (r.visible === 'hidden') console.log(`  · ${r.id.padEnd(14)} hidden by a branch`)
+    else console.log(`  ${r.status === 'tbc' ? '!' : r.value ? '✓' : '·'} ${r.id.padEnd(14)} ${r.section.padEnd(10)} ${r.required ? 'req ' : '    '} ${r.status.padEnd(10)} ${r.value.slice(0, 70)}`)
+  }
+  console.log('')
+}
+
+function check() {
+  const vis = questions.filter((q) => visible(q))
+  const blocking = []
+  const warnings = []
+  for (const q of vis) {
+    const a = state.answers[q.id]
+    if (!a) {
+      if (q.required) blocking.push({ id: q.id, why: 'required, unanswered' })
+      continue
+    }
+    if (a.status === 'tbc') {
+      if (q.gate === 'blocking') blocking.push({ id: q.id, why: 'blocking question left TBC' })
+      else warnings.push({ id: q.id, why: 'TBC' })
+    }
+    if (a.status === 'assumption' && q.required) warnings.push({ id: q.id, why: 'required, assumed' })
+  }
+
+  if (args.has('json')) {
+    console.log(JSON.stringify({ stage, state: statePath, blocking, warnings, visible: vis.length, answered: vis.filter((q) => state.answers[q.id]).length }, null, 2))
+  } else {
+    console.log(`\n${pack.title ?? stage} — gate\n`)
+    console.log(`  visible ${vis.length} · answered ${vis.filter((q) => state.answers[q.id]).length}`)
+    if (blocking.length) {
+      console.log('\n  blocking')
+      for (const b of blocking) console.log(`    ✗ ${b.id.padEnd(14)} ${b.why}`)
+    }
+    if (warnings.length) {
+      console.log('\n  recorded, not blocking')
+      for (const w of warnings) console.log(`    ! ${w.id.padEnd(14)} ${w.why}`)
+    }
+    if (!blocking.length) console.log('\n  ✓ clear — no required question is unanswered')
+    console.log(`\n  state: ${rel(statePath)}\n`)
+  }
+
+  if (args.has('write')) {
+    const lines = [
+      `# ${pack.title ?? `${stage} interview`}`,
+      '',
+      `> ${new Date().toISOString().slice(0, 10)} · ${vis.length} visible questions · ${blocking.length} blocking`,
+      '',
+      '| Question | Status | Answer | Source |',
+      '|---|---|---|---|',
+      ...vis.map((q) => {
+        const a = state.answers[q.id]
+        const value = a?.value == null ? '—' : Array.isArray(a.value) ? a.value.join(', ') : String(a.value)
+        return `| ${q.id} | ${a?.status ?? 'unanswered'} | ${value.replace(/\|/g, '\\|').slice(0, 120)} | ${a?.source ?? '—'} |`
+      }),
+      '',
+    ]
+    const file = writeDoc(ctx.docDir, 'interview.md', lines.join('\n'))
+    console.log(`→ ${rel(file)}`)
+  }
+  process.exit(blocking.length ? 1 : 0)
+}
+
+/* ------------------------------------------------------------------- main -- */
+
+if (args.has('reset')) {
+  rmSync(statePath, { force: true })
+  console.log(`reset ${rel(statePath)}`)
+  process.exit(0)
+}
+
+if (args.get('answer')) {
+  const raw = args.get('answer')
+  const at = raw.indexOf('=')
+  if (at < 0) fail('--answer needs id=value')
+  const id = raw.slice(0, at)
+  const q = questions.find((x) => x.id === id)
+  if (!q) fail(`no question "${id}" in the ${stage} pack`)
+  const valueRaw = raw.slice(at + 1)
+  if (!valueRaw) fail('--answer needs a value after "="')
+  const value = q.type === 'list' ? valueRaw.split(',').map((s) => s.trim()).filter(Boolean) : valueRaw
+  state.answers[id] = {
+    value,
+    status: args.get('status', 'assumption'),
+    source: args.get('source', 'owner'),
+    at: new Date().toISOString(),
+  }
+  save()
+  console.log(`recorded ${id} = ${Array.isArray(value) ? value.join(', ') : value} (${state.answers[id].status})`)
+  if (!args.has('json')) {
+    const n = nextQuestion()
+    if (n) printNext(n)
+    else console.log(`\nNo visible unanswered questions. Check: probe ask --stage ${stage} --check`)
+  }
+  process.exit(0)
+}
+
+if (args.get('tbc')) {
+  const id = args.get('tbc')
+  const q = questions.find((x) => x.id === id)
+  if (!q) fail(`no question "${id}" in the ${stage} pack`)
+  state.answers[id] = { value: null, status: 'tbc', source: args.get('source', 'owner'), at: new Date().toISOString() }
+  save()
+  console.log(`recorded ${id} = TBC`)
+  const n = nextQuestion()
+  if (n) printNext(n)
+  process.exit(0)
+}
+
+if (args.has('list')) {
+  list()
+  process.exit(0)
+}
+
+if (args.has('check')) {
+  check()
+  process.exit(0)
+}
+
+printNext(nextQuestion())

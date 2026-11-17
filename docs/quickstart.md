@@ -31,11 +31,15 @@ needed. Use `--source eagle` if you have it.
 ```bash
 bin/probe brand scaffold --project .
 bin/probe brand serve    --project .      # http://127.0.0.1:4211
+bin/probe ask --stage brand --next        # one question, with branches and a gate
 bin/probe brand review   --project .      # gate: 0 blocking
 ```
 
 The interview writes `docs/brand/brand.md` and `brand.json`: 39 slots, each with a status and a source.
-A brand record is the constraint every later decision is checked against.
+A brand record is the constraint every later decision is checked against. `probe ask` is the same spine
+with branches — a person is not asked a company's economics, a company is not asked a personal voice —
+plus a recommendation and a blocking gate. Its state is `interview.json`; the brand record remains
+`brand.json`.
 
 ## 4. References
 
