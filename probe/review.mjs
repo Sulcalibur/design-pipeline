@@ -59,8 +59,11 @@ function areaFor(code) {
 
 /** Duplicate custom properties with different values, across CSS files. */
 function tokenDrift(project) {
-  const files = walkFiles(project, ['.css']).filter((f) => !/\/(tokens|base)\.css$/i.test(f))
-  const tokens = walkFiles(project, ['.css']).filter((f) => /(tokens|theme|variables)\.css$/i.test(f))
+  const cssFiles = walkFiles(project, ['.css']).filter(
+    (f) => !/\/handoff\//.test(f) && !/\/audit-\d{4}-\d{2}-\d{2}\//.test(f) && !/\/od-roundtrip\//.test(f),
+  )
+  const files = cssFiles.filter((f) => !/\/(tokens|base)\.css$/i.test(f))
+  const tokens = cssFiles.filter((f) => /(tokens|theme|variables)\.css$/i.test(f))
   const decl = new Map()
   let rawHex = 0
   for (const file of [...tokens, ...files]) {

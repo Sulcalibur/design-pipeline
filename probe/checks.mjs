@@ -405,10 +405,11 @@ export function writeDoc(docDir, name, content) {
 /* ------------------------------------------------------------------ utils -- */
 
 export function chromePath() {
+  const home = process.env.HOME ?? ''
   const candidates = [
     process.env.CHROME_PATH,
-    path.join(process.env.HOME ?? '', 'Library/Caches/ms-playwright/chromium-1248/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing'),
-    path.join(process.env.HOME ?? '', '.cache/puppeteer/chrome/mac_arm-131.0.6778.204/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing'),
+    path.join(home, 'Library/Caches/ms-playwright/chromium-1248/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing'),
+    path.join(home, '.cache/puppeteer/chrome/mac_arm-131.0.6778.204/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing'),
     '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
     '/Applications/Chromium.app/Contents/MacOS/Chromium',
     '/usr/bin/google-chrome',
@@ -418,7 +419,27 @@ export function chromePath() {
     '/snap/bin/chromium',
     'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
   ].filter(Boolean)
-  return candidates.find((p) => existsSync(p)) ?? null
+
+  // The cached automation builds change version; scan the two caches rather than
+  // hardcoding a version that a Playwright/Puppeteer update silently invalidates.
+  const relatives = [
+    'chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing',
+    'chrome-mac/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing',
+    'chrome-linux64/chrome',
+    'chrome-linux/chrome',
+    'chrome-win64/chrome.exe',
+  ]
+  const dynamic = []
+  for (const root of [path.join(home, '.cache/puppeteer/chrome'), path.join(home, 'Library/Caches/ms-playwright')]) {
+    if (!existsSync(root)) continue
+    for (const version of readdirSync(root).sort().reverse()) {
+      for (const rel of relatives) {
+        const candidate = path.join(root, version, rel)
+        if (existsSync(candidate)) dynamic.push(candidate)
+      }
+    }
+  }
+  return [...candidates, ...dynamic].find((p) => existsSync(p)) ?? null
 }
 
 export function contrast(hexA, hexB) {

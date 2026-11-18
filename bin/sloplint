@@ -33,6 +33,16 @@ if [ -z "${CHROME_PATH:-}" ]; then
   done
 fi
 
+# Cached automation builds change version; scan rather than hardcode one.
+if [ -z "${CHROME_PATH:-}" ]; then
+  while IFS= read -r candidate; do
+    if [ -x "$candidate" ]; then
+      export CHROME_PATH="$candidate"
+      break
+    fi
+  done < <(find "$HOME/.cache/puppeteer/chrome" "$HOME/Library/Caches/ms-playwright" -type f \( -name "Google Chrome for Testing" -o -name "chrome" -o -name "chromium" \) 2>/dev/null | sort -r)
+fi
+
 if [ -z "${CHROME_PATH:-}" ]; then
   echo "No automation browser found. Set CHROME_PATH to a Chrome for Testing binary." >&2
   exit 1

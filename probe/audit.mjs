@@ -18,6 +18,7 @@ import { spawnSync } from 'node:child_process'
 import os from 'node:os'
 import path from 'node:path'
 import { parseArgs, fail, rel } from './paths.mjs'
+import { chromePath } from './checks.mjs'
 
 const args = parseArgs(process.argv.slice(2))
 const url = args.get('url')
@@ -31,24 +32,7 @@ const base = args.get('out')
     ? path.join(project, 'docs/design', slug, 'audit')
     : path.join(project, 'docs/audit')
 
-function chrome() {
-  const candidates = [
-    process.env.CHROME_PATH,
-    path.join(
-      os.homedir(),
-      'Library/Caches/ms-playwright/chromium-1248/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing',
-    ),
-    path.join(
-      os.homedir(),
-      '.cache/puppeteer/chrome/mac_arm-131.0.6778.204/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing',
-    ),
-    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-    '/Applications/Chromium.app/Contents/MacOS/Chromium',
-  ].filter(Boolean)
-  return candidates.find((p) => existsSync(p)) ?? null
-}
-
-const browser = chrome()
+const browser = chromePath()
 if (!browser) fail('no Chrome or Chromium found — set CHROME_PATH to a Chrome for Testing binary')
 
 const tmp = path.join(os.tmpdir(), `lh-${process.pid}.json`)
